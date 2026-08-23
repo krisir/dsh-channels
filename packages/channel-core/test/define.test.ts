@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   defineChannelAdapter,
   isChannelAdapter,
+  mediaCapabilitiesSchema,
   type ChannelAdapter,
   type ChannelCapabilities,
 } from '../src/index.js';
@@ -145,6 +146,14 @@ describe('defineChannelAdapter (Task 17.1)', () => {
     expect(() => defineChannelAdapter(badFlag as never)).toThrowError(
       /capabilities.image must be a boolean/,
     );
+  });
+
+  it('rejects media capability keys outside BinaryKind', () => {
+    const result = mediaCapabilitiesSchema.safeParse({
+      inbound: { image: 'bytes', pdf: 'bytes' },
+      outbound: { file: 'bytes' },
+    });
+    expect(result.success).toBe(false);
   });
 
   it('rejects non-object input', () => {

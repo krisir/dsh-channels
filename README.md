@@ -205,7 +205,7 @@ live gate 完成前均不视为生产验证通过。
 
 ### 关闭不需要的渠道
 
-在 profile patch 中将对应渠道插件的 `enabled` 设为 `false`，或删除可选的 `channels-files` 行以关闭通用文件扩展。
+在 profile patch 中将对应渠道插件的 `enabled` 设为 `false`，或删除可选的 `channels-files` 行以关闭通用附件兼容后端。
 
 ## 已知限制
 
@@ -268,8 +268,8 @@ pnpm ci:check
 | --- | --- |
 | `packages/channels` | 对外 bundle `@wsz987/dsh-channels`（聚合 patch） |
 | `packages/channel-core` | **Channel Contract**：类型 + `ctx.channels` Service + `defineChannelAdapter` |
-| `packages/channel-harness` | 渠道 ↔ Harness 桥；只保留可选 `ChannelFileProvider` 端口 |
-| `packages/channel-files` | 可选通用文件扩展：私有存储、成熟文档解析库、读取工具 |
+| `packages/channel-harness` | 渠道 ↔ Harness 桥；只保留可选 `ChannelAttachmentProvider` 端口（旧名 `ChannelFileProvider` 为兼容别名） |
+| `packages/channel-files` | Generic Attachment compatibility backend：会话隔离存储、legacy 兼容解析、`read_channel_attachment` 兼容工具 |
 | `packages/channel-control` | 控制面：配置 / 凭据 / 扫码授权 / 运行时生命周期 |
 | `packages/channel-{weixin,qq,dingtalk,lark,telegram}` | 五个内置渠道适配器 |
 | `packages/channel-{compat,testkit,verify,web}` | 契约验证 / 测试工具 / Web 可视化 |

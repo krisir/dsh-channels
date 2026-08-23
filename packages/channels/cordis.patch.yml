@@ -13,8 +13,10 @@
     - id: channels-service
       name: '@wsz987/dsh-channels/service'
 
-    # Optional generic-file extension. Remove this line to keep placeholders
-    # only; Harness-native image attachments remain available either way.
+    # Generic attachment compatibility backend.
+    # Required for non-image channel attachments until Harness provides native
+    # generic attachment support. Legacy v1 data remains readable even after a
+    # native backend becomes available.
     - id: channels-files
       name: '@wsz987/dsh-channels/files'
 

@@ -1,7 +1,7 @@
 import { Service, type Context } from '@deepseek-ai/cordis';
 import type {
-  ChannelFileContext,
-  ChannelFileProvider,
+  ChannelAttachmentContext,
+  ChannelAttachmentProvider,
   ResolvedChannelAttachment,
   StoredBinaryPart,
 } from '@wsz987/channel-harness';
@@ -18,7 +18,7 @@ declare module '@deepseek-ai/cordis' {
   }
 }
 
-export class ChannelFileService extends Service implements ChannelFileProvider {
+export class ChannelFileService extends Service implements ChannelAttachmentProvider {
   readonly storeBackend: FileChannelInboundAssetStore;
   private readonly extractor = createAttachmentExtractor(DEFAULT_ATTACHMENT_POLICY);
 
@@ -27,16 +27,21 @@ export class ChannelFileService extends Service implements ChannelFileProvider {
     this.storeBackend = new FileChannelInboundAssetStore();
   }
 
-  store(context: ChannelFileContext, part: StoredBinaryPart) {
+  store(context: ChannelAttachmentContext, part: StoredBinaryPart) {
     return storeBinaryPart(this.storeBackend, context, part, {
       extractor: this.extractor,
     });
   }
 
-  installTools(agentContext: Context): Promise<void> {
+  installCompatibilityTools(agentContext: Context): Promise<void> {
     return installReadChannelAttachmentTool(agentContext, {
       store: this.storeBackend,
     });
+  }
+
+  /** @deprecated use installCompatibilityTools. */
+  installTools(agentContext: Context): Promise<void> {
+    return this.installCompatibilityTools(agentContext);
   }
 
   resolveAttachment(

@@ -32,7 +32,7 @@ import {
   type MessageReceived,
   type VideoPart,
 } from '@wsz987/channel-core';
-import type { ChannelFileDescriptor } from './file-provider.js';
+import type { ChannelAttachmentDescriptor } from './file-provider.js';
 
 /** Type-level alias: the bridge always produces Harness user messages. */
 export type UserMessageLike = UserMessage;
@@ -58,7 +58,7 @@ export type StoredBinaryPart = FilePart | AudioPart | VideoPart;
  */
 export type FileStoreHook = (
   part: StoredBinaryPart,
-) => Promise<ChannelFileDescriptor | undefined>;
+) => Promise<ChannelAttachmentDescriptor | undefined>;
 
 export interface MessageConvertOptions {
   /** Whether to prepend the `[channel=.. sender=.. message=..]` prefix. Defaults to false. */
@@ -251,7 +251,7 @@ async function storedDescriptor(
   }
 }
 
-function renderDescriptor(asset: ChannelFileDescriptor): string {
+function renderDescriptor(asset: ChannelAttachmentDescriptor): string {
   const mime = asset.mimeType ? ' ' + asset.mimeType : '';
   const readable = asset.readable ? ' readable' : '';
   return `[attachment ${asset.attachmentId} ${asset.name}${mime} ${humanSize(asset.bytes)}${readable}]`;

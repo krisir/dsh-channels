@@ -90,6 +90,31 @@ export class WeixinAdapter implements ChannelAdapter {
     reactions: false,
     threads: false,
     streaming: 'buffered',
+    // Directional per-kind media precision (attachment-gateway plan §7.1).
+    // CODE-CONFIRMED:
+    //   inbound — TencentWeixinUpstream.enrichInboundMedia downloads + AES
+    //     decrypts image/file/video and download+decrypt+transcodeSilkVoice for
+    //     audio, setting localData before the monitor emits; failures keep the
+    //     part with `ingressFailure`.
+    //   outbound — concrete sendImage/sendFile/sendVideo (uploadMedia +
+    //     sendMedia over iLink 2.4.6) upload real bytes; audio has no Tencent
+    //     2.4.6 outbound path (adapter.send() rejects voice parts with
+    //     CHANNEL_UNSUPPORTED), so it is `unsupported`.
+    // Legacy booleans above stay unchanged (coarse flags, plan §5.1).
+    media: {
+      inbound: {
+        image: 'bytes',
+        file: 'bytes',
+        audio: 'bytes',
+        video: 'bytes',
+      },
+      outbound: {
+        image: 'bytes',
+        file: 'bytes',
+        video: 'bytes',
+        audio: 'unsupported',
+      },
+    },
   };
 
   private readonly config: WeixinConfig;

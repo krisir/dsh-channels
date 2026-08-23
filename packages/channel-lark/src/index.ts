@@ -81,6 +81,7 @@ export {
   type LarkMediaClient,
   type LarkMediaPort,
   type LarkMediaPortOptions,
+  type LarkResourceType,
   type LarkMessageResourceGetPayload,
   type LarkMessageResourceResult,
   type LarkImageGetPayload,
@@ -90,8 +91,10 @@ export {
   type LarkFileCreateResult,
 } from './upstream/media-port.js';
 export {
+  MediaHydrator,
   ImageHydrator,
   classifyIngressFailure,
+  type MediaHydratorOptions,
   type ImageHydratorOptions,
 } from './media-hydrator.js';
 export { FetchTransport, type HttpTransport } from './transport.js';

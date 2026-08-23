@@ -41,11 +41,11 @@ export interface QQAdapterDeps {
   /** Resolved QQ AppSecret credential value (injected by the plugin). Tests using the Fake client may omit it. */
   appSecret?: string;
   /**
-   * Optional secure remote media fetcher used to hydrate inbound image bytes
-   * before emit (plan §23 / §79A). Tests inject a fake so the inbound path is
-   * fully offline; production defaults to a real `SecureRemoteMediaFetcher`.
-   * Configurable here (not in config) because it is a low-level seam, not a
-   * user-facing knob.
+   * Optional secure remote media fetcher used to hydrate inbound media bytes
+   * (image/file/audio/video) before emit (plan §23-A3 / §79A). Tests inject a
+   * fake so the inbound path is fully offline; production defaults to a real
+   * `SecureRemoteMediaFetcher`. Configurable here (not in config) because it
+   * is a low-level seam, not a user-facing knob.
    */
   secureFetch?: SecureRemoteMediaFetcher;
   /** Injectable clock (tests). */
@@ -92,6 +92,15 @@ export class QQAdapter implements ChannelAdapter {
       cards: false,
       reactions: false,
       threads: false,
+      // Directional, per-kind media precision (attachment-gateway plan §7.1):
+      // inbound 'bytes' — the inbound path hydrates every binary kind through
+      // `SecureRemoteMediaFetcher` before emit (image/file/audio/video);
+      // outbound 'bytes' — `sendMedia` uploads `localData` bytes via the SDK
+      // `fileData` carrier for every kind (IMAGE / VOICE / VIDEO / FILE).
+      media: {
+        inbound: { image: 'bytes', file: 'bytes', audio: 'bytes', video: 'bytes' },
+        outbound: { image: 'bytes', file: 'bytes', audio: 'bytes', video: 'bytes' },
+      },
       // Conservative default; `resolveStreamingMode` upgrades C2C+msgId to
       // native streaming.
       streaming: 'buffered',

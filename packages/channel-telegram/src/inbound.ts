@@ -8,11 +8,12 @@
  *
  * Media hydration runs after the duplicate check and before emit. The dedup
  * entry is committed only after emit succeeds, so a failed dispatch remains
- * retryable. Each `image` and
- * `file` part with an opaque Telegram `resourceRef` (file_id) is resolved and
- * downloaded through the platform upstream and its bytes are placed on
- * `localData`. A download failure never blocks text delivery — the part keeps
- * its `resourceRef` and records a stable `ingressFailure` code.
+ * retryable. Each binary part (`image`, `file`, `audio` — voice notes and
+ * audio messages — and `video`) with an opaque Telegram `resourceRef`
+ * (file_id) is resolved and downloaded through the platform upstream and its
+ * bytes are placed on `localData`. A download failure never blocks text
+ * delivery — the part keeps its `resourceRef` and records a stable
+ * `ingressFailure` code.
  *
  * ## Interactions (plan §5 / §12.2)
  *
@@ -62,9 +63,21 @@ function summarizeParts(parts: readonly MessagePart[]): unknown[] {
           ingressFailure: part.ingressFailure,
         };
       case 'audio':
-        return { type: 'audio', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'audio',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       case 'video':
-        return { type: 'video', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'video',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       default:
         return { type: part.type };
     }

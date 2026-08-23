@@ -106,6 +106,32 @@ export class LarkAdapter implements ChannelAdapter {
     reactions: true,
     threads: true,
     streaming: 'edit',
+    // Directional media precision (attachment-gateway plan §7.1). Inbound:
+    // image/file/audio/video are all hydrated to real bytes before emit — the
+    // official `message.resource` API documents audio/video downloads (see the
+    // SDK-embedded doc statement for im.v1.messageResource.get in
+    // @larksuiteoapi/node-sdk@1.73.0: 音频、视频、图片和文件; plan §23-A4), so
+    // every binary kind the mapper produces routes its file_key through
+    // `messageResource.get` into localData. Outbound: image (`sendMedia` →
+    // im.image.create) and file (`sendFile` → im.file.create) upload real
+    // bytes; there is no audio/video send path — audio/video outbound parts
+    // fall back to `[audio]`/`[video]` text placeholders, so outbound
+    // audio/video are 'unsupported' (the legacy coarse `audio: true` /
+    // `video: false` flags remain unchanged).
+    media: {
+      inbound: {
+        image: 'bytes',
+        file: 'bytes',
+        audio: 'bytes',
+        video: 'bytes',
+      },
+      outbound: {
+        image: 'bytes',
+        file: 'bytes',
+        audio: 'unsupported',
+        video: 'unsupported',
+      },
+    },
   };
 
   private ctx?: ChannelAdapterContext;

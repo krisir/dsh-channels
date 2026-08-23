@@ -1,5 +1,5 @@
 /**
- * Inbound processing: dedup window + structured mapping + image hydration +
+ * Inbound processing: dedup window + structured mapping + media hydration +
  * emit.
  *
  * Input is the Tencent SDK's `QQBotInboundMessage`. Dedup keys on `messageId`
@@ -7,13 +7,13 @@
  * `kind === 'c2c'` and `kind === 'group'` are accepted in V1 — anything else
  * (guild/dm) is logged and dropped.
  *
- * Binary hydration (plan §23 / §79A / §85) runs AFTER mapping and dedup,
- * BEFORE emit: each `type === 'image'` (M2A) and `type === 'file'` (M7B)
- * part with a genuine `http(s)` `url` is downloaded through the injectable
+ * Binary hydration (plan §23-A3 / §79A / §85) runs AFTER mapping and dedup,
+ * BEFORE emit: every `image` (M2A), `file` (M7B), `audio` and `video` part
+ * with a genuine `http(s)` `url` is downloaded through the injectable
  * `SecureRemoteMediaFetcher` and its bytes are placed on `localData`
- * (file parts also carry the hydrated byte length in `size`). A download
- * failure never blocks text delivery — the part keeps its `url` and records
- * a stable `ingressFailure` code (§79A).
+ * (file/audio/video parts also carry the hydrated byte length in `size`).
+ * A download failure never blocks text delivery — the part keeps its `url`
+ * and records a stable `ingressFailure` code (§79A).
  */
 import type { ChannelAdapterContext, MessagePart, MessageReceived } from '@wsz987/channel-core';
 import { SecureRemoteMediaFetcher } from '@wsz987/channel-core';
@@ -43,9 +43,21 @@ function summarizeParts(parts: readonly MessagePart[]): unknown[] {
           ingressFailure: part.ingressFailure,
         };
       case 'audio':
-        return { type: 'audio', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'audio',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       case 'video':
-        return { type: 'video', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'video',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       default:
         return { type: part.type };
     }
@@ -53,7 +65,7 @@ function summarizeParts(parts: readonly MessagePart[]): unknown[] {
 }
 import type { QQBotInboundMessage } from '@tencent-connect/qqbot-nodejs';
 import { mapInbound, type QQInboundMeta } from './mapper.js';
-import { hydrateImageParts, type ImageHydratorOptions } from './image-hydrator.js';
+import { hydrateMediaParts, type MediaHydratorOptions } from './media-hydrator.js';
 
 export interface InboundProcessorOptions {
   ctx: ChannelAdapterContext;
@@ -62,8 +74,10 @@ export interface InboundProcessorOptions {
   dedupWindowMs: number;
   /** Optional secure remote media fetcher (tests inject a fake; defaults to real). */
   secureFetch?: SecureRemoteMediaFetcher;
-  /** Image hydration tuning. */
-  imageHydration?: ImageHydratorOptions;
+  /** Media hydration tuning (image / file / audio / video). */
+  mediaHydration?: MediaHydratorOptions;
+  /** @deprecated use mediaHydration. */
+  imageHydration?: MediaHydratorOptions;
   /** Injectable clock (tests). */
   now?: () => number;
 }
@@ -71,17 +85,17 @@ export interface InboundProcessorOptions {
 export class InboundProcessor {
   private readonly now: () => number;
   private readonly secureFetch: SecureRemoteMediaFetcher;
-  private readonly imageHydration: ImageHydratorOptions;
+  private readonly mediaHydration: MediaHydratorOptions;
   /** messageId -> last-seen timestamp, pruned on every handle. */
   private readonly seen = new Map<string, number>();
 
   constructor(private readonly options: InboundProcessorOptions) {
     this.now = options.now ?? Date.now;
     this.secureFetch = options.secureFetch ?? new SecureRemoteMediaFetcher();
-    this.imageHydration = options.imageHydration ?? {};
+    this.mediaHydration = options.mediaHydration ?? options.imageHydration ?? {};
   }
 
-  /** Process one SDK inbound message; dedup, hydrate images, then emit. */
+  /** Process one SDK inbound message; dedup, hydrate media, then emit. */
   async handle(raw: QQBotInboundMessage): Promise<void> {
     if (raw.kind !== 'c2c' && raw.kind !== 'group') {
       this.options.ctx.logger.debug(
@@ -103,10 +117,10 @@ export class InboundProcessor {
     }
 
     const event: MessageReceived = mapInbound(raw, this.options.meta);
-    // Hydrate image bytes before emit so the harness saveImage()/ImageBlock
-    // path receives real bytes. Never throws; failures degrade the part.
-    await hydrateImageParts(event.message.content, this.secureFetch, {
-      ...this.imageHydration,
+    // Hydrate media bytes before emit so the harness attachment paths receive
+    // real bytes. Never throws; failures degrade the part.
+    await hydrateMediaParts(event.message.content, this.secureFetch, {
+      ...this.mediaHydration,
       signal: this.options.ctx.signal,
     });
     // Inbound message log (debug diagnostics): visible in web:debug with

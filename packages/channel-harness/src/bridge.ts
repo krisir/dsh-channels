@@ -65,7 +65,10 @@ import {
   type FileStoreHook,
   type StoredBinaryPart,
 } from './message-converter.js';
-import type { ChannelFileProvider } from './file-provider.js';
+import {
+  installAttachmentCompatibilityTools,
+  type ChannelAttachmentProvider,
+} from './file-provider.js';
 import { ReplyContextStore } from './reply-context-store.js';
 import type { ChannelOutboxService } from './outbox/service.js';
 import { installSendChannelMessageTool } from './outbox/tool-send.js';
@@ -111,7 +114,7 @@ export interface ChannelHarnessBridgeOptions {
   /** Optional attachment-commit seam (WX5 real image path). */
   saveImage?: SaveImageHook;
   /** Optional generic-file extension. Absent keeps ordinary file placeholders. */
-  fileProvider?: ChannelFileProvider;
+  fileProvider?: ChannelAttachmentProvider;
   /**
    * The Cordis context on which the official `commands` registry is mounted.
    * `ctx.commands.execute` is the official command dispatcher.
@@ -469,10 +472,13 @@ export class ChannelHarnessBridge {
     this.modelSelectionDisposers.add(disposeModelSelection);
     // M4: Agent-scoped read_channel_attachment tool. Registered on the agent's
     // own scope so it is disposed with the agent. Best-effort: a tool-install
-    // failure must never roll back the agent setup.
+    // failure must never roll back the agent setup. The tool stays registered
+    // through the provider's OPTIONAL compatibility path (plan §10.1) while it
+    // is the only generic-attachment reader. The deprecated installTools name
+    // remains a fallback for one cycle; providers with neither hook skip it.
     if (this.options.fileProvider) {
       try {
-        await this.options.fileProvider.installTools(agentCtx);
+        await installAttachmentCompatibilityTools(this.options.fileProvider, agentCtx);
       } catch (error) {
         this.options.logger.warn('[channel-harness] failed to install read_channel_attachment tool', error);
       }

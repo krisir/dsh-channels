@@ -9,7 +9,11 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Readable } from 'node:stream';
-import { ChannelError } from '@wsz987/channel-core';
+import {
+  BodyTooLargeError,
+  ChannelError,
+  RemoteMediaAbortedError,
+} from '@wsz987/channel-core';
 import {
   LarkOpenApiMediaPort,
   type LarkMediaClient,
@@ -21,7 +25,8 @@ import {
  */
 class FakeMediaClient implements LarkMediaClient {
   calls: { method: string; payload?: unknown }[] = [];
-  streamChunks: Buffer[] = [Buffer.from('\x89PNG-fake-image-bytes')];
+  streamChunks: Array<Buffer | Uint8Array | ArrayBuffer> = [Buffer.from('\x89PNG-fake-image-bytes')];
+  streamFactory?: () => Readable;
   headers?: Record<string, unknown> = { 'content-type': 'image/png; charset=utf-8' };
   messageResourceError?: Error;
   imageCreateResult: { image_key?: string } | null = { image_key: 'img_v2_up' };
@@ -35,7 +40,7 @@ class FakeMediaClient implements LarkMediaClient {
           if (this.messageResourceError) throw this.messageResourceError;
           return {
             writeFile: async () => undefined,
-            getReadableStream: () => Readable.from([...this.streamChunks]),
+            getReadableStream: () => this.streamFactory?.() ?? Readable.from([...this.streamChunks]),
             headers: this.headers,
           };
         },
@@ -110,6 +115,49 @@ describe('LarkOpenApiMediaPort.downloadMessageResource (M2A image ingress)', () 
     });
     expect(result.mimeType).toBeUndefined();
     expect(result.name).toBeUndefined();
+  });
+
+  it('normalizes ArrayBuffer and typed-array chunks without unsafe coercion', async () => {
+    const client = new FakeMediaClient();
+    client.streamChunks = [
+      Uint8Array.from([1, 2]),
+      Uint8Array.from([3, 4]).buffer,
+    ];
+    const result = await port(client).downloadMessageResource({
+      messageId: 'om_chunks',
+      resourceKey: 'file_chunks',
+      type: 'file',
+    });
+    expect(result.data).toEqual(Uint8Array.from([1, 2, 3, 4]));
+  });
+
+  it('fails while consuming the chunk that crosses the hard byte cap', async () => {
+    const client = new FakeMediaClient();
+    client.streamChunks = [Buffer.alloc(4), Buffer.alloc(4), Buffer.alloc(4)];
+    await expect(port(client).downloadMessageResource({
+      messageId: 'om_large',
+      resourceKey: 'file_large',
+      type: 'video',
+      maxBytes: 6,
+    })).rejects.toBeInstanceOf(BodyTooLargeError);
+  });
+
+  it('destroys an active SDK stream when AbortSignal is cancelled', async () => {
+    const client = new FakeMediaClient();
+    client.streamFactory = () => Readable.from((async function* () {
+      yield Buffer.from('first');
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      yield Buffer.from('second');
+    })());
+    const controller = new AbortController();
+    const download = port(client).downloadMessageResource({
+      messageId: 'om_abort',
+      resourceKey: 'file_abort',
+      type: 'audio',
+      signal: controller.signal,
+    });
+    setTimeout(() => controller.abort(), 5);
+    await expect(download).rejects.toBeInstanceOf(RemoteMediaAbortedError);
   });
 });
 

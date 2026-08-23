@@ -32,16 +32,28 @@ function summarizeParts(parts: readonly MessagePart[]): unknown[] {
           ingressFailure: part.ingressFailure,
         };
       case 'audio':
-        return { type: 'audio', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'audio',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       case 'video':
-        return { type: 'video', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'video',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       default:
         return { type: part.type };
     }
   });
 }
 import { dedupKey, mapInbound, mapInteraction, type LarkInboundMeta } from './mapper.js';
-import { ImageHydrator } from './media-hydrator.js';
+import { MediaHydrator } from './media-hydrator.js';
 import type { LarkMediaPort } from './upstream/media-port.js';
 
 export interface InboundProcessorOptions {
@@ -52,26 +64,32 @@ export interface InboundProcessorOptions {
   /** Injectable clock (tests). */
   now?: () => number;
   /**
-   * Optional media port used to hydrate inbound image resourceRefs into bytes
-   * before emit (Milestone M2A, plan §28/§79A). When absent, image parts keep
+   * Optional media port used to hydrate inbound binary resourceRefs into bytes
+   * before emit (Milestone M2A + plan §23-A4). When absent, binary parts keep
    * their resourceRef untouched (no ingress).
    */
   mediaPort?: LarkMediaPort;
+  /** Test/embedding override; production defaults to two concurrent downloads. */
+  mediaHydrationConcurrency?: number;
+  /** Test/embedding override; production defaults to the Lark 100 MiB cap. */
+  maxMediaBytes?: number;
 }
 
 export class InboundProcessor {
   private readonly now: () => number;
   /** dedup key -> last-seen timestamp, pruned on every handle. */
   private readonly seen = new Map<string, number>();
-  /** Resolves inbound image resourceRefs into bytes before emit (M2A). */
-  private readonly hydrator: ImageHydrator;
+  /** Resolves inbound binary resourceRefs into bytes before emit (M2A/§23-A4). */
+  private readonly hydrator: MediaHydrator;
 
   constructor(private readonly options: InboundProcessorOptions) {
     this.now = options.now ?? Date.now;
-    this.hydrator = new ImageHydrator({
+    this.hydrator = new MediaHydrator({
       mediaPort: options.mediaPort,
       signal: options.ctx.signal,
       logger: options.ctx.logger,
+      maxConcurrency: options.mediaHydrationConcurrency,
+      maxBytes: options.maxMediaBytes,
     });
   }
 
@@ -96,9 +114,10 @@ export class InboundProcessor {
       return;
     }
     const event: MessageReceived = mapInbound(raw, this.options.meta);
-    // Hydrate image resourceRefs into bytes before emit; failures mark the
-    // part (ingressFailure) and never block text delivery.
-    await this.hydrator.hydrateImages(event);
+    // Hydrate binary resourceRefs (image/file/audio/video) into bytes before
+    // emit; failures mark the part (ingressFailure) and never block text
+    // delivery.
+    await this.hydrator.hydrateMedia(event);
     // Inbound message log (debug diagnostics): visible in web:debug with
     // DSH_CHANNELS_DEBUG=1, shows mapped parts incl. hydration result.
     this.options.ctx.logger.info(

@@ -1,8 +1,16 @@
 /**
- * Inbound processing: dedup window + structured mapping + image hydration + emit.
+ * Inbound processing: dedup window + structured mapping + media hydration (image/file/audio/video) + emit.
  */
 import type { ChannelAdapterContext, MessagePart, MessageReceived } from '@wsz987/channel-core';
+import { z } from 'zod';
 import { dedupKey, mapInbound, type DingTalkInboundMeta } from './mapper.js';
+
+const downloadContextSchema = z.object({
+  type: z.string().optional(),
+  picDownloadCode: z.string().min(1).optional(),
+  downloadCode: z.string().min(1).optional(),
+  robotCode: z.string().min(1).optional(),
+});
 
 /** Compact per-part summary for inbound message logs (debug diagnostics). */
 function summarizeParts(parts: readonly MessagePart[]): unknown[] {
@@ -13,8 +21,8 @@ function summarizeParts(parts: readonly MessagePart[]): unknown[] {
       case 'image':
         return {
           type: 'image',
-          url: part.url,
-          resourceRef: part.resourceRef,
+          hasUrl: Boolean(part.url),
+          resourceRef: part.resourceRef ? '[redacted]' : undefined,
           mimeType: part.mimeType,
           localDataBytes: part.localData?.byteLength,
           ingressFailure: part.ingressFailure,
@@ -29,15 +37,29 @@ function summarizeParts(parts: readonly MessagePart[]): unknown[] {
           ingressFailure: part.ingressFailure,
         };
       case 'audio':
-        return { type: 'audio', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'audio',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          size: part.size,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       case 'video':
-        return { type: 'video', durationMs: part.durationMs, localDataBytes: part.localData?.byteLength };
+        return {
+          type: 'video',
+          durationMs: part.durationMs,
+          mimeType: part.mimeType,
+          size: part.size,
+          localDataBytes: part.localData?.byteLength,
+          ingressFailure: part.ingressFailure,
+        };
       default:
         return { type: part.type };
     }
   });
 }
-import { hydrateFiles, hydrateImages, type RemoteMediaFetchLike } from './image-hydrator.js';
+import { hydrateFiles, hydrateImages, hydrateMedia, type RemoteMediaFetchLike } from './image-hydrator.js';
 import type { MediaResolverLike } from './openapi-port.js';
 
 export interface InboundProcessorOptions {
@@ -88,7 +110,8 @@ export class InboundProcessor {
     // downloadCode + robotCode are transient upstream state the official
     // /v1.0/robot/messageFiles/download API needs. Read from the raw payload
     // and passed to hydration — never persisted onto core parts (plan §9/§46).
-    const rawValue = raw as { picDownloadCode?: string; downloadCode?: string; robotCode?: string } | undefined;
+    const parsedDownloadContext = downloadContextSchema.safeParse(raw);
+    const rawValue = parsedDownloadContext.success ? parsedDownloadContext.data : undefined;
     const downloadContext = {
       downloadCode: rawValue?.picDownloadCode ?? rawValue?.downloadCode,
       robotCode: rawValue?.robotCode,
@@ -102,9 +125,9 @@ export class InboundProcessor {
       signal: this.options.ctx.signal,
       onFailure: (error, part) => {
         this.options.ctx.logger.warn('[channel-dingtalk] inbound image hydration failed', {
-          resourceRef: part.type === 'image' ? part.resourceRef : undefined,
-          url: part.type === 'image' ? part.url : undefined,
-          error: error instanceof Error ? error.message : String(error),
+          hasResourceRef: part.type === 'image' && Boolean(part.resourceRef),
+          hasUrl: part.type === 'image' && Boolean(part.url),
+          error: summarizeError(error),
         });
       },
     });
@@ -116,25 +139,27 @@ export class InboundProcessor {
       downloadContext,
       signal: this.options.ctx.signal,
     });
-    // Inbound message log (debug diagnostics): shows the mapped parts incl.
-    // image/file locator + hydration result, so channel ingress is visible in
-    // web:debug / DSH_CHANNELS_DEBUG=1 consoles.
-    const rawRecord = raw as Record<string, unknown> | undefined;
+    // Hydrate audio/video parts (plan §23-A5): audio/video follow the exact
+    // same URL-or-opaque resolution as image/file — genuine http(s) urls via
+    // the secure fetcher, opaque downloadCodes via the official
+    // messageFiles/download seam (the connector oracle downloads voice/video
+    // bytes through the identical downloadCode -> downloadUrl -> raw bytes
+    // flow). Failures only annotate the part; text still delivers.
+    await hydrateMedia(event.message.content, {
+      secureFetch: this.options.secureFetch,
+      resolveMedia: this.options.resolveMedia,
+      downloadContext,
+      signal: this.options.ctx.signal,
+    });
+    // Inbound message log: expose hydration state without platform locators.
+    // Signed URLs and download codes must never enter logs at any level.
     this.options.ctx.logger.info(
       `[channel-dingtalk] inbound message ${event.message.id} from ${event.sender.id} in ${event.conversation.id}`,
       {
-        msgtype: rawRecord?.type,
+        msgtype: rawValue?.type,
         parts: summarizeParts(event.message.content),
       },
     );
-    this.options.ctx.logger.debug('[channel-dingtalk] raw inbound media locators', {
-      picUrl: rawRecord?.picUrl,
-      picMediaId: rawRecord?.picMediaId,
-      picDownloadCode: rawRecord?.picDownloadCode,
-      mediaUrl: rawRecord?.mediaUrl,
-      downloadCode: rawRecord?.downloadCode,
-      robotCode: rawRecord?.robotCode,
-    });
     await this.options.ctx.emit(event);
   }
 
@@ -143,4 +168,10 @@ export class InboundProcessor {
       if (now - ts >= this.options.dedupWindowMs) this.seen.delete(key);
     }
   }
+}
+
+function summarizeError(error: unknown): { name: string; code?: string } {
+  if (!(error instanceof Error)) return { name: 'UnknownError' };
+  const code = 'code' in error && typeof error.code === 'string' ? error.code : undefined;
+  return { name: error.name, ...(code !== undefined ? { code } : {}) };
 }

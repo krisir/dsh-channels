@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
 import { TOPIC_ROBOT } from 'dingtalk-stream';
-import { ChannelService, ChannelError, type MessageReceived } from '@wsz987/channel-core';
+import { ChannelService, ChannelError, mediaCapabilitiesSchema, type MessageReceived } from '@wsz987/channel-core';
 import {
   runChannelAdapterContract,
   createTestContext,
@@ -154,6 +154,38 @@ describe('mapper (fixture-driven)', () => {
     const fixture = await loadFixture('dingtalk', 'inbound-audio');
     const event = mapInbound(fixture.payload, { channel: 'dingtalk' as never, accountId: 'main' as never });
     expect(event.message.content).toEqual((fixture.expected as MessageReceived).message.content);
+  });
+
+  it('maps inbound video fixture (capabilities/video mapping keeps url + durationMs)', async () => {
+    const fixture = await loadFixture('dingtalk', 'inbound-video');
+    const event = mapInbound(fixture.payload, { channel: 'dingtalk' as never, accountId: 'main' as never });
+    expect(event.message.content).toEqual((fixture.expected as MessageReceived).message.content);
+  });
+
+  it('capabilities.media parses through mediaCapabilitiesSchema and matches the verdict', () => {
+    const a = new DingTalkAdapter(makeConfig());
+    // The directional media map must satisfy the shared contract schema.
+    const parsed = mediaCapabilitiesSchema.safeParse(a.capabilities.media);
+    expect(parsed.success).toBe(true);
+    // Audio/video stay locator-level until official platform evidence and a
+    // real-account live gate prove the download path for actual callbacks.
+    expect(a.capabilities.media?.inbound).toEqual({
+      image: 'bytes',
+      file: 'bytes',
+      audio: 'locator',
+      video: 'locator',
+    });
+    // Outbound: only image/file bytes are actually sendable (proactive
+    // uploadMedia + sendMedia); there is no robot audio/video send path.
+    expect(a.capabilities.media?.outbound).toEqual({
+      image: 'bytes',
+      file: 'bytes',
+      audio: 'unsupported',
+      video: 'unsupported',
+    });
+    // Legacy coarse flags are untouched (video stays false legacy).
+    expect(a.capabilities.video).toBe(false);
+    expect(a.capabilities.audio).toBe(true);
   });
 
   it('maps unknown types to unsupported parts', async () => {

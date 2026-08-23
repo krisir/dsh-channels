@@ -9,6 +9,18 @@
  * returns a binary stream ({ getReadableStream }) which this port normalizes
  * to a Uint8Array, best-effort copying the content-type header into mimeType.
  *
+ * Since plan section 23-A4 the port resolves ALL four binary resource kinds:
+ * the official `message.resource` API documents its scope as 音频、视频、图片和文件
+ * ("resource files in the specified message, including audio, video, image
+ * and file", see the SDK-embedded doc statement for im.v1.messageResource.get
+ * in @larksuiteoapi/node-sdk@1.73.0), and the SDK `type` query param is typed
+ * `string` - NOT restricted to image/file. The mapper therefore routes
+ * audio/video file_keys through the same `type: 'audio'` / `type: 'video'`
+ * download seam as image/file. Platform-level limits stay official facts:
+ * <= 100 MB per resource, no stickers, no sub-messages of merged-forward /
+ * card messages (error 234043) - those surface as port failures that the
+ * hydrator maps to a stable ingressFailure.
+ *
  * uploadImage -> client.im.v1.image.create and uploadFile ->
  * client.im.v1.file.create are declared now (needed by the outbound-media
  * milestone M7A later) and implemented because they are straightforward.
@@ -25,11 +37,22 @@
  *     Promise<{ writeFile(fp): Promise<unknown>;
  *               getReadableStream(): Readable; headers: any }>
  */
-import { ChannelError } from '@wsz987/channel-core';
+import {
+  BodyTooLargeError,
+  ChannelError,
+  RemoteMediaAbortedError,
+  concatenate,
+} from '@wsz987/channel-core';
+
+/** Official per-resource limit, also enforced locally while reading. */
+export const LARK_MESSAGE_RESOURCE_MAX_BYTES = 100 * 1024 * 1024;
+
+/** The four binary resource kinds the official message.resource API resolves. */
+export type LarkResourceType = 'image' | 'file' | 'audio' | 'video';
 
 /** Minimal im.v1.messageResource.get payload/result shapes consumed here. */
 export interface LarkMessageResourceGetPayload {
-  params: { type: 'image' | 'file' | string };
+  params: { type: LarkResourceType | string };
   path: { message_id: string; file_key: string };
 }
 
@@ -98,15 +121,19 @@ export interface LarkMediaClient {
  */
 export interface LarkMediaPort {
   /**
-   * Download a resource (image/file) embedded in a message. resourceKey is
-   * the platform image_key/file_key (a resourceRef), resolved via the
-   * official messageResource.get against the owning messageId.
+   * Download a resource (image/file/audio/video) embedded in a message.
+   * resourceKey is the platform image_key/file_key (a resourceRef), resolved
+   * via the official messageResource.get against the owning messageId. The
+   * per-kind `type` mirrors the resource kind the official API documents for
+   * audio/video downloads (plan section 23-A4).
    */
   downloadMessageResource(input: {
     messageId: string;
     resourceKey: string;
-    type: 'image' | 'file';
+    type: LarkResourceType;
     signal?: AbortSignal;
+    /** Hard cap enforced while consuming the SDK stream. */
+    maxBytes?: number;
   }): Promise<{ data: Uint8Array; mimeType?: string; name?: string }>;
 
   /** Upload an image; returns the platform image_key. */
@@ -139,15 +166,20 @@ export class LarkOpenApiMediaPort implements LarkMediaPort {
   async downloadMessageResource(input: {
     messageId: string;
     resourceKey: string;
-    type: 'image' | 'file';
+    type: LarkResourceType;
     signal?: AbortSignal;
+    maxBytes?: number;
   }): Promise<{ data: Uint8Array; mimeType?: string; name?: string }> {
-    void input.signal;
+    if (input.signal?.aborted) throw new RemoteMediaAbortedError();
     const result = await this.options.client.im.v1.messageResource.get({
       params: { type: input.type },
       path: { message_id: input.messageId, file_key: input.resourceKey },
     });
-    const data = await streamToUint8Array(result);
+    const data = await streamToUint8Array(
+      result,
+      input.maxBytes ?? LARK_MESSAGE_RESOURCE_MAX_BYTES,
+      input.signal,
+    );
     return { data, mimeType: contentTypeOf(result), name: fileNameOf(result) };
   }
 
@@ -187,25 +219,55 @@ export class LarkOpenApiMediaPort implements LarkMediaPort {
   }
 }
 
-/** Buffer the official resource stream into a Uint8Array. */
-async function streamToUint8Array(result: LarkMessageResourceResult): Promise<Uint8Array> {
-  const stream = result.getReadableStream();
-  const chunks: Buffer[] = [];
-  for await (const chunk of stream) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array));
+/** Consume the official Node stream under a hard cumulative byte cap. */
+async function streamToUint8Array(
+  result: LarkMessageResourceResult,
+  maxBytes: number,
+  signal?: AbortSignal,
+): Promise<Uint8Array> {
+  if (maxBytes <= 0) {
+    throw new BodyTooLargeError(maxBytes, `maxBytes must be positive, got ${maxBytes}`);
   }
-  return concat(chunks);
+  if (signal?.aborted) throw new RemoteMediaAbortedError();
+
+  const stream = result.getReadableStream();
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  const onAbort = () => stream.destroy(new RemoteMediaAbortedError());
+  signal?.addEventListener('abort', onAbort, { once: true });
+  try {
+    for await (const rawChunk of stream) {
+      if (signal?.aborted) throw new RemoteMediaAbortedError();
+      const chunk = normalizeStreamChunk(rawChunk);
+      if (chunk === undefined) {
+        stream.destroy();
+        throw new ChannelError('CHANNEL_ERROR', 'lark media stream returned a non-binary chunk');
+      }
+      received += chunk.byteLength;
+      if (received > maxBytes) {
+        stream.destroy();
+        throw new BodyTooLargeError(maxBytes);
+      }
+      chunks.push(chunk);
+    }
+  } catch (error) {
+    if (signal?.aborted) throw new RemoteMediaAbortedError(undefined, { cause: error });
+    throw error;
+  } finally {
+    signal?.removeEventListener('abort', onAbort);
+  }
+  return concatenate(chunks, received);
 }
 
-function concat(chunks: Buffer[]): Uint8Array {
-  const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
-  const output = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    output.set(chunk, offset);
-    offset += chunk.length;
+function normalizeStreamChunk(chunk: unknown): Uint8Array | undefined {
+  if (Buffer.isBuffer(chunk)) return chunk;
+  if (typeof chunk === 'string') return Buffer.from(chunk);
+  if (chunk instanceof Uint8Array) return chunk;
+  if (chunk instanceof ArrayBuffer) return new Uint8Array(chunk);
+  if (ArrayBuffer.isView(chunk)) {
+    return new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength);
   }
-  return output;
+  return undefined;
 }
 
 /** Best-effort content-type from the SDK response headers. */

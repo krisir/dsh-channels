@@ -197,7 +197,7 @@ To reuse the Harness launch directory or disable isolation, override `channels-h
 
 ### Disable unused channels
 
-Set the corresponding channel plugin's `enabled` to `false` in the profile patch, or delete the optional `channels-files` line to turn off the generic file extension.
+Set the corresponding channel plugin's `enabled` to `false` in the profile patch, or delete the optional `channels-files` line to turn off the generic attachment compatibility backend.
 
 ## Known limitations
 
@@ -260,8 +260,8 @@ Follows the layering convention of mainstream open-source projects (Koishi / Wec
 | --- | --- |
 | `packages/channels` | Public bundle `@wsz987/dsh-channels` (aggregated patch) |
 | `packages/channel-core` | **Channel Contract**: types + `ctx.channels` Service + `defineChannelAdapter` |
-| `packages/channel-harness` | Channel ↔ Harness bridge; keeps only the optional `ChannelFileProvider` port |
-| `packages/channel-files` | Optional generic-file extension: private storage, mature doc parsers, read tool |
+| `packages/channel-harness` | Channel ↔ Harness bridge; keeps only the optional `ChannelAttachmentProvider` port (`ChannelFileProvider` kept as a deprecated alias) |
+| `packages/channel-files` | Generic attachment compatibility backend: session-scoped storage, legacy extraction, `read_channel_attachment` compatibility tool |
 | `packages/channel-control` | Control plane: config / credentials / QR auth / runtime lifecycle |
 | `packages/channel-{weixin,qq,dingtalk,lark,telegram}` | The five built-in channel adapters |
 | `packages/channel-{compat,testkit,verify,web}` | Contract verification / test tooling / Web visualization |

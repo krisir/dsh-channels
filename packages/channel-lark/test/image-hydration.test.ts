@@ -9,7 +9,7 @@ import { Context } from '@deepseek-ai/cordis';
 import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
 import { createTestContext } from '@wsz987/channel-testkit';
 import { ImageHydrator, InboundProcessor } from '../src/index.ts';
-import type { LarkMediaPort } from '../src/index.ts';
+import type { LarkMediaPort, LarkResourceType } from '../src/index.ts';
 
 const meta = { channel: 'lark' as never, accountId: 'main' as never };
 
@@ -18,7 +18,7 @@ const meta = { channel: 'lark' as never, accountId: 'main' as never };
  * exact messageResource inputs for official-method-mapping assertions.
  */
 class FakeMediaPort implements LarkMediaPort {
-  calls: { messageId: string; resourceKey: string }[] = [];
+  calls: { messageId: string; resourceKey: string; type?: LarkResourceType }[] = [];
   downloadError?: Error;
   downloadResult: { data: Uint8Array; mimeType?: string; name?: string } = {
     data: new Uint8Array([0x89, 0x50, 0x4e, 0x47]),
@@ -29,10 +29,10 @@ class FakeMediaPort implements LarkMediaPort {
   async downloadMessageResource(input: {
     messageId: string;
     resourceKey: string;
-    type: 'image' | 'file';
+    type: LarkResourceType;
     signal?: AbortSignal;
   }): Promise<{ data: Uint8Array; mimeType?: string; name?: string }> {
-    this.calls.push({ messageId: input.messageId, resourceKey: input.resourceKey });
+    this.calls.push({ messageId: input.messageId, resourceKey: input.resourceKey, type: input.type });
     if (this.downloadError) throw this.downloadError;
     return this.downloadResult;
   }
@@ -89,7 +89,7 @@ describe('ImageHydrator (direct)', () => {
     expect(image.mimeType).toBe('image/png');
     expect(image.name).toBe('photo.png');
     expect(image.ingressFailure).toBeUndefined();
-    expect(port.calls).toEqual([{ messageId: 'om_in_1', resourceKey: 'img_v2_xyz' }]);
+    expect(port.calls).toEqual([{ messageId: 'om_in_1', resourceKey: 'img_v2_xyz', type: 'image' }]);
   });
 
   it('keeps resourceRef and records download-failed on a network/API failure', async () => {
@@ -182,7 +182,7 @@ describe('InboundProcessor hydration wiring', () => {
     expect(image.localData).toEqual(new Uint8Array([0x89, 0x50, 0x4e, 0x47]));
     expect(image.mimeType).toBe('image/png');
     // messageId for messageResource.get came from the invocation context.
-    expect(port.calls).toEqual([{ messageId: 'om_in_5', resourceKey: 'img_v2_abc' }]);
+    expect(port.calls).toEqual([{ messageId: 'om_in_5', resourceKey: 'img_v2_abc', type: 'image' }]);
   });
 
   it('failure keeps resourceRef + ingressFailure and still emits (text not blocked)', async () => {
@@ -261,7 +261,7 @@ describe('File hydration (M7A generic file ingress)', () => {
     expect(file.resourceRef).toBe('file_v2_abc');
     expect(file.ingressFailure).toBeUndefined();
     // The port was called with type 'file'.
-    expect(port.calls).toEqual([{ messageId: 'om_file_1', resourceKey: 'file_v2_abc' }]);
+    expect(port.calls).toEqual([{ messageId: 'om_file_1', resourceKey: 'file_v2_abc', type: 'file' }]);
   });
 
   it('keeps resourceRef and records download-failed on a file download failure', async () => {
@@ -338,7 +338,7 @@ describe('InboundProcessor file hydration wiring (M7A)', () => {
     expect(file.localData).toEqual(new Uint8Array([9, 9, 9]));
     expect(file.mimeType).toBe('application/pdf');
     expect(file.name).toBe('contract.pdf');
-    expect(port.calls).toEqual([{ messageId: 'om_file_5', resourceKey: 'file_v2_xyz' }]);
+    expect(port.calls).toEqual([{ messageId: 'om_file_5', resourceKey: 'file_v2_xyz', type: 'file' }]);
   });
 
   it('a file download failure keeps resourceRef + ingressFailure and emits (not blocked)', async () => {

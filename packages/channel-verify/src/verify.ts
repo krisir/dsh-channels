@@ -11,9 +11,9 @@
  *               placeholder, untested upstream state)
  * - `fail`    — the check found a real problem; any fail fails the run
  *
- * Checks: package, adapter-surface, manifest, capabilities, fixtures,
- * credentials, contract. Everything runs locally (no network), so the CLI is
- * CI-friendly and offline.
+ * Checks: package, adapter-surface, manifest, capabilities, media-capabilities,
+ * fixtures, credentials, contract. Everything runs locally (no network), so the
+ * CLI is CI-friendly and offline.
  */
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
@@ -27,7 +27,13 @@ import {
   versionState,
 } from '@wsz987/channel-compat';
 import { resolveFixturesDir, validateFixture } from '@wsz987/channel-testkit/fixture-loader';
-import { capabilitiesSchema, channelAdapterShapeSchema, type ChannelAdapter } from '@wsz987/channel-core';
+import {
+  BINARY_KINDS,
+  capabilitiesSchema,
+  channelAdapterShapeSchema,
+  mediaCapabilitiesSchema,
+  type ChannelAdapter,
+} from '@wsz987/channel-core';
 import { z } from 'zod';
 
 export type VerifySeverity = 'ok' | 'warning' | 'fail';
@@ -43,7 +49,10 @@ export interface VerifyItem {
 
 /** The result of one named check. */
 export interface VerifyCheck {
-  /** Stable check id: package | adapter-surface | manifest | capabilities | fixtures | credentials | contract. */
+  /**
+   * Stable check id: package | adapter-surface | manifest | capabilities |
+   * media-capabilities | fixtures | credentials | contract.
+   */
   id: string;
   items: VerifyItem[];
 }
@@ -141,13 +150,16 @@ export async function verifyAdapter(dir: string, opts: VerifyOptions = {}): Prom
   // 4. capabilities
   checks.push(checkCapabilities(adapter));
 
-  // 5. fixtures
+  // 5. media capabilities (directional byte precision + coarse flag coherence)
+  checks.push(checkMediaCapabilities(adapter));
+
+  // 6. fixtures
   checks.push(await checkFixtures(absDir, adapter?.id));
 
-  // 6. credentials
+  // 7. credentials
   checks.push(await checkCredentials(absDir));
 
-  // 7. contract
+  // 8. contract
   checks.push(await checkContract(absDir, opts));
 
   const items = checks.flatMap((check) => check.items);
@@ -436,6 +448,90 @@ function checkCapabilities(adapter: AdapterShape | undefined): VerifyCheck {
   }
   items.push(ok('capabilities-ok', 'capabilities shape is valid'));
   return { id: 'capabilities', items };
+}
+
+// ---------------------------------------------------------------------------
+// Check: media-capabilities
+// ---------------------------------------------------------------------------
+
+/**
+ * Directional media capability check (attachment-gateway plan §7.2):
+ *
+ * - `capabilities.media` is optional; when absent the coarse transport flags
+ *   remain authoritative and the check reports `media-capabilities-absent`
+ *   (ok).
+ * - When present, the media map must pass `mediaCapabilitiesSchema` (the same
+ *   schema the contract boundary uses). An invalid map fails with
+ *   `media-capabilities-invalid`.
+ * - Cross-flag coherence (plan §7.1): the legacy `image/file/audio/video`
+ *   booleans are intentionally coarse *transport* flags that cannot express
+ *   directionality or byte precision — e.g. Weixin keeps legacy `audio: false`
+ *   (no audio OUTBOUND) while `media.inbound.audio === 'bytes'` (inbound voice
+ *   hydration works). The media map is therefore authoritative for directional
+ *   claims: a per-kind `inbound[kind] === 'bytes'` claim alongside a legacy
+ *   `false` for that kind is a precision upgrade, NOT a contradiction — it is
+ *   reported as a warning (`media-capabilities-mismatch`) and never gates the
+ *   verification result. The converse — the coarse flag `true` while media
+ *   does not claim `bytes` for that kind (absent, `locator` or `unsupported`)
+ *   — is also only a warning (`media-capabilities-unclaimed`), a precision
+ *   downgrade but not a contradiction.
+ */
+function checkMediaCapabilities(adapter: AdapterShape | undefined): VerifyCheck {
+  const items: VerifyItem[] = [];
+  if (!adapter) {
+    return { id: 'media-capabilities', items: [warn('media-capabilities-skipped', 'no adapter found; media capabilities check skipped')] };
+  }
+  const caps = adapter.capabilities;
+  if (typeof caps !== 'object' || caps === null) {
+    return { id: 'media-capabilities', items: [fail('media-capabilities-missing', 'adapter.capabilities is missing or not an object')] };
+  }
+  const media = (caps as Record<string, unknown>).media;
+  if (media === undefined) {
+    items.push(ok('media-capabilities-absent', 'no directional media map declared; the coarse transport flags remain authoritative'));
+    return { id: 'media-capabilities', items };
+  }
+
+  const parsed = mediaCapabilitiesSchema.safeParse(media);
+  if (!parsed.success) {
+    items.push(
+      fail(
+        'media-capabilities-invalid',
+        'capabilities.media must be a ChannelMediaCapabilities object (inbound/outbound records of bytes | locator | unsupported values)',
+      ),
+    );
+    return { id: 'media-capabilities', items };
+  }
+
+  for (const kind of BINARY_KINDS) {
+    const inbound = parsed.data.inbound[kind];
+    const legacy = (caps as Record<string, unknown>)[kind];
+    if (typeof legacy !== 'boolean') continue; // shape problems are the capabilities check's job
+    if (inbound === 'bytes') {
+      if (legacy) {
+        items.push(
+          ok('media-capabilities-ok', `capabilities.media.inbound.${kind}='bytes' is consistent with capabilities.${kind}=true`),
+        );
+      } else {
+        items.push(
+          warn(
+            'media-capabilities-mismatch',
+            `capabilities.media.inbound.${kind} claims 'bytes' but capabilities.${kind} is false — the legacy flag is a coarse transport boolean (plan §7.1) and cannot express directionality; the directional media map is authoritative and this is not a verification failure`,
+          ),
+        );
+      }
+    } else if (legacy) {
+      items.push(
+        warn(
+          'media-capabilities-unclaimed',
+          `capabilities.${kind}=true but capabilities.media.inbound.${kind} does not claim 'bytes' (${inbound ?? 'not declared'})`,
+        ),
+      );
+    }
+  }
+  if (items.length === 0) {
+    items.push(ok('media-capabilities-ok', 'directional media map declared with no cross-flag conflicts'));
+  }
+  return { id: 'media-capabilities', items };
 }
 
 // ---------------------------------------------------------------------------

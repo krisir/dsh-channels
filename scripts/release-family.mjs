@@ -15,6 +15,9 @@ export const RELEASE_PACKAGE_NAMES = [
   '@wsz987/channel-dingtalk',
   '@wsz987/channel-lark',
   '@wsz987/channel-telegram',
+  '@wsz987/channel-compat',
+  '@wsz987/channel-testkit',
+  '@wsz987/channel-verify',
   RELEASE_BUNDLE,
 ];
 

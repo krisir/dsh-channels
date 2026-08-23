@@ -7,6 +7,7 @@
  * exercised through the minimal `HarnessPort` defined here.
  */
 export * from './contract-tests.js';
+export * from './binary-ingress-contract.js';
 export * from './inbound-identity-contract.js';
 export * from './activation-contract.js';
 export * from './fake-adapter.js';

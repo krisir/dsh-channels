@@ -314,6 +314,76 @@ describe('capabilities check', () => {
   });
 });
 
+describe('media capabilities check', () => {
+  /** Adapter entry with a directional `media` field injected into `capabilities`. */
+  const mediaEntry = (media: string): string =>
+    adapterEntry('').replace(
+      "  streaming: 'buffered',",
+      `  streaming: 'buffered',\n  media: ${media},`,
+    );
+
+  it('reports absent media as ok (optional field)', async () => {
+    await withDir({ 'package.json': VALID_PACKAGE, 'lib/index.js': adapterEntry('') }, async (dir) => {
+      const report = await verifyAdapter(dir);
+      const mediaCheck = check(report, 'media-capabilities');
+      expect(codes(report, 'media-capabilities')).toContain('media-capabilities-absent');
+      expect(mediaCheck.items[0]?.severity).toBe('ok');
+    });
+  });
+
+  it('fails when media is present but invalid', async () => {
+    const entry = mediaEntry('{ inbound: { image: "instant" }, outbound: {} }');
+    await withDir({ 'package.json': VALID_PACKAGE, 'lib/index.js': entry }, async (dir) => {
+      const report = await verifyAdapter(dir);
+      const mediaCheck = check(report, 'media-capabilities');
+      expect(codes(report, 'media-capabilities')).toContain('media-capabilities-invalid');
+      expect(mediaCheck.items[0]?.severity).toBe('fail');
+    });
+  });
+
+  it('warns (not fails) when inbound bytes contradicts a false coarse transport flag', async () => {
+    // VALID_CAPABILITIES has video: false — media claiming video bytes must NOT
+    // fail verification: legacy flags are coarse transport booleans that cannot
+    // express directionality (plan §7.1, e.g. Weixin audio), so the directional
+    // media map is authoritative and the conflict is a warning only.
+    const entry = mediaEntry('{ inbound: { video: "bytes" }, outbound: {} }');
+    await withDir({ 'package.json': VALID_PACKAGE, 'lib/index.js': entry }, async (dir) => {
+      const report = await verifyAdapter(dir);
+      const mediaCheck = check(report, 'media-capabilities');
+      const mismatch = mediaCheck.items.find((item) => item.code === 'media-capabilities-mismatch');
+      expect(mismatch).toBeDefined();
+      expect(mismatch?.severity).toBe('warning');
+      expect(mismatch?.message).toContain('video');
+      // The mismatch must never gate the verification result.
+      expect(report.passed).toBe(true);
+    });
+  });
+
+  it('reports ok when bytes claims are backed by the coarse flags', async () => {
+    // image: true + media.inbound.image bytes -> ok; video stays unclaimed.
+    const entry = mediaEntry('{ inbound: { image: "bytes" }, outbound: { image: "bytes" } }');
+    await withDir({ 'package.json': VALID_PACKAGE, 'lib/index.js': entry }, async (dir) => {
+      const report = await verifyAdapter(dir);
+      const mediaCheck = check(report, 'media-capabilities');
+      expect(codes(report, 'media-capabilities')).toContain('media-capabilities-ok');
+      expect(mediaCheck.items.every((item) => item.severity !== 'fail')).toBe(true);
+    });
+  });
+
+  it('warns when the coarse flag is true but media does not claim bytes', async () => {
+    // image: true + media.inbound.image locator -> precision downgrade warning.
+    const entry = mediaEntry('{ inbound: { image: "locator" }, outbound: {} }');
+    await withDir({ 'package.json': VALID_PACKAGE, 'lib/index.js': entry }, async (dir) => {
+      const report = await verifyAdapter(dir);
+      const mediaCheck = check(report, 'media-capabilities');
+      const unclaimed = mediaCheck.items.find((item) => item.code === 'media-capabilities-unclaimed');
+      expect(unclaimed).toBeDefined();
+      expect(unclaimed?.severity).toBe('warning');
+      expect(unclaimed?.message).toContain('image');
+    });
+  });
+});
+
 describe('fixtures check', () => {
   const VALID_FIXTURE = JSON.stringify(
     {

@@ -363,6 +363,15 @@ export type MessagePart =
 - `dataUri` —— 内联 data URL
 - `localData` —— 适配器已下载/解密的受信字节（优先）；Core 不解码不落盘，由 Harness bridge 转成真实附件
 
+> Adapter 对其声明支持且可解析的入站 BinaryPart 应在 emit 前尽最大可能提供 `localData`；是否存在当前 Agent consumer 不得作为跳过 transport hydration 的理由。
+
+transport hydration 由 `@wsz987/channel-core`（media/hydration）的共享协议无关 helper
+`applyHydrationResult` 执行；各适配器通过方向化的 `capabilities.media` 声明媒体能力
+——inbound 逐 kind 为 `'bytes' | 'locator' | 'unsupported'`，outbound 为
+`'bytes' | 'unsupported'`，旧的粗粒度 `image/file/audio/video` 布尔字段保留至少一个
+兼容周期（计划 §7.1），新 Attachment Gateway / `channel-verify` 优先读
+`capabilities.media`。
+
 二进制元数据分为两个信任等级：
 
 - **MIME hint**：平台字段、HTTP `Content-Type` 或文件名扩展名提供的提示。各适配器
@@ -944,7 +953,7 @@ pnpm 将传递依赖提升到 profile 根目录。根入口同时承载 Web host
     - id: channels-service
       name: '@wsz987/dsh-channels/service'
 
-    # 可选通用文件扩展；删除此行则仅保留文本占位符
+    # Generic attachment compatibility backend；删除此行则仅保留文本占位符
     - id: channels-files
       name: '@wsz987/dsh-channels/files'
 
@@ -1086,18 +1095,40 @@ ctx.logger.info(
 状态变化刷成大量 `ignoring channel event`；状态详情由 `channel-control` / `channel-web`
 的状态订阅和健康检查展示。只有未知的未来事件才应由 bridge 记录 debug 日志。
 
-### 通用文件是可替换扩展
+### Generic Attachment compatibility backend（通用文件是可替换扩展）
 
 Harness `0.1.1-rc.2` 的 `ctx.attachments` 仍然只提供栅格图片的验证、保存和读取
 （`saveImage` / `saveImages`，无通用 `saveFile`），当前 `ContentBlock` 也没有通用
-`FileBlock`。因此 PDF / DOCX / XLSX / 文本
-暂由 `@wsz987/channel-files` 补充：
+`FileBlock`；Harness 目前**没有原生 generic-file 面**。因此非图片附件
+（PDF / DOCX / XLSX / 文本 与 audio/video）暂由 `@wsz987/channel-files` 以
+**Generic Attachment compatibility backend** 承接：
 
 ```text
 各渠道 FilePart.localData
-  → channel-harness 的可选 ChannelFileProvider 端口
-  → channel-files 私有存储 + 成熟解析库 + read_channel_attachment
+  → channel-harness 的可选 ChannelAttachmentProvider 端口
+  → channel-files 会话隔离存储 + 兼容提取 + read_channel_attachment
 ```
+
+- **存储与 ACL**：跨渠道非图片附件按 Session 隔离存储，读取经 Session ACL 校验，
+  稳定逻辑 id 为 `att-*`（计划 §11）；`read_channel_attachment` 是**兼容工具**，
+  经 provider 的可选 `installCompatibilityTools?` 注册（channel-harness bridge 在
+  agent 组装时调用）。
+- **提取是兼容行为**：PDF（`unpdf`）/ DOCX（`mammoth`）/ XLSX（`xlsx`）/ 文本解析
+  保留为 legacy compatibility extraction，**不再向 `channel-files` 新增“理解类”
+  能力**（ASR / 视频分析 / OCR / PPTX 等放到 Harness / Skill / 独立 plugin /
+  MCP）。
+- **Native-first 预留（默认关闭）**：未来 Harness 提供官方 Generic Attachment 后，
+  通过 **public capability detection**（禁止 Harness version-string 猜测，计划
+  §14）接入 native backend（`src/backends/harness-native.ts`：目前只有接口与 fake
+  seam）；惰性 **copy + verify** 迁移基础设施（Catalog v2
+  `attachments/catalog/v2` + `src/migration/`）已就位但默认关闭，迁移失败自动保持
+  legacy 为 authoritative（计划 §15 / §27 / §28）。
+- **旧 v1 数据永久可读**：升级不扫描、不原地 rewrite、不删除旧 bytes（计划 §12 /
+  §15）；`channel-files` 仍可长期作为 legacy reader / migration backend /
+  compatibility tool 加载。
+- **Provider 端口已改名**：`ChannelFileProvider` → `ChannelAttachmentProvider`
+  （`ChannelFileContext` / `ChannelFileDescriptor` 同步），旧名保留为 `@deprecated`
+  别名本轮不删除（计划 §10）。
 
 `channel-core` 与五个适配器不知道解析格式；`channel-harness` 也不依赖扩展包，
 只通过 `ctx.get('channelFiles')` 尝试获取 provider。bundle 默认加载该扩展，但可

@@ -39,7 +39,10 @@ function fakeAuthAdapter(overrides: Partial<ChannelAdapter> = {}): ChannelAdapte
   const submitAuthInput = vi.fn(async () => {});
   return {
     id: 'weixin',
-    capabilities: { text: true, image: true, file: false, audio: false, video: false, markdown: false, cards: false, reactions: false, threads: false, streaming: 'buffered' },
+    // Mirrors WeixinAdapter.capabilities (drift-fixed: file/video are real
+    // outbound sends; the directional media map pins inbound bytes for all four
+    // kinds and outbound bytes for image/file/video, audio inbound-only).
+    capabilities: { text: true, image: true, file: true, audio: false, video: true, markdown: false, cards: false, reactions: false, threads: false, streaming: 'buffered', media: { inbound: { image: 'bytes', file: 'bytes', audio: 'bytes', video: 'bytes' }, outbound: { image: 'bytes', file: 'bytes', video: 'bytes', audio: 'unsupported' } } },
     start: vi.fn(async () => {}),
     stop: vi.fn(async () => {}),
     send: vi.fn(async () => ({ delivered: true })),

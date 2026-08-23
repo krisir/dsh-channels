@@ -100,6 +100,30 @@ export class DingTalkAdapter implements ChannelAdapter {
     reactions: false,
     threads: false,
     streaming: 'edit',
+    // Directional media precision (attachment-gateway plan §7.1). Inbound
+    // image/file have an established official download path. Audio/video are
+    // conservatively declared as locators until official callback/download
+    // documentation and a real-account live gate prove byte hydration; the
+    // inbound processor may still hydrate them as a best-effort enhancement.
+    // Outbound: only
+    // image/file bytes are actually sendable (proactive uploadMedia + sendMedia,
+    // msgKey sampleImageMsg/sampleFile); there is no robot audio/video send
+    // path, so outbound audio/video are 'unsupported' (the legacy coarse
+    // `audio: true` / `video: false` flags remain unchanged).
+    media: {
+      inbound: {
+        image: 'bytes',
+        file: 'bytes',
+        audio: 'locator',
+        video: 'locator',
+      },
+      outbound: {
+        image: 'bytes',
+        file: 'bytes',
+        audio: 'unsupported',
+        video: 'unsupported',
+      },
+    },
   };
 
   private ctx?: ChannelAdapterContext;

@@ -30,7 +30,7 @@ Monorepo
 + Harness Bridge（唯一 Harness API 边界）
 + Channel Adapter（平台语义 ↔ Contract）
 + Upstream Driver（SDK / package / 协议隔离）
-+ Channel Control / Web / Files（通用控制面 / Web 设置 / 文件扩展）
++ Channel Control / Web / Files（通用控制面 / Web 设置 / 附件兼容后端）
 + Testkit / Compat / Verify（测试与上游治理）
 ```
 
@@ -116,7 +116,7 @@ npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
 @wsz987/channel-core
 @wsz987/channel-harness
 @wsz987/channel-control     # 通用控制面
-@wsz987/channel-files       # 可选通用文件扩展
+@wsz987/channel-files       # Generic Attachment compatibility backend（跨渠道附件存储 / Session ACL / 兼容提取）
 @wsz987/channel-web         # Web 设置面板
 @wsz987/channel-testkit
 @wsz987/channel-compat
@@ -155,7 +155,7 @@ deepseek-harness-channels/
 │  ├─ channel-core/        # Channel Contract + ChannelService（ctx.channels）
 │  ├─ channel-harness/     # 渠道 ↔ Harness 桥（唯一允许 import Harness API）
 │  ├─ channel-control/     # 控制面：配置 / 凭据 / Auth Session / 运行时挂载
-│  ├─ channel-files/       # 可选通用文件扩展（存储 / 解析 / read_channel_attachment）
+│  ├─ channel-files/       # Generic Attachment compatibility backend（跨渠道附件存储 / Session ACL / 兼容提取 / read_channel_attachment；旧 v1 数据永久可读）
 │  ├─ channel-web/         # Web「设置 → 渠道」面板 + HTTP API（/api/v1 + /api/v2）
 │  ├─ channel-weixin/      # 微信适配器（source-port，官方 iLink 协议）
 │  ├─ channel-qq/          # QQ 适配器（official-sdk）
@@ -390,6 +390,20 @@ Compat
 DSH Bundle
 = 用户安装与组合体验
 ```
+
+### Channel Attachments 正式边界
+
+```text
+Channel Attachments
+= transport + persistence + Session ACL
+≠ content understanding
+```
+
+附件承载只负责：跨渠道二进制传输（BinaryPart transport）、会话级持久化与 Session
+ACL。内容理解（文档分析 / ASR / 视频分析）不属于 Attachment 层，由 Harness / Skill /
+独立 plugin / MCP 承担；`channel-files` 是 Generic Attachment compatibility
+backend（跨渠道附件存储 / Session ACL / 兼容提取 / `read_channel_attachment`；
+旧 `attachments/v1` 数据永久可读）。
 
 最重要的目标不是完成某几个渠道。
 

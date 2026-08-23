@@ -8,22 +8,23 @@
  * `localData`, exactly like the official adapters' hydrators do for their
  * platform URLs.
  *
- * Only `image` and `file` parts are hydrated — those are the binary types the
- * Harness bridge currently projects as real attachments (image -> ImageBlock,
- * file -> private asset store). Audio/video keep their `resourceRef`
- * placeholder in V1 (no DSH consumer yet).
+ * Every transportable binary kind — `image`, `file`, `audio` and `video`
+ * (voice notes and audio messages both map to AudioPart, video messages to
+ * VideoPart) — is hydrated: Transport is transport, so a `resourceRef` is
+ * resolved into real bytes before emit for whichever binary part carries one
+ * (attachment-gateway plan §5 / §23-A2). The download seam is generic for any
+ * supported file_id (photo / document / voice / audio / video).
  *
  * Failure handling follows the shared contract: a download failure never
  * blocks text delivery. The part keeps its `resourceRef` and records a stable
  * de-identified `ingressFailure` code via `toIngressFailureCode` from
- * `@wsz987/channel-core`.
+ * `@wsz987/channel-core` (shared `BodyTooLargeError` maps to 'too-large').
  */
 import {
+  BodyTooLargeError,
+  isHydratableBinaryPart,
   toIngressFailureCode,
-  type BinaryIngressFailureCode,
   type ChannelLogger,
-  type FilePart,
-  type ImagePart,
   type MessagePart,
 } from '@wsz987/channel-core';
 
@@ -58,37 +59,39 @@ export async function hydrateTelegramParts(
 
   await Promise.allSettled(
     parts.map(async (part): Promise<void> => {
-      if (part.type !== 'image' && part.type !== 'file') return;
-      const binary = part as ImagePart | FilePart;
-      const fileId = binary.resourceRef;
+      // All four transportable binary kinds hydrate; anything else is ignored.
+      if (!isHydratableBinaryPart(part)) return;
+      const fileId = part.resourceRef;
       if (typeof fileId !== 'string' || fileId.length === 0) return;
       // Trusted bytes already in hand take precedence — never re-download.
-      if (binary.localData !== undefined || binary.dataUri !== undefined) return;
+      if (part.localData !== undefined || part.dataUri !== undefined) return;
 
       try {
         const result = await resolver.downloadFile(fileId, signal);
         if (result.data.byteLength > maxBytes) {
-          throw new FileTooLargeError(maxBytes, result.data.byteLength);
+          throw new BodyTooLargeError(
+            maxBytes,
+            `Telegram file ${result.data.byteLength} bytes exceeds the ${maxBytes} byte cap`,
+          );
         }
-        binary.localData = result.data;
+        part.localData = result.data;
+        // Actual downloaded bytes are authoritative over any previously-known
+        // size.
+        part.size = result.data.byteLength;
         // Telegram's original message metadata is more authoritative than
         // metadata reconstructed from the download response/path. Only fill
-        // missing hints so a generated file_path cannot replace a user name.
-        if (binary.mimeType === undefined && result.mimeType) binary.mimeType = result.mimeType;
-        if (binary.type === 'file') {
-          binary.size = result.data.byteLength;
-          if (binary.name === undefined && result.name) binary.name = result.name;
-        }
+        // missing hints so a generated file_path cannot replace a user name
+        // (photos carry no user-facing name, so image is left untouched).
+        if (part.mimeType === undefined && result.mimeType) part.mimeType = result.mimeType;
+        if (part.type !== 'image' && part.name === undefined && result.name) part.name = result.name;
         // A successful hydration clears any previous failure marker.
-        delete binary.ingressFailure;
+        delete part.ingressFailure;
       } catch (error) {
         // Keep the resourceRef, record the stable de-identified failure code.
-        binary.ingressFailure = error instanceof FileTooLargeError
-          ? 'too-large'
-          : toIngressFailureCode(error);
+        part.ingressFailure = toIngressFailureCode(error);
         logger?.warn('[channel-telegram] media hydration failed', {
-          type: binary.type,
-          failure: binary.ingressFailure,
+          type: part.type,
+          failure: part.ingressFailure,
           error: safeErrorDetails(error),
         });
       }
@@ -109,18 +112,3 @@ function safeErrorDetails(error: unknown): Record<string, string> {
       .replace(/\/bot[^/?#]+/g, '/bot<redacted>'),
   };
 }
-
-/** Local size guard; mapped to 'too-large' by `toIngressFailureCode`. */
-class FileTooLargeError extends Error {
-  readonly code = 'BODY_TOO_LARGE';
-  constructor(
-    readonly maxBytes: number,
-    readonly received: number,
-  ) {
-    super(`Telegram file ${received} bytes exceeds the ${maxBytes} byte cap`);
-    this.name = 'FileTooLargeError';
-  }
-}
-
-/** Re-exported so tests can build stable ingress-failure expectations. */
-export type { BinaryIngressFailureCode };

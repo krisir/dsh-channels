@@ -1,8 +1,8 @@
 /**
- * DingTalk inbound image hydration (plan §32A / §79A).
+ * DingTalk inbound image/file/media hydration (plan §32A / §79A / §23-A5).
  *
  * After the pure mapper (`mapInbound`) produces the stable `MessageReceived`
- * shape, this module walks the image parts and turns a genuine `http(s)`
+ * shape, this module walks the binary parts and turns a genuine `http(s)`
  * locator into trusted bytes on the part itself:
  *
  * ```text
@@ -11,6 +11,15 @@
  *   -> ImagePart.localData + mimeType
  *   -> existing Harness saveImage()/ImageBlock path (host owns that)
  * ```
+ *
+ * Audio/video parts (`hydrateMedia`, plan §23-A5) follow the identical
+ * URL-or-opaque rule: a genuine http(s) URL is fetched through the secure
+ * fetcher; an opaque handle (downloadCode / mediaId) is moved to
+ * `resourceRef` and resolved through the official DingTalk OpenAPI port —
+ * `POST /v1.0/robot/messageFiles/download { downloadCode, robotCode }` returns
+ * a `downloadUrl`, which is then fetched as bounded bytes (the same seam the
+ * official connector oracle `@dingtalk-real-ai/dingtalk-connector@0.8.24`
+ * uses for voice/video).
  *
  * This module performs NO platform-protocol implementation. It only calls the
  * shared secure host boundary (`@wsz987/channel-core` `SecureRemoteMediaFetcher`)
@@ -30,8 +39,9 @@
  * the `DingTalkOpenApiPort.resolveMedia(...)` milestone (§32A). We never
  * invent an HTTP downloader for a mediaId.
  */
-import type { FilePart, MessagePart } from '@wsz987/channel-core';
+import type { AudioPart, FilePart, MessagePart, VideoPart } from '@wsz987/channel-core';
 import {
+  applyHydrationResult,
   SecureRemoteMediaFetcher,
   toIngressFailureCode,
   type BinaryIngressFailureCode,
@@ -287,6 +297,99 @@ export async function hydrateFiles(parts: MessagePart[], options: HydrateFilesOp
 function classifyPartLocator(url: string | undefined): 'http-url' | 'opaque' | 'none' {
   if (url === undefined || url === '') return 'none';
   return /^https?:\/\//i.test(url) ? 'http-url' : 'opaque';
+}
+
+/** Default hard byte cap for a downloaded audio/video resource (100 MiB). */
+export const MEDIA_MAX_BYTES = 100 * 1024 * 1024;
+
+/**
+ * Options for one audio/video hydration pass (plan §23-A5 media ingress).
+ * @extends HydrateFilesOptions
+ */
+export interface HydrateMediaOptions {
+  /**
+   * The secure remote media fetcher used for genuine http(s) audio/video URLs.
+   * Injectable for offline tests; defaults to a real `SecureRemoteMediaFetcher`.
+   */
+  secureFetch?: SecureRemoteMediaFetcher | RemoteMediaFetchLike;
+  /**
+   * The OpenAPI media resolver used to turn an opaque audio/video handle
+   * (downloadCode / mediaId) into trusted bytes (plan §32A). Injectable for
+   * offline tests. When absent, opaque handles stay on `resourceRef`.
+   */
+  resolveMedia?: MediaResolverLike;
+  /** Abort signal threaded from the adapter context for prompt teardown. */
+  signal?: AbortSignal;
+  /** Hard byte cap per audio/video resource (default 100 MiB). */
+  maxBytes?: number;
+  /** Read-idle timeout ms (default 15s). */
+  idleTimeoutMs?: number;
+  /**
+   * Per-message download context (official schema): `downloadCode` +
+   * `robotCode` for the official /v1.0/robot/messageFiles/download API.
+   * Transient upstream state — never persisted onto core parts.
+   */
+  downloadContext?: { downloadCode?: string; robotCode?: string };
+}
+
+/**
+ * Hydrate audio/video parts in place (plan §23-A5). Audio/video follow the
+ * exact same URL-or-opaque resolution as image/file:
+ *   - http(s) url  -> SecureRemoteMediaFetcher -> `localData` + `mimeType` + `size`
+ *   - opaque handle -> move to `resourceRef` -> `resolveMedia` (official
+ *     `messageFiles/download` seam) -> `localData`
+ * The apply step delegates to core `applyHydrationResult`, so success clears
+ * `ingressFailure`, failures write ONLY a stable `ingressFailure` (never
+ * fabricating bytes), and this never throws / never blocks text delivery.
+ */
+export async function hydrateMedia(parts: MessagePart[], options: HydrateMediaOptions = {}): Promise<void> {
+  const fetcher: RemoteMediaFetchLike = options.secureFetch ?? new SecureRemoteMediaFetcher();
+  const resolver = options.resolveMedia;
+  const maxBytes = options.maxBytes ?? MEDIA_MAX_BYTES;
+  const idleTimeoutMs = options.idleTimeoutMs ?? IMAGE_IDLE_TIMEOUT_MS;
+
+  for (const part of parts) {
+    if (part.type !== 'audio' && part.type !== 'video') continue;
+    const media = part as AudioPart | VideoPart;
+
+    // Opaque handle: either the mapper already placed it in resourceRef, or a
+    // non-http url needs moving there first. Resolve via the port (official
+    // downloadCode flow) when a resolver is wired — never via a generic fetch.
+    let opaque: string | undefined = media.resourceRef;
+    if (!opaque) {
+      const kind = classifyPartLocator(media.url);
+      if (kind === 'none') continue;
+      if (kind === 'opaque') {
+        opaque = media.url;
+        media.resourceRef = opaque;
+        delete media.url;
+      }
+    }
+    if (opaque) {
+      if (!resolver) continue;
+      await applyHydrationResult(
+        media,
+        () => resolver.resolveMedia(opaque, {
+          signal: options.signal,
+          name: media.name,
+          downloadCode: options.downloadContext?.downloadCode,
+          robotCode: options.downloadContext?.robotCode,
+        }),
+        { maxBytes, signal: options.signal },
+      );
+      continue;
+    }
+
+    const url = media.url!;
+    await applyHydrationResult(
+      media,
+      async () => {
+        const result = await fetcher.fetchBounded(url, { maxBytes, idleTimeoutMs, signal: options.signal });
+        return { data: result.data, mimeType: result.mimeType };
+      },
+      { maxBytes, signal: options.signal },
+    );
+  }
 }
 
 /** Apply a successful resolution to a file part. */

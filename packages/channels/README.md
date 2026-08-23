@@ -22,9 +22,9 @@ npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
 
 The bundle patch (`cordis.patch.yml`) references only entrypoints exported by
 `@wsz987/dsh-channels` itself. Those entrypoints delegate to the ChannelService,
-generic-file extension, Harness bridge, control plane, Web settings panel and
-the five channel adapters through the bundle's own dependency tree. Every
-channel can be disabled through its plugin config.
+the generic attachment compatibility backend, Harness bridge, control plane, Web
+settings panel and the five channel adapters through the bundle's own dependency
+tree. Every channel can be disabled through its plugin config.
 
 ## Quick start
 
@@ -84,7 +84,7 @@ ever install `@wsz987/dsh-channels`**:
 | `@wsz987/channel-core`   | Cross-channel contract + `ChannelService` (`ctx.channels`) |
 | `@wsz987/channel-harness`| Harness bridge (`SessionBinding`, `AgentManager`, reply pipeline) |
 | `@wsz987/channel-control`| Config / credentials / auth-session control plane |
-| `@wsz987/channel-files`  | Optional generic-file extension (store / extract / `read_channel_attachment`) |
+| `@wsz987/channel-files`  | Generic attachment compatibility backend (store / extract / `read_channel_attachment`) |
 | `@wsz987/channel-web`    | Web dashboard (`Settings > Channels`) for GUI setup |
 | `@wsz987/channel-weixin/qq/dingtalk/lark/telegram` | The five channel adapters |
 

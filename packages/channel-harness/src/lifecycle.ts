@@ -41,7 +41,7 @@ import type { ChannelHarnessBridgeOptions } from './bridge.js';
 import type { SaveImageHook } from './message-converter.js';
 import { installDebugConsoleExporter } from './debug-logger.js';
 import { StoredChannelAccessPolicyResolver } from './access/resolver.js';
-import type { ChannelFileProvider } from './file-provider.js';
+import type { ChannelAttachmentProvider } from './file-provider.js';
 import { createQuestionInteraction } from './interactions/question-backend.js';
 import type {
   ChannelQuestionApiProxy,
@@ -100,7 +100,7 @@ export function startBridge(
   // Optional generic-file extension. Harness currently has a native image
   // service but no generic FileBlock/FileAttachment surface, so deployments
   // may provide this separately without coupling document parsers to the bridge.
-  const fileProvider = ctx.get('channelFiles') as ChannelFileProvider | undefined;
+  const fileProvider = ctx.get('channelFiles') as ChannelAttachmentProvider | undefined;
 
   // Best-effort typing indicator wiring: a typing API failure must NEVER break
   // the inbound/outbound flow, so every call is fire-and-forget with a swallow.
