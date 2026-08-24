@@ -974,6 +974,45 @@ describe('TelegramAdapter lifecycle', () => {
     await a.stop(); // idempotent
   });
 
+  it('uses the getMe bot identity to map group mention activation', async () => {
+    const service = new ChannelService(new Context());
+    const ctx = createTestContext(service);
+    routeAuth();
+    let delivered = false;
+    transport.route(tgPath('getUpdates'), async () => {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      if (delivered) return { ok: true, result: [] };
+      delivered = true;
+      return {
+        ok: true,
+        result: [{
+          update_id: 101,
+          message: {
+            message_id: 8,
+            date: 1700000001,
+            chat: { id: -100123, type: 'supergroup', title: 'Harness Lab' },
+            from: { id: 321, first_name: 'Alice' },
+            text: '@Proof_Bot hello',
+            entities: [{ type: 'mention', offset: 0, length: 10 }],
+          },
+        }],
+      };
+    });
+
+    const listener = vi.fn();
+    service.on(listener);
+    const a = adapter({ token: TOKEN });
+    await a.start(ctx);
+    await vi.waitFor(() => {
+      const event = listener.mock.calls.find(
+        (call) => (call[0] as MessageReceived).type === 'message.received',
+      )?.[0] as MessageReceived | undefined;
+      expect(event?.message.activation?.mentionedBot).toBe(true);
+    }, { timeout: 2000 });
+
+    await a.stop();
+  });
+
   it('deletes a webhook before polling and reports connected only after a successful poll', async () => {
     const service = new ChannelService(new Context());
     const ctx = createTestContext(service);

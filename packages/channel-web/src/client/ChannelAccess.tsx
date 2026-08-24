@@ -28,6 +28,7 @@ import {
   type PublicOwnerClaimSession,
 } from './api.js';
 import {
+  createNamedGroupAccessRule,
   directMessageAccessMode,
   groupAccessMode,
   hasEditableAccessControls,
@@ -231,12 +232,10 @@ export function ChannelAccess({ channel, web, t, onChanged }: ChannelAccessProps
         groupPolicy: 'allowlist',
         groups: {
           ...current.groups,
-          [id]: {
-            enabled: true,
-            senderPolicy: 'allowlist',
-            allowFrom: ownerId ? [ownerId] : [],
-            requireMention: false,
-          },
+          [id]: createNamedGroupAccessRule(
+            ownerId,
+            descriptor.defaults?.requireMention === true,
+          ),
         },
       };
     });

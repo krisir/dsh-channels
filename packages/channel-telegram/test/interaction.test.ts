@@ -364,6 +364,10 @@ describe('Telegram definition formatting persistence', () => {
         set: async () => undefined,
       },
     });
+    expect(definition.access).toMatchObject({
+      mentions: true,
+      defaults: { requireMention: true },
+    });
     await definition.saveConfig({ formatting: { mode: 'html' }, typing: { enabled: false, refreshMs: 6000 } });
     const saved = definition.snapshotConfig() as TelegramConfig;
     expect(saved.formatting.mode).toBe('html');

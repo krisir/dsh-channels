@@ -34,6 +34,11 @@ import { z } from 'zod';
 export interface TelegramInboundMeta {
   channel: ChannelId;
   accountId: AccountId;
+  /** Trusted bot identity resolved from getMe before polling starts. */
+  bot?: {
+    id: number;
+    username?: string;
+  };
 }
 
 /** An untrusted Telegram update did not satisfy the canonical identity schema. */
@@ -61,6 +66,13 @@ const telegramUserSchema = z.object({
   is_bot: z.boolean().optional(),
   first_name: z.string().optional(),
   username: z.string().optional(),
+}).passthrough();
+
+const telegramMessageEntitySchema = z.object({
+  type: z.string(),
+  offset: telegramInteger.nonnegative(),
+  length: telegramInteger.nonnegative(),
+  user: telegramUserSchema.optional(),
 }).passthrough();
 
 const telegramPhotoSchema = z.object({
@@ -105,6 +117,8 @@ const telegramMessageSchema = z.object({
   from: telegramUserSchema,
   text: z.string().optional(),
   caption: z.string().optional(),
+  entities: z.array(telegramMessageEntitySchema).optional(),
+  caption_entities: z.array(telegramMessageEntitySchema).optional(),
   message_thread_id: telegramInteger.optional(),
   reply_to_message: z.object({ message_id: telegramInteger }).passthrough().optional(),
   photo: z.array(telegramPhotoSchema).optional(),
@@ -156,6 +170,10 @@ export function mapInbound(raw: unknown, meta: TelegramInboundMeta): MessageRece
   // The chat id is the conversation id for both dm and group messages.
   const conversationId = String(chat.id) as ConversationId;
   const messageId = String(message.message_id) as MessageId;
+  const conversationType = chat.type === 'group' || chat.type === 'supergroup' ? 'group' : 'dm';
+  const mentionedBot = conversationType === 'group'
+    ? messageMentionedBot(message, meta.bot)
+    : undefined;
 
   return {
     type: 'message.received',
@@ -180,9 +198,46 @@ export function mapInbound(raw: unknown, meta: TelegramInboundMeta): MessageRece
         : {}),
       // Telegram timestamps are Unix seconds; the contract uses ms.
       createdAt: message.date !== undefined ? message.date * 1000 : Date.now(),
+      ...(mentionedBot !== undefined ? { activation: { mentionedBot } } : {}),
     },
     raw,
   };
+}
+
+/** Telegram entity offsets use UTF-16 code units, matching JavaScript slice. */
+function messageMentionedBot(
+  message: TelegramMessage,
+  bot: TelegramInboundMeta['bot'],
+): boolean | undefined {
+  if (!bot) return undefined;
+
+  const sources = [
+    { text: message.text, entities: message.entities },
+    { text: message.caption, entities: message.caption_entities },
+  ];
+
+  for (const source of sources) {
+    if (!source.text || !source.entities) continue;
+    for (const entity of source.entities) {
+      if (entity.type === 'text_mention' && entity.user?.id === bot.id) return true;
+    }
+  }
+
+  const username = bot.username?.replace(/^@/, '').toLowerCase();
+  if (!username) return false;
+
+  for (const source of sources) {
+    if (!source.text || !source.entities) continue;
+    for (const entity of source.entities) {
+      const value = source.text.slice(entity.offset, entity.offset + entity.length);
+      if (entity.type === 'mention' && value.slice(1).toLowerCase() === username) return true;
+      if (entity.type === 'bot_command') {
+        const addressedTo = value.slice(value.lastIndexOf('@') + 1).toLowerCase();
+        if (value.includes('@') && addressedTo === username) return true;
+      }
+    }
+  }
+  return false;
 }
 
 function partsFor(message: TelegramMessage): MessagePart[] {

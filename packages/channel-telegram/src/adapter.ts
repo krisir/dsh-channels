@@ -125,6 +125,8 @@ export class TelegramAdapter implements ChannelAdapter {
   }>();
   private connected = false;
   private authState: TelegramAuthState = 'unauthenticated';
+  /** Public bot identity used only for reliable inbound mention activation. */
+  private botIdentity?: { id: number; username?: string };
   /** getUpdates acknowledgement cursor, shared with the driver across retries. */
   private readonly cursor: TelegramUpdateCursor = { offset: 0 };
   private readonly now: () => number;
@@ -151,6 +153,7 @@ export class TelegramAdapter implements ChannelAdapter {
     this.ctx = ctx;
     this.stopped = false;
     this.connected = false;
+    this.botIdentity = undefined;
     this.cursor.offset = 0;
     this.inbound = this.createInboundProcessor();
     this.receiveAbort = new AbortController();
@@ -167,7 +170,14 @@ export class TelegramAdapter implements ChannelAdapter {
 
     if (this.token) {
       try {
-        await this.upstream.getMe();
+        const bot = await this.upstream.getMe();
+        this.botIdentity = {
+          id: bot.id,
+          ...(bot.username ? { username: bot.username } : {}),
+        };
+        // Polling starts only after getMe, so replace the pre-auth processor
+        // with one carrying the trusted identity used by mention detection.
+        this.inbound = this.createInboundProcessor();
         this.authState = 'authenticated';
         this.emitAuth('authenticated');
       } catch (error) {
@@ -204,7 +214,11 @@ export class TelegramAdapter implements ChannelAdapter {
   private createInboundProcessor(): InboundProcessor {
     return new InboundProcessor({
       ctx: this.ctx!,
-      meta: { channel: this.id as never, accountId: this.config.accountId as never },
+      meta: {
+        channel: this.id as never,
+        accountId: this.config.accountId as never,
+        ...(this.botIdentity ? { bot: this.botIdentity } : {}),
+      },
       dedupEnabled: this.config.dedup.enabled,
       dedupWindowMs: this.config.dedup.windowMs,
       files: this.upstream,

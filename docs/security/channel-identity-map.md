@@ -48,7 +48,10 @@ mention 支持。所有 ID 一律作为 **opaque string** 处理（在 Harness a
 - dm/group：chat.type
 - group id：保留原始字符串（含 `-100...`），不丢符号
 - owner discovery：`claim`
-- mention：descriptor 先 `false`
+- mention：`getMe` 提供当前 Bot ID/username；mapper 按 Telegram `MessageEntity`
+  的 UTF-16 offset/length 识别 `mention`、`text_mention` 与定向 `bot_command`，
+  对群消息产出严格布尔 `activation.mentionedBot`；descriptor 为 `true`，新群规则默认
+  `requireMention=true`
 
 ## 证据 / 测试状态
 

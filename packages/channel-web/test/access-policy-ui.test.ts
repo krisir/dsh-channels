@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ChannelAccessPolicy, GroupAccessRule } from '../src/client/api.js';
 import {
+  createNamedGroupAccessRule,
   directMessageAccessMode,
   groupAccessMode,
   groupSenderAccessMode,
@@ -125,6 +126,17 @@ describe('group access mode mapping', () => {
       groupPolicy: 'open',
       groups: {},
       defaultGroupRule: { enabled: true, senderPolicy: 'open', allowFrom: [] },
+    });
+  });
+
+  it('applies provider mention defaults to new global and named group rules', () => {
+    const opened = withGroupAccessMode(policy(), 'open', ownerId, true);
+    expect(opened.defaultGroupRule?.requireMention).toBe(true);
+    expect(createNamedGroupAccessRule(ownerId, true)).toEqual({
+      enabled: true,
+      senderPolicy: 'allowlist',
+      allowFrom: [ownerId],
+      requireMention: true,
     });
   });
 

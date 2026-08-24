@@ -202,14 +202,15 @@ export function createTelegramDefinition(
     restoreConfig,
     createAdapter,
     autoStart: true,
-    // Declared access capability (plan §11). Telegram supports DM + groups; no
-    // mention activation in V1; owner is identified via the /dsh-claim flow.
+    // Telegram entities are mapped to a reliable mentionedBot activation fact;
+    // new group rules default to requiring an explicit bot mention.
     access: {
       directMessages: true,
       groups: true,
-      mentions: false,
+      mentions: true,
       ownerDiscovery: 'claim',
       identityLabels: { user: 'Telegram User ID', group: 'Telegram Chat ID' },
+      defaults: { requireMention: true },
     },
   };
 }

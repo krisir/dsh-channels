@@ -4,6 +4,18 @@ export type DirectMessageAccessMode = 'disabled' | 'owner-only' | 'allowlist' | 
 export type GroupSenderAccessMode = 'owner-only' | 'allowlist' | 'open';
 export type GroupAccessMode = 'disabled' | 'allowlist' | 'open';
 
+export function createNamedGroupAccessRule(
+  ownerId: string | undefined,
+  requireMention = false,
+): GroupAccessRule {
+  return {
+    enabled: true,
+    senderPolicy: 'allowlist',
+    allowFrom: ownerId ? [ownerId] : [],
+    requireMention,
+  };
+}
+
 export function groupAccessMode(policy: ChannelAccessPolicy): GroupAccessMode {
   return policy.groupPolicy;
 }
