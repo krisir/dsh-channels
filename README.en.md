@@ -51,7 +51,7 @@ Once installed, configure and authorize channels via QR code in the Harness Web 
 | QQ | Yes | send/receive | send/receive | Yes | ✅ |
 | DingTalk | Yes | send/receive | send/receive | Yes | ✅ |
 | Lark | Yes | send/receive | send/receive | Yes | ✅ |
-| Telegram | Yes | send/receive | send/receive | Yes | ✅ |
+| Telegram | Yes | send/receive | send/receive | Yes | Experimental, pending live gate |
 
 - Vision-capable multimodal models can inspect images directly; PDF, DOCX, XLSX and text attachments can be extracted for the Agent to read (100 MiB inbound limit per file); audio and video are currently degraded.
 
@@ -129,6 +129,10 @@ This feature only ever prompts — it never installs or upgrades anything. The b
 
 Harness manages secrets; put only references such as `appSecretRef` in `cordis.patch.yml`. See [minimal-profile](apps/example/minimal-profile/) for a complete example. A config patch replaces the whole `config`; it is not a deep merge.
 
+The Telegram adapter requires Bot API 10.2 or newer; `formatting.mode: auto` defaults to Rich Markdown. This project does not maintain automatic compatibility with older Bot API servers — `plain` is only an explicit output mode or a one-shot downgrade on a formatting error.
+
+Telegram currently implements only `getUpdates` long polling. It calls `deleteWebhook` on startup, which removes any webhook already configured for that bot; do not let the same bot serve another webhook consumer at the same time. The current implementation subscribes to `message` and `callback_query`, but interactive buttons should only be treated as supporting callbacks that carry a `message.chat` context. Rich Messages, draft streaming, callbacks, media error handling and rate-limit recovery are not considered production-verified until a real-bot live gate passes.
+
 ### Required: configure secure access
 
 After a first installation or an upgrade from 0.3.x, use **Secure access** to confirm who may use the local Agent through the bot. The system never treats everyone who can message the bot as authorized by default.
@@ -161,6 +165,7 @@ In any channel conversation you can send slash commands, parsed and executed by 
 | `/model [<provider> <model> [<reasoningEffort>]]` | Show or switch the current session's model |
 
 If the host loads official plugins (`/compact`, `/goal`, `/plan`, `/feedback`, ...), those commands also appear in channels automatically — no channel upgrade needed.
+`/help` renders with Markdown and follows the `locale.preference` (`zh` / `en`) that Harness Web writes to `$DSH_HOME/settings.yaml`; when unset, the channel side defaults to Chinese.
 **Unregistered slash commands are rejected** (matching the official rc.2 Host behavior): the channel replies with an "unknown command" notice and the line is **never** sent to the model as ordinary user input.
 
 #### `/model` examples
@@ -186,7 +191,7 @@ To reuse the Harness launch directory or disable isolation, override `channels-h
 ```yaml
 - id: channels-harness
   name: '@wsz987/dsh-channels/harness'
-  inject: [channels, agents, agentDefaultModel, llm, commands]
+  inject: [channels, agents, agentDefaultModel, agentPresets, llm, commands, apiProxy]
   config:
     workspace:
       mode: channel-account # channel-account (default) | host-cwd | disabled
