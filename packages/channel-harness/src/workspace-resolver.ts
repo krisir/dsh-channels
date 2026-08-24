@@ -1,5 +1,5 @@
 /**
- * Channel Workspace resolver (plan §6 / §9 / M1).
+ * Channel Workspace resolver.
  *
  * Maps a channel conversation identity to the Session working directory and
  * (optionally) a Harness `WorkspaceRegistry` member. The default
@@ -32,7 +32,7 @@ export interface ChannelWorkspaceInput {
 }
 
 /**
- * Structural view of the official dsh-workspace Workspace entity (plan §6/§10).
+ * Structural view of the official dsh-workspace Workspace entity.
  * Kept local so this module does not depend on `@deepseek-ai/dsh-workspace`.
  */
 export interface ChannelWorkspaceLike {

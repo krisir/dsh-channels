@@ -15,7 +15,7 @@ import dingtalkPkg from '../../channel-dingtalk/package.json' with { type: 'json
 /** The three strategy literals allowed by plan section 39. */
 const STRATEGIES = ['official-sdk', 'official-host-neutral-subpath', 'minimal-official-api-port', 'source-port'] as const;
 
-describe('UPSTREAM_MANIFESTS (plan §39 boundary lock)', () => {
+describe('UPSTREAM_MANIFESTS (boundary lock)', () => {
   it('contains exactly the four official channels keyed by id', () => {
     expect(UPSTREAM_MANIFESTS.map((m) => m.channel).sort()).toEqual(['dingtalk', 'lark', 'qq', 'weixin']);
     expect(new Set(UPSTREAM_MANIFESTS.map((m) => m.channel)).size).toBe(4);
@@ -79,7 +79,7 @@ describe('UPSTREAM_MANIFESTS (plan §39 boundary lock)', () => {
   });
 });
 
-describe('M8 exact-pin / package.json drift discipline (plan §17/§72)', () => {
+describe('M8 exact-pin / package.json drift discipline', () => {
   it('weixin does not install the OpenClaw-coupled Tencent plugin', () => {
     const range = weixinPkg.dependencies['@tencent-weixin/openclaw-weixin'];
     expect(range).toBeUndefined();

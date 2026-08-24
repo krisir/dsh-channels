@@ -1,18 +1,17 @@
 /**
- * Lazy migration ON READ (attachment-gateway plan §15 / §28 — Phase F, P1-4,
- * test matrix §34).
+ * Lazy migration ON READ.
  *
  * NOT YET WIRED into the resolve flow. This module is standalone, default-off
  * infrastructure: the first release ships with `migration.nativeOnRead =
- * false` (plan §28) and the resolver turn-on is a later wave (plan P1-4). Only
- * when `enabled` is true AND the running Harness host reports a generic
- * attachment capability does a read of a legacy record trigger a copy.
+ * false` and the resolver turn-on is a later wave. Only when `enabled` is true
+ * AND the running Harness host reports a generic attachment capability does a
+ * read of a legacy record trigger a copy.
  *
- * Contract (plan §15 / §15.1 / §15.2 / §28):
+ * Contract:
  *
  * - never MOVE or DELETE legacy bytes — migration is copy + verify + retain
  *   (`legacyRetained: true`); deleting legacy bytes is GC's job, separate from
- *   the migration transaction (plan §16);
+ *   the migration transaction;
  * - copy to native -> read back -> verify sha256 + bytes -> catalog switch;
  * - ANY failure (copy fail, read-back fail, hash mismatch, length mismatch,
  *   catalog get/update fail or throw, missing catalog record) ->
@@ -29,14 +28,14 @@ import { readBackVerified } from './verify.js';
 export interface MigrationOptions {
   /**
    * Master switch; defaults to `false` in release ('migration.nativeOnRead'
-   * policy, plan §28). Migration never runs unless explicitly enabled.
+   * policy). Migration never runs unless explicitly enabled.
    */
   enabled: boolean;
-  /** Capability probe result of the running Harness host (plan §14/§27). */
+  /** Capability probe result of the running Harness host. */
   native: NativeGenericAttachmentCapability;
   /**
    * Copy the record's bytes into the native backend; resolves to the native
-   * id. Must never move or delete the legacy bytes (plan §15.1).
+   * id. Must never move or delete the legacy bytes.
    */
   copyToNative: (record: AttachmentCatalogRecordV2) => Promise<string>;
   /** Read the copied bytes back from the native backend for verification. */
@@ -87,7 +86,7 @@ export async function migrateOnRead(
     // 1) COPY (never move/delete the legacy bytes).
     const nativeId = await options.copyToNative(current);
 
-    // 2) READ BACK + VERIFY sha256 and byte length (plan §15).
+    // 2) READ BACK + VERIFY sha256 and byte length.
     const verified = await readBackVerified({
       readBack: () => options.readBackNative(nativeId),
       expectedSha256: current.file.sha256,
@@ -110,8 +109,8 @@ export async function migrateOnRead(
     if (updated === undefined) return { outcome: 'legacy-authoritative' };
     return { outcome: 'migrated' };
   } catch {
-    // Copy fail, read-back fail, catalog get/update fail: plan §15.2 — legacy
-    // stays authoritative, catalog unchanged, legacy bytes untouched.
+    // Copy fail, read-back fail, catalog get/update fail: legacy stays
+    // authoritative, catalog unchanged, legacy bytes untouched.
     return { outcome: 'legacy-authoritative' };
   }
 }

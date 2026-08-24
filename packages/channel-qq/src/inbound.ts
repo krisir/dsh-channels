@@ -7,13 +7,13 @@
  * `kind === 'c2c'` and `kind === 'group'` are accepted in V1 — anything else
  * (guild/dm) is logged and dropped.
  *
- * Binary hydration (plan §23-A3 / §79A / §85) runs AFTER mapping and dedup,
+ * Binary hydration runs AFTER mapping and dedup,
  * BEFORE emit: every `image` (M2A), `file` (M7B), `audio` and `video` part
  * with a genuine `http(s)` `url` is downloaded through the injectable
  * `SecureRemoteMediaFetcher` and its bytes are placed on `localData`
  * (file/audio/video parts also carry the hydrated byte length in `size`).
  * A download failure never blocks text delivery — the part keeps its `url`
- * and records a stable `ingressFailure` code (§79A).
+ * and records a stable `ingressFailure` code.
  */
 import type { ChannelAdapterContext, MessagePart, MessageReceived } from '@wsz987/channel-core';
 import { SecureRemoteMediaFetcher } from '@wsz987/channel-core';

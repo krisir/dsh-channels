@@ -1,5 +1,5 @@
 /**
- * Media hydration tests (plan §23-A4): the MediaHydrator resolves ALL four
+ * Media hydration tests: the MediaHydrator resolves ALL four
  * binary resource kinds — image, file, audio AND video — through the fake
  * media port into localData bytes before emit.
  *
@@ -413,7 +413,7 @@ describe('InboundProcessor audio/video hydration wiring (§23-A4)', () => {
   });
 });
 
-describe('capabilities.media (plan §7.1)', () => {
+describe('capabilities.media', () => {
   it('declares a directional media map that parses via mediaCapabilitiesSchema', () => {
     const adapter = new LarkAdapter(makeConfig());
     const parsed = mediaCapabilitiesSchema.safeParse(adapter.capabilities.media);

@@ -43,7 +43,7 @@ export const locales = {
     authSection: '授权',
     beginAuth: '开始授权',
     authNeedsConfigFirst: '请先在「应用配置」中填写并保存必填凭证，再开始授权',
-    // access control section (plan §37–§41)
+    // access control section
     accessSection: '安全访问',
     ownerSection: '所有者',
     ownerIdentified: '已识别',
@@ -158,7 +158,7 @@ export const locales = {
     authSection: 'Authorization',
     beginAuth: 'Begin authorization',
     authNeedsConfigFirst: 'Fill in and save the required credentials under "Application config" first',
-    // access control section (plan §37–§41)
+    // access control section
     accessSection: 'Secure access',
     ownerSection: 'Owner',
     ownerIdentified: 'Identified',

@@ -1,5 +1,5 @@
 /**
- * M4 PDF / DOCX / XLSX extractor tests (plan §48).
+ * M4 PDF / DOCX / XLSX extractor tests.
  *
  * Generate small real fixtures in-process:
  * - PDF: a hand-written, uncompressed + a FlateDecode content-stream variant.

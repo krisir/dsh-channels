@@ -22,7 +22,7 @@
  * Capability negotiation for a *reply* uses `streaming` (statically, or
  * target-aware via `adapter.resolveStreamingMode`).
  *
- * ## Directional media (attachment-gateway plan §7.1)
+ * ## Directional media
  *
  * The legacy `image/file/audio/video` booleans cannot express directionality
  * (e.g. Weixin: audio inbound yes / outbound no) or byte precision (locator
@@ -36,17 +36,17 @@ import type { BinaryKind } from './media/hydration.js';
 export type StreamingMode = 'native' | 'edit' | 'buffered';
 
 /**
- * Per-kind inbound media precision (plan §7.1).
+ * Per-kind inbound media precision.
  */
 export type InboundBinaryCapability = 'bytes' | 'locator' | 'unsupported';
 
 /**
- * Per-kind outbound media precision (plan §7.1).
+ * Per-kind outbound media precision.
  */
 export type OutboundBinaryCapability = 'bytes' | 'unsupported';
 
 /**
- * Directional, per-kind binary media capability breakdown (plan §7.1).
+ * Directional, per-kind binary media capability breakdown.
  *
  * Missing keys mean "not declared" — treat them as not guaranteed rather than
  * as `'unsupported'`.
@@ -94,7 +94,7 @@ export interface ChannelCapabilities {
   video: boolean;
 
   /**
-   * Directional, per-kind media capability breakdown (plan §7.1). The legacy
+   * Directional, per-kind media capability breakdown (the "7.1 precursor"). The legacy
    * `image/file/audio/video` booleans above are coarse transport flags kept
    * for backwards compatibility; new consumers should read this map when they
    * need per-kind direction or byte precision

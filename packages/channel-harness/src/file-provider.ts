@@ -30,11 +30,11 @@ export interface ResolvedChannelAttachment {
 }
 
 /**
- * Optional generic-attachment capability supplied by an extension package
- * (plan §10). Core responsibility: `store` / `resolveAttachment` / session ACL.
+ * Optional generic-attachment capability supplied by an extension package.
+ * Core responsibility: `store` / `resolveAttachment` / session ACL.
  * Tool registration (`read_channel_attachment`) is NOT part of the core
  * contract — `installCompatibilityTools` is optional and keeps the tool
- * registered while it is the compatibility path (plan §10.1); once Harness
+ * registered while it is the compatibility path; once Harness
  * ships a native generic-attachment surface this method can be dropped.
  */
 export interface ChannelAttachmentProvider {

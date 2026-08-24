@@ -1,15 +1,14 @@
 /**
- * ChannelOutboxService — the durable outbox (plan §60 / §63 / §65 / §69 /
- * §71).
+ * ChannelOutboxService — the durable outbox.
  *
  * One `send` call walks the full outbound path:
  *
  * ```
  * sessionId
- *   → resolveBindingForSession (durable authority, plan §58)
- *   → targetFromBinding (plan §61)
- *   → build OutboundMessage (text / attachment bytes, plan §63)
- *   → proactive capability gate (fail closed, plan §69/§71)
+ *   → resolveBindingForSession (durable authority)
+ *   → targetFromBinding
+ *   → build OutboundMessage (text / attachment bytes)
+ *   → proactive capability gate (fail closed)
  *   → adapter.send(target, message)
  * ```
  *

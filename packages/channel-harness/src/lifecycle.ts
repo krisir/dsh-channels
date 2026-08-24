@@ -71,7 +71,7 @@ export function startBridge(
     channels.get(channelId);
 
   const replyContexts = new ReplyContextStore();
-  // One-shot capability probe (plan §5/§21 P0-3): with the public ApiProxy
+  // One-shot capability probe: with the public ApiProxy
   // gateway mounted (Web profile) questions ride the official mux frames and
   // the channel side NEVER registers a user-questions provider; without it
   // (headless) the channel registers the official UserQuestionProvider
@@ -162,7 +162,7 @@ export function startBridge(
   // the bridge back to the bridge's own fresh-session bootstrap. The arrow only
   // calls `bridge.startNewSession` at runtime (when a command actually runs), by
   // which point the bridge is assigned (definite-assignment assertion below).
-  // Durable outbox (plan M6 / §60-§71 / §95): the proactive send path. The
+  // Durable outbox: the proactive send path. The
   // binding authority is the DURABLE store (never AgentManager's hint cache),
   // and the adapter lookup + asset store are the same ones the reply pipeline
   // uses. Optional: absent -> the send_channel_message tool is not installed.
@@ -179,7 +179,7 @@ export function startBridge(
   const commandDeps: ChannelHarnessBridgeOptions['commandDeps'] = {
     startNewSession: (agent) => bridge.startNewSession(agent),
   };
-  // Fail-closed Access Gate (plan §3.1/§17/§32): production ALWAYS resolves the
+  // Fail-closed Access Gate: production ALWAYS resolves the
   // policy from the shared ChannelStorage and logs decisions on the
   // `channel-access` namespace. Reads once per inbound — no policy caching (§16).
   const accessResolver = new StoredChannelAccessPolicyResolver(

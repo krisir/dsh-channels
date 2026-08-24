@@ -1,5 +1,5 @@
 /**
- * port.ts — DSH-side minimal upstream interface (execution plan §15/§7).
+ * port.ts — DSH-side minimal upstream interface.
  *
  * `WeixinUpstream` is the ONLY surface the Weixin adapter depends on. It is a
  * thin, protocol-agnostic port: the adapter no longer knows AES keys,
@@ -7,7 +7,7 @@
  * those all live inside the DSH-hosted source-port implementation
  * (tencent-upstream.ts).
  *
- * Design constraints (plan §7):
+ * Design constraints:
  *   - method count stays small — only what DSH genuinely consumes;
  *   - no token/retry/reconnect/AES/upload-algorithm logic here — pure shape;
  *   - a capability that the upstream cannot yet provide is surfaced as a
@@ -159,7 +159,7 @@ export interface WeixinUpstream {
 
 /**
  * A typed capability error: the requested operation is not (yet) provided by
- * the upstream. Thrown instead of fabricating support (plan §15 — "do not fake
+ * the upstream. Thrown instead of fabricating support ("do not fake
  * support").
  */
 export class UpstreamCapabilityError extends Error {

@@ -1,5 +1,5 @@
 /**
- * Media hydration tests (plan §23-A3, fully offline):
+ * Media hydration tests (fully offline):
  *
  * - `hydrateMediaParts` unit suite: fake fetcher injected, asserts
  *   localData/size/mime for all four binary kinds (image / file / audio /

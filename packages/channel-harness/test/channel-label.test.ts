@@ -1,5 +1,5 @@
 /**
- * Channel display-label and safe path/title helpers (plan §4.2).
+ * Channel display-label and safe path/title helpers.
  *
  * Covers the label registry, single- vs multi-account workspace titles, the
  * stable 6-hex account hash, path-safe segmentation, and the conservative

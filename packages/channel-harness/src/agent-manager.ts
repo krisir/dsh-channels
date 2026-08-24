@@ -108,7 +108,7 @@ export class SessionNotFoundError extends Error {
   }
 }
 
-/** Caller-supplied metadata for a fresh agent create (plan §8). */
+/** Caller-supplied metadata for a fresh agent create. */
 export interface AgentCreateMeta {
   /** Explicit working directory for the new session's header.cwd. */
   cwd?: string;
@@ -542,7 +542,7 @@ export class AgentManager {
 
   /**
    * Retire a session's reference and reverse binding and dispose it ONLY if the
-   * manager owns the handle (plan §15). Borrowed / unknown agents are released
+   * manager owns the handle. Borrowed / unknown agents are released
    * from local tracking but NEVER disposed. Retiring never touches persisted
    * history — the old session keeps its durable log.
    */
@@ -560,7 +560,7 @@ export class AgentManager {
   }
 
   /**
-   * One-time channel-command setup for a BORROWED live agent (plan §7.1). A
+   * One-time channel-command setup for a BORROWED live agent. A
    * borrowed agent never went through create/resume, so its setup could not
    * have run at publication; run it here exactly once against the agent's
    * scoped context. Setup failure propagates to the caller. The borrowed

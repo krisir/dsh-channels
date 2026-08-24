@@ -1,9 +1,9 @@
 /**
- * Attachment Catalog v2 (attachment-gateway plan §12 / §26 — Phase D, P1-2).
+ * Attachment Catalog v2.
  *
  * The catalog is a NEW logical-id -> backend-locator map kept SEPARATE from
- * the legacy `attachments/v1` tree, which is never rewritten in place
- * (plan §12.1). One record is written per attachment at:
+ * the legacy `attachments/v1` tree, which is never rewritten in place. One
+ * record is written per attachment at:
  *
  * \`\`\`
  * attachments/
@@ -16,13 +16,13 @@
  *
  * The record deliberately carries NO transient platform state — no
  * `resourceRef`, no provider URL, no token, no `downloadCode` (same rule as
- * `StoredChannelAsset`, plan §22/§46). It exists so the resolve flow can later
- * pick a backend (Native-first + legacy fallback, plan §13) without parsing
- * v1 metadata, and so lazy migration (plan §15 / §28) can record the
- * channel-v1 -> harness-native transition explicitly.
+ * `StoredChannelAsset`). It exists so the resolve flow can later pick a
+ * backend (Native-first + legacy fallback) without parsing v1 metadata, and
+ * so lazy migration can record the channel-v1 -> harness-native transition
+ * explicitly.
  *
  * `attachmentId` is the stable logical id (`att-<uuid>`) and is NEVER a path
- * or a Harness native id (plan §11).
+ * or a Harness native id.
  */
 
 /** Schema version of `AttachmentCatalogRecordV2` (mirrors the v2 directory). */
@@ -31,7 +31,7 @@ export const CATALOG_SCHEMA_VERSION = 2 as const;
 /** Binary kinds a generic (non-image) attachment record may describe. */
 export type CatalogFileKind = 'file' | 'audio' | 'video';
 
-/** Storage backends a catalog record may point at (plan §13). */
+/** Storage backends a catalog record may point at. */
 export type CatalogStorageBackend = 'channel-v1' | 'harness-native';
 
 /**
@@ -43,7 +43,7 @@ export interface AttachmentCatalogRecordV2 {
   schemaVersion: typeof CATALOG_SCHEMA_VERSION;
   /** Stable logical attachment id (`att-<uuid>`); never a path or native id. */
   attachmentId: string;
-  /** Session ACL owner — the ONLY identity that gates read access (plan §17). */
+  /** Session ACL owner — the ONLY identity that gates read access. */
   owner: {
     sessionId: string;
   };
@@ -68,10 +68,10 @@ export interface AttachmentCatalogRecordV2 {
     | { backend: 'channel-v1' }
     | { backend: 'harness-native'; nativeId: string };
   /**
-   * Lazy-migration state (plan §15 / §28). Present once a legacy record has
+   * Lazy-migration state. Present once a legacy record has
    * been copied to the native backend, read back and hash-verified.
    * `legacyRetained` must stay `true` — migration is copy + verify,
-   * never move/delete (plan §15.1 / §16).
+   * never move/delete.
    */
   migration?: {
     sourceBackend?: 'channel-v1';

@@ -38,7 +38,7 @@ export type BinaryIngressFailureCode =
  *   adapter. It is preferred over `url` / `dataUri` / `resourceRef` when
  *   the adapter has the raw binary in hand.
  *
- * See the M2 contract (plan §8/§9) for the url-vs-resourceRef rule.
+ * See the M2 contract for the url-vs-resourceRef rule.
  */
 export interface BinaryPartBase {
   /**

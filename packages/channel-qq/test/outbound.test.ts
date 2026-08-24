@@ -185,7 +185,7 @@ describe('OutboundSender — generic file via sendMedia (M7B)', () => {
     expect(result.delivered).toBe(true);
     expect(client.mediaCalls).toHaveLength(1);
     expect(client.mediaCalls[0]?.target).toEqual({ scope: 'group', targetId: 'conv_1', msgId: undefined });
-    // The raw bytes travel to the fake client untouched (plan §96 Adapter → Fake).
+    // The raw bytes travel to the fake client untouched.
     expect(client.mediaCalls[0]?.message.parts[0]).toEqual({
       type: 'file',
       localData: bytes,

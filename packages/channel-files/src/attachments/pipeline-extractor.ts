@@ -1,10 +1,10 @@
 /**
- * M4 pipeline extraction hook (plan §48 / §49 / §50).
+ * M4 pipeline extraction hook.
  *
  * The concrete AttachmentExtractorHook used by the bridge: drives the
  * extractor registry (attemptExtraction) and persists the outcome through
  * the store — putExtracted for ready, recordExtraction for unsupported /
- * failed / too-large. Never throws (best-effort, plan §41): every failure
+ * failed / too-large. Never throws (best-effort): every failure
  * collapses to a typed extraction state.
  */
 import { extname } from 'node:path';

@@ -1,6 +1,5 @@
 /**
- * Question interaction backend contract + one-shot capability selection
- * (upgrade plan §5 / §18 / §21 P0-3).
+ * Question interaction backend contract + one-shot capability selection.
  *
  * Two official transports exist for the Harness question domain
  * (`ask_user_question` -> `ctx.userQuestions`):
@@ -17,12 +16,12 @@
  *   channel -> resolve -> Agent continues. No ApiProxy is simulated.
  *
  * The mode is decided by ONE capability probe at startup, in this file
- * (plan §18 red line: no `if (version >= …)` scattering). A failed probe
+ * (no `if (version >= …)` scattering). A failed probe
  * fails safe: an explicit error is logged and channel question presentation
  * is disabled — never a silent double registration.
  *
- * Naming leaves room for the upcoming approval interaction (plan §19 /
- * P1-3): everything here is `QuestionInteraction*` under `interactions/`,
+ * Naming leaves room for the upcoming approval interaction:
+ * everything here is `QuestionInteraction*` under `interactions/`,
  * and the official mux already carries `approval/requested` /
  * `approval/resolved` frames a future `ApprovalInteraction` can reuse.
  */
@@ -125,7 +124,7 @@ export interface QuestionInteractionDeps {
 export interface QuestionInteractionOptions extends QuestionInteractionDeps, QuestionBackendProbe {}
 
 /**
- * One-shot backend selection (plan §5). ApiProxy wins whenever present —
+ * One-shot backend selection. ApiProxy wins whenever present —
  * in the Web profile ApiProxy is already the registered UserQuestion
  * provider, so the channel side consumes its mux stream instead of ever
  * registering a second provider. Only without ApiProxy does the channel

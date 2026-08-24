@@ -1,11 +1,11 @@
 /**
- * Extractor registry (plan §48 / §49).
+ * Extractor registry.
  *
  * Picks the right extractor for a stored asset by its VERIFIED mime type and
  * filename extension, and enforces the parser input cap BEFORE parsing: input
  * beyond maxInputBytes reports 'too-large' without ever handing bytes to a
  * parser. Unrecognized formats report 'unsupported'. The output cap is also
- * enforced here (truncate with a marker, per plan §49).
+ * enforced here (truncate with a marker).
  */
 import { textExtractor } from './text.js';
 import { pdfExtractor } from './pdf.js';
@@ -24,7 +24,7 @@ const EXTRACTORS: readonly Extractor[] = [
 /** Marker appended when the extracted output is truncated to the output cap. */
 export const TRUNCATION_MARKER = '\n\n[...truncated]\n';
 
-/** Extraction boundaries (plan §49: parser input cap + extracted output cap). */
+/** Extraction boundaries (parser input cap + extracted output cap). */
 export interface ExtractionCaps {
   /** Max raw bytes handed to a parser (beyond => too-large, no parse). */
   maxInputBytes: number;
@@ -62,7 +62,7 @@ export type ExtractAttemptResult =
 /**
  * Guards + runs the extractor for one asset, enforcing input/output caps.
  * Never throws: every failure collapses to a typed status so the pipeline can
- * record it and continue (best-effort, plan §41).
+ * record it and continue (best-effort).
  */
 export async function attemptExtraction(input: {
   mime: string | undefined;

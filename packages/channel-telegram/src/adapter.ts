@@ -85,7 +85,7 @@ export class TelegramAdapter implements ChannelAdapter {
     // drafts natively for DMs; `resolveStreamingMode` picks per target.
     streaming: 'edit',
     maxTextLength: 4096,
-    // Directional media precision (attachment-gateway plan §7.1). Inbound:
+    // Directional media precision. Inbound:
     // every binary kind is hydrated to real bytes (`resourceRef` -> getFile ->
     // /file/bot... -> localData) before emit. Outbound: sendPhoto /
     // sendDocument / sendAudio / sendVideo all accept byte uploads

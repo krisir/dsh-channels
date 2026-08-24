@@ -1,6 +1,6 @@
 /**
  * M7C: `DingTalkOpenApiPortImpl` — method inventory + official-behavior basis
- * (plan §33) and media upload/send (plan §86). Fully offline (fake transport).
+ * and media upload/send. Fully offline (fake transport).
  */
 import { describe, expect, it } from 'vitest';
 import type { ChannelTarget } from '@wsz987/channel-core';
@@ -53,7 +53,7 @@ function secureFetch(data: Uint8Array, mimeType?: string, calls?: Array<{ url: s
   };
 }
 
-/** The full method surface the port must expose (plan §33 + §32A). */
+/** The full method surface the port must expose. */
 const PORT_METHODS = [
   'getAccessToken',
   'sendProactiveText',
@@ -66,7 +66,7 @@ const PORT_METHODS = [
   'getMediaDownloadUrl',
 ];
 
-describe('DingTalkOpenApiPortImpl — method inventory (plan §33)', () => {
+describe('DingTalkOpenApiPortImpl — method inventory', () => {
   it('exposes the full DingTalkOpenApiPort interface (shape)', () => {
     const port: DingTalkOpenApiPort = new DingTalkOpenApiPortImpl({
       transport: new FakeTransport(),
@@ -181,7 +181,7 @@ describe('DingTalkOpenApiPortImpl — method inventory (plan §33)', () => {
   });
 });
 
-describe('DingTalkOpenApiPortImpl — media upload/send (plan §86)', () => {
+describe('DingTalkOpenApiPortImpl — media upload/send', () => {
   it('uploadMedia then sendMedia: upload called first, mediaId flows into send', async () => {
     const transport = new FakeTransport()
       .route(tokenPath, () => ({ accessToken: 'token-1', expireIn: 7200 }))

@@ -1,10 +1,10 @@
 /**
- * upstream-facade.test.ts — Weixin upstream facade (plan §96) + plan §78
- * zero-regression image ingress baseline.
+ * upstream-facade.test.ts — Weixin upstream facade + zero-regression image
+ * ingress baseline.
  *
  * Two directions:
  *
- *   A. FakeWeixinUpstream driving the adapter (plan §96): a fake implements the
+ *   A. FakeWeixinUpstream driving the adapter: a fake implements the
  *      `WeixinUpstream` port and is injected via `WeixinAdapterDeps.upstream`.
  *      Asserts the adapter routes its sends to the facade (sendImage for an
  *      image part, sendText for plain text) with the image localData passed
@@ -13,7 +13,7 @@
  *   B. Real adapter + real facade end-to-end image ingress: an inbound
  *      getUpdates image message is hydrated through the facade's downloadImage
  *      (official AES decrypt) and the emitted event's image part.localData
- *      equals the decrypted plaintext — the plan §78 baseline:
+ *      equals the decrypted plaintext — the image ingress baseline:
  *
  *          Weixin image → localData → saveImage() → ImageBlock
  *
@@ -122,7 +122,7 @@ class FakeWeixinUpstream {
 /* A. Adapter ↔ facade boundary (FakeWeixinUpstream)                   */
 /* ------------------------------------------------------------------ */
 
-describe('FakeWeixinUpstream driving the adapter (plan §96)', () => {
+describe('FakeWeixinUpstream driving the adapter', () => {
   let fake: FakeWeixinUpstream;
 
   beforeEach(() => { fake = new FakeWeixinUpstream(); });
@@ -235,7 +235,7 @@ const HEX_KEY = '00112233445566778899aabbccddeeff';
 const KEY_BUF = Buffer.from(HEX_KEY, 'hex');
 const PLAIN_BYTES = Buffer.from('hello weixin image plaintext', 'utf-8');
 
-describe('real adapter image ingress → localData unchanged (plan §78)', () => {
+describe('real adapter image ingress → localData unchanged', () => {
   let transport: FakeTransport;
   const OLD_FETCH = globalThis.fetch;
 

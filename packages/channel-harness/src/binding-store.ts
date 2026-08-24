@@ -41,7 +41,7 @@ export interface SessionBindingStore {
   get(key: string): Promise<SessionBinding | undefined>;
   put(binding: SessionBinding): Promise<void>;
   delete(key: string): Promise<void>;
-  /** Resolve the single current binding for a session id (plan §59). */
+  /** Resolve the single current binding for a session id. */
   findBySessionId(sessionId: string): Promise<SessionBinding | undefined>;
 }
 
@@ -71,7 +71,7 @@ export interface SessionBindingV2 {
 
 /**
  * Raised by `findBySessionId` when one session id maps to more than one
- * CURRENT binding (plan §59). The durable binding authority fails closed
+ * CURRENT binding. The durable binding authority fails closed
  * rather than guessing which conversation "owns" the session.
  */
 export class AmbiguousBindingError extends Error {
@@ -164,7 +164,7 @@ export function migrateBinding(value: unknown): SessionBinding {
   return value as SessionBinding;
 }
 
-/** v2 -> v3: add the legacy-default dm conversation type (plan §55/§56). */
+/** v2 -> v3: add the legacy-default dm conversation type. */
 function promoteV2ToV3(v2: SessionBindingV2): SessionBinding {
   const migrated: SessionBinding = {
     channelId: v2.channelId,
@@ -193,7 +193,7 @@ function migratedNotice(sessionId: string, from: 'v1' | 'v2'): void {
 
 export class MemoryBindingStore implements SessionBindingStore {
   private readonly store = new Map<string, SessionBinding>();
-  /** sessionId -> bindable key index (plan §59). */
+  /** sessionId -> bindable key index. */
   private readonly bySession = new Map<string, string>();
 
   get(key: string): Promise<SessionBinding | undefined> {
@@ -265,7 +265,7 @@ export class MemoryBindingStore implements SessionBindingStore {
  */
 export class FileBindingStore implements SessionBindingStore {
   private readonly cache = new Map<string, SessionBinding>();
-  /** sessionId -> bindable key index (plan §59). */
+  /** sessionId -> bindable key index. */
   private readonly bySession = new Map<string, string>();
   private loaded = false;
   private writeChain: Promise<void> = Promise.resolve();

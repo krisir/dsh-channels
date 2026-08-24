@@ -1,6 +1,5 @@
 /**
- * Access Policy Store — durable read/write of a channel's access policy
- * (execution plan §15).
+ * Access Policy Store — durable read/write of a channel's access policy.
  *
  * Policies live in the shared channel-domain KV namespace (`accessPolicyStorageKey`)
  * over the SAME `ChannelStorage` that adapters and the harness resolver use, so
@@ -13,7 +12,7 @@
  *              `undefined`).
  * - `getRaw`   returns the raw JSON string so a resolver (harness-side) can
  *              distinguish MISSING (no raw) from INVALID (non-empty raw that
- *              fails to parse) — plan §15 "missing vs invalid".
+ *              fails to parse) — the "missing vs invalid" distinction.
  */
 import {
   accessPolicyStorageKey,

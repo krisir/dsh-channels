@@ -9,7 +9,7 @@ import {
 } from '../src/index.ts';
 
 /**
- * Unit tests for the multi-channel binary ingress contract (plan §32).
+ * Unit tests for the multi-channel binary ingress contract.
  *
  * The pass/fail semantics live in the pure `evaluateBinaryIngressCase`
  * (assertion semantics are tested deterministically here); the
@@ -52,7 +52,7 @@ function caps(
 const baseCaps = (): ChannelCapabilities =>
   caps({ image: 'bytes', file: 'locator' }, { image: true, file: true });
 
-describe('evaluateBinaryIngressCase — bytes mode (plan §32 `bytes`)', () => {
+describe('evaluateBinaryIngressCase — bytes mode (`bytes`)', () => {
   const cas: BinaryIngressCase = { kind: 'image', expected: 'bytes', channel: 'telegram' };
 
   it('passes when the part carries hydrated localData', () => {
@@ -135,7 +135,7 @@ describe('evaluateBinaryIngressCase — bytes mode (plan §32 `bytes`)', () => {
     expect(problems).toEqual([]);
   });
 
-  it('fails on a raw platform credential field (plan §32: no raw platform credential)', () => {
+  it('fails on a raw platform credential field (no raw platform credential)', () => {
     const problems = evaluateBinaryIngressCase(
       cas,
       makeFixture(),
@@ -157,7 +157,7 @@ describe('evaluateBinaryIngressCase — bytes mode (plan §32 `bytes`)', () => {
   });
 });
 
-describe('evaluateBinaryIngressCase — locator mode (plan §32 `locator`)', () => {
+describe('evaluateBinaryIngressCase — locator mode (`locator`)', () => {
   const cas: BinaryIngressCase = { kind: 'file', expected: 'locator', channel: 'lark' };
 
   it('passes with a resourceRef and no fabricated bytes', () => {
@@ -217,7 +217,7 @@ describe('evaluateBinaryIngressCase — locator mode (plan §32 `locator`)', () 
   });
 });
 
-describe('evaluateBinaryIngressCase — failure mode (plan §32 `failure`)', () => {
+describe('evaluateBinaryIngressCase — failure mode (`failure`)', () => {
   const cas: BinaryIngressCase = { kind: 'audio', expected: 'failure', channel: 'qq' };
   const failedParts = (overrides: Record<string, unknown> = {}): MessagePart[] => [
     { type: 'text', text: 'keep me' },

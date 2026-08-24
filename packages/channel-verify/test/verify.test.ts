@@ -344,7 +344,7 @@ describe('media capabilities check', () => {
   it('warns (not fails) when inbound bytes contradicts a false coarse transport flag', async () => {
     // VALID_CAPABILITIES has video: false — media claiming video bytes must NOT
     // fail verification: legacy flags are coarse transport booleans that cannot
-    // express directionality (plan §7.1, e.g. Weixin audio), so the directional
+    // express directionality (e.g. Weixin audio), so the directional
     // media map is authoritative and the conflict is a warning only.
     const entry = mediaEntry('{ inbound: { video: "bytes" }, outbound: {} }');
     await withDir({ 'package.json': VALID_PACKAGE, 'lib/index.js': entry }, async (dir) => {

@@ -4,7 +4,7 @@
  * Text-only messages go through `sendText`; messages carrying a media part
  * with a resolvable source go through `sendMedia` (fileType mapped from the
  * part type). A part's `localData` bytes (image or generic file) are sent via
- * `sendMedia` with the SDK `fileData` base64 carrier (plan §23 / §65 / §85).
+ * `sendMedia` with the SDK `fileData` base64 carrier.
  * Failures are wrapped in `ChannelSendError`.
  */
 import type {

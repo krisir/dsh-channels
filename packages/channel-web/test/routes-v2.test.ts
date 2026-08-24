@@ -607,7 +607,7 @@ describe('auth session lifecycle (doc §32)', () => {
   });
 });
 
-describe('GET /channels/:id/access (plan §27/§30)', () => {
+describe('GET /channels/:id/access', () => {
   it('returns the ChannelAccessState', async () => {
     const fresh = makeControl();
     const handler = wireV2(fresh.control);
@@ -633,7 +633,7 @@ describe('GET /channels/:id/access (plan §27/§30)', () => {
   });
 });
 
-describe('PUT /channels/:id/access (plan §31)', () => {
+describe('PUT /channels/:id/access', () => {
   it('saves a valid policy → 200 + resulting state', async () => {
     const fresh = makeControl();
     const handler = wireV2(fresh.control);
@@ -720,7 +720,7 @@ describe('PUT /channels/:id/access (plan §31)', () => {
   });
 });
 
-describe('owner-claim lifecycle (plan §29/§30)', () => {
+describe('owner-claim lifecycle', () => {
   it('POST /channels/qq/access/owner-claims → 201 + session', async () => {
     const fresh = makeControl();
     const handler = wireV2(fresh.control);
@@ -832,7 +832,7 @@ describe('owner-claim lifecycle (plan §29/§30)', () => {
   });
 });
 
-describe('access responses never leak platform secrets (plan §30)', () => {
+describe('access responses never leak platform secrets', () => {
   it('GET access body carries no token/secret/provider state', async () => {
     const fresh = makeControl();
     const handler = wireV2(fresh.control);

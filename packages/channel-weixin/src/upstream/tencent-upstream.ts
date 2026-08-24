@@ -7,7 +7,7 @@
  * violate the DSH host boundary. Protocol orchestration and AES therefore stay
  * in this adapter behind the WeixinUpstream port.
  *
- * ZERO-REGRESSION contract (plan §78):
+ * ZERO-REGRESSION contract:
  *   Weixin image → localData → saveImage() → ImageBlock unchanged.
  *   downloadImage() returns the SAME decrypted bytes legacy media/download.ts
  *   produced. URL resolution keeps the legacy shape because the Tencent plugin

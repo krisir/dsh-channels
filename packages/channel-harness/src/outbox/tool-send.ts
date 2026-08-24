@@ -1,14 +1,14 @@
 /**
- * send_channel_message — the M6 Harness tool (plan §62 / §95).
+ * send_channel_message — the M6 Harness tool.
  *
  * Lets the model send a proactive message back to the channel conversation the
  * CURRENT session is durably bound to. Parameters are ONLY `{ text?,
  * attachment_id? }` — there is NO `recipient` / `channel` / `account` /
- * `conversation` / `user_id` / `openid` / `file_path` (plan §62, §95: those
+ * `conversation` / `user_id` / `openid` / `file_path` (those
  * fields must NOT exist in the parameter schema nor in the request type). The
  * durable binding resolves the target.
  *
- * Agent-scoped registration (plan §81): installSendChannelMessageTool registers
+ * Agent-scoped registration: installSendChannelMessageTool registers
  * through the official @deepseek-ai/dsh-tools ctx.tools.register on the agent's
  * own scope, mirroring installReadChannelAttachmentTool.
  */
@@ -94,7 +94,7 @@ export function registerSendChannelMessageTool(
   });
 }
 
-/** Install the tool on an Agent scoped context (plan §81 Agent-scoped registration). */
+/** Install the tool on an Agent scoped context (Agent-scoped registration). */
 export async function installSendChannelMessageTool(
   agentCtx: Context,
   options: RegisterSendChannelMessageToolOptions,

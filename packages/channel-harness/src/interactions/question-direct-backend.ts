@@ -1,6 +1,6 @@
 /**
  * Headless question backend: the channel side AS the official
- * `UserQuestionProvider` (upgrade plan §5.2 / §21 P0-3).
+ * `UserQuestionProvider`.
  *
  * When no ApiProxy gateway is mounted, nothing serves `ctx.userQuestions`,
  * so this backend registers the official provider and the flow becomes:

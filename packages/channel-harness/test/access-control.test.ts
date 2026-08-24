@@ -1,5 +1,5 @@
 /*
- * Access Control unit tests (execution plan §53).
+ * Access Control unit tests.
  *
  * Covers InboundAccessController against the full DM/Group authorization +
  * activation matrix, and StoredChannelAccessPolicyResolver against the
@@ -68,7 +68,7 @@ function authorizeGroup(
   });
 }
 
-describe('InboundAccessController — DM (plan §19.1, §53)', () => {
+describe('InboundAccessController — DM', () => {
   it('DM disabled -> denied dm_disabled', () => {
     const d = authorizeDm('user_1', dmPolicy({ dmPolicy: 'disabled' }));
     expect(d).toEqual({ authorized: false, activated: false, reason: 'dm_disabled' });
@@ -95,7 +95,7 @@ describe('InboundAccessController — DM (plan §19.1, §53)', () => {
   });
 });
 
-describe('InboundAccessController — Group (plan §19.2, §53)', () => {
+describe('InboundAccessController — Group', () => {
   it('groupPolicy disabled -> DENY group_disabled', () => {
     const d = authorizeGroup('u1', 'g1', dmPolicy({ groupPolicy: 'disabled' }));
     expect(d).toEqual({ authorized: false, activated: false, reason: 'group_disabled' });
@@ -176,7 +176,7 @@ describe('InboundAccessController — Group (plan §19.2, §53)', () => {
   });
 });
 
-describe('InboundAccessController — Activation / requireMention (plan §14, §53)', () => {
+describe('InboundAccessController — Activation / requireMention', () => {
   const groupOpen = (rule: GroupAccessRule): ChannelAccessPolicy =>
     dmPolicy({
       groupPolicy: 'allowlist',
@@ -224,7 +224,7 @@ describe('InboundAccessController — Activation / requireMention (plan §14, §
   });
 });
 
-describe('StoredChannelAccessPolicyResolver (plan §15, §17)', () => {
+describe('StoredChannelAccessPolicyResolver', () => {
   function resolverWith(entries: Record<string, string>) {
     const storage = new MemoryStorage();
     for (const [k, v] of Object.entries(entries)) {

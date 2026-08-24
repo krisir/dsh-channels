@@ -241,7 +241,7 @@ describe('LarkOpenApiOutbound.sendFile (M7A official mapping)', () => {
     const bytes = new Uint8Array([1, 2, 3, 4, 5]);
     await outbound.sendFile('oc_456', { type: 'file', localData: bytes, name: 'report.pdf', mimeType: 'application/pdf' });
 
-    // Official method mapping (plan §96): im.v1.file.create then im.v1.message.create.
+    // Official method mapping: im.v1.file.create then im.v1.message.create.
     const upload = createCall(client, 'file.create');
     expect(upload).toBeDefined();
     const uploadData = (upload?.payload as LarkCreateFilePayload).data;

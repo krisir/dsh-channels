@@ -1,7 +1,7 @@
 /**
- * M5 workspace integration tests (plan §21, Test 1–4).
+ * M5 workspace integration tests, Test 1–4.
  *
- * Proves the channel Session factory transaction (plan §12/M3):
+ * Proves the channel Session factory transaction:
  *
  *   A. workspaceResolver.resolve(conversation)  -> cwd (+ workspace)
  *   B. agentManager.create(sessionId, route, ..., { cwd })
@@ -10,7 +10,7 @@
  *   E. registerBinding(binding)
  *   F. structured success log
  *
- * and its failure semantics (plan §11 revision — SOFT attach): a Workspace
+ * and its failure semantics (SOFT attach): a Workspace
  * attach failure keeps the freshly-created agent (NOT disposed), persists the
  * binding, and followup still runs — the session merely stays ungrouped — while
  * a binding-write failure still rolls back (detach + dispose).
@@ -318,7 +318,7 @@ function makeBridge(options: {
   return { rootCtx, gateway, manager, bridge, adapter, bindingStore, logger };
 }
 
-describe('M5 workspace integration (plan §21)', () => {
+describe('M5 workspace integration', () => {
   it('does not log expected connection/auth status events as ignored messages', async () => {
     const logger = capturingLogger();
     const { bridge } = makeBridge({ logger });

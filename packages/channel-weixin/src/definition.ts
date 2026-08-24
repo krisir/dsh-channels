@@ -1,5 +1,5 @@
 /**
- * Weixin ChannelDefinition — control-plane entry (execution plan §43).
+ * Weixin ChannelDefinition — control-plane entry.
  *
  * Weixin has NO credentials/config fields: it mounts at startup (autoStart)
  * and the QR login happens on the MOUNTED adapter. The definition therefore
@@ -39,7 +39,7 @@ export interface WeixinDefinitionOptions {
   /** Durable store for the enabled intent (doc §21) when the host provides one. */
   persistEnabled?: (enabled: boolean) => Promise<void>;
   /**
-   * Optional owner-identity resolver (plan §11 / §52). Returns the canonical
+   * Optional owner-identity resolver. Returns the canonical
    * sender.id of the Weixin account owner (the scanning QR userId). When
    * provided, the returned definition exposes `resolveOwnerIdentity` so the
    * control plane can safely bootstrap an owner-only policy. The caller is
@@ -177,7 +177,7 @@ export function createWeixinDefinition(options: WeixinDefinitionOptions): Channe
     },
     createAdapter: async () => new WeixinAdapter(config, deps),
     autoStart: true,
-    // Declared access capability (plan §11). Weixin is DM-only, no group
+    // Declared access capability. Weixin is DM-only, no group
     // mention activation in V1; owner is discovered from the account.
     access: {
       directMessages: true,

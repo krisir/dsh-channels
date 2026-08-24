@@ -1,18 +1,17 @@
 /**
- * Pure, protocol-agnostic binary hydration helper (attachment-gateway plan
- * §6.3: "统一 Binary Hydration 规则").
+ * Pure, protocol-agnostic binary hydration helper.
  *
  * This module owns the *protocol-neutral* part of hydration only: applying a
  * platform resolver result onto a binary `MessagePart` under a byte cap and an
  * AbortSignal, merging name/mime/size, and mapping failures to the stable
  * `BinaryIngressFailureCode`. It performs NO network I/O and persists nothing.
  *
- * Per plan §6.3 the resolution *how* stays in the adapters: `resourceRef`
- * handles (Telegram file_id, Lark image_key/file_key, DingTalk mediaId,
- * Weixin encrypted CDN ref) are resolved exclusively by the platform upstream
- * resolvers (TelegramFileResolver, LarkMediaPort, DingTalk resolveMedia, QQ
- * secure fetch, Weixin upstream). Core never resolves a locator and never
- * branches on the channel — this file has no `if (channel === ...)` anywhere.
+ * The resolution *how* stays in the adapters: `resourceRef` handles (Telegram
+ * file_id, Lark image_key/file_key, DingTalk mediaId, Weixin encrypted CDN
+ * ref) are resolved exclusively by the platform upstream resolvers
+ * (TelegramFileResolver, LarkMediaPort, DingTalk resolveMedia, QQ secure
+ * fetch, Weixin upstream). Core never resolves a locator and never branches on
+ * the channel — this file has no `if (channel === ...)` anywhere.
  */
 import type {
   AudioPart,
@@ -60,7 +59,7 @@ export interface BinaryHydrationPolicy {
  * Protocol-agnostic application of a platform resolver result onto one binary
  * `MessagePart` (mutates `part` in place, returns nothing).
  *
- * Behavior contract (plan §6.1 / §6.3):
+ * Behavior contract:
  * 1. `part.localData` already present → `resolve()` is NOT called and the part
  *    is returned untouched (no double download) — even when the policy would
  *    fail, an already-hydrated part wins.

@@ -1,5 +1,5 @@
 /**
- * Channel command plane (plan §4 / §23, spec §35).
+ * Channel command plane.
  *
  * Composes the channel command factories and installs them into an Agent
  * scoped context via the official `@deepseek-ai/dsh-commands` registry —

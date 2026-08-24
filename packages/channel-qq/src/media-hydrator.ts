@@ -1,26 +1,26 @@
 /**
- * Binary hydration for the QQ inbound path (plan §23-A3 / §79A / §85).
+ * Binary hydration for the QQ inbound path.
  *
  * The mapper stays pure: it preserves the real `attachment.url` on image,
- * generic-file, audio (`voice_wav_url` ?? `url`) and video parts (plan §23).
+ * generic-file, audio (`voice_wav_url` ?? `url`) and video parts.
  * This module is the single place that turns a genuine `http(s)` URL into
  * trusted bytes, using the shared `SecureRemoteMediaFetcher` from
- * `@wsz987/channel-core` as the DSH host's generic security boundary (plan
- * §12 / §13). It never implements QQ upload / token / gateway protocol —
- * those belong to `qqbot-nodejs` (plan §23).
+ * `@wsz987/channel-core` as the DSH host's generic security boundary. It
+ * never implements QQ upload / token / gateway protocol —
+ * those belong to `qqbot-nodejs`.
  *
  * Native image ingress (M2A) hydrates `image` parts so the harness
  * `saveImage()` / `ImageBlock` path receives real bytes. Generic file
- * ingress (M7B, plan §85) hydrates `file` parts the same way: the produced
+ * ingress hydrates `file` parts the same way: the produced
  * `localData` is picked up automatically by the harness private asset store
  * + extractor, so the adapter never implements QQ file upload. Since
- * §23-A3, `audio` and `video` parts are hydrated through the same secure
+ * `audio` and `video` parts are hydrated through the same secure
  * fetcher — the adapter is the transport layer and must deliver bytes for
  * every binary kind it maps, regardless of whether a model consumer exists
- * yet (plan §5.1).
+ * yet.
  *
  * The apply step reuses core's protocol-agnostic `applyHydrationResult`
- * (plan §6.3) for all four binary kinds: it owns the byte cap, the
+ * for all four binary kinds: it owns the byte cap, the
  * AbortSignal handling, the localData/size/mime merge and the stable
  * `ingressFailure` mapping. This module only owns the QQ-specific gate
  * (which parts, which URLs) and the URL-level failure mapping.
@@ -34,10 +34,10 @@
  *   hydrated byte length) and `mimeType` (prefer the fetcher's Content-Type,
  *   else keep the platform hint, else sniff the filename). Image parts keep
  *   their legacy shape: the `size` field is intentionally NOT set there, so
- *   existing image consumers observe exactly the same part as before §23-A3.
+ *   existing image consumers observe exactly the same part as before.
  * - On ANY failure the part is NOT dropped: its `url` is kept, a stable
  *   `ingressFailure` code is set, and hydration of other parts continues.
- *   A download failure must never block text delivery (plan §79A), and this
+ *   A download failure must never block text delivery, and this
  *   function never throws.
  */
 import {
@@ -102,7 +102,7 @@ export async function hydrateMediaParts(
       }
       // Trusted bytes already in hand take precedence — never re-download.
       // (`applyHydrationResult` also skips parts with `localData`; the
-      // `dataUri` skip is QQ's own gate to keep pre-§23-A3 behavior.)
+      // `dataUri` skip is QQ's own gate to keep the legacy behavior.)
       if (part.localData !== undefined || part.dataUri !== undefined) {
         return;
       }
@@ -121,14 +121,14 @@ export async function hydrateMediaParts(
           return {
             data: result.data,
             // Prefer the fetcher's Content-Type, else keep the platform hint,
-            // else fall back to a filename sniff (mirrors pre-§23-A3 logic).
+            // else fall back to a filename sniff.
             mimeType: result.mimeType ?? platformMime ?? mimeHintFromFilename(part.name),
           };
         },
         { maxBytes, signal },
       );
       // Legacy image ingestion never carried `size`; keep that exact shape so
-      // existing consumers observe the same image part as before §23-A3 while
+      // existing consumers observe the same image part as before while
       // audio/video/file take the authoritative `size` from the real bytes.
       if (isImage) delete part.size;
     }),

@@ -1,5 +1,5 @@
 /**
- * index.ts — public surface of the Weixin upstream layer (plan §15/§38).
+ * index.ts — public surface of the Weixin upstream layer.
  *
  * Re-exports the DSH-side port (`WeixinUpstream`) and the factory
  * (`createWeixinUpstream`). Consumers (the adapter) depend only on the port;

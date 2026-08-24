@@ -1,5 +1,5 @@
 /**
- * Extractors (plan §48 / §49): bytes -> readable text for the private store.
+ * Extractors: bytes -> readable text for the private store.
  */
 export * from './types.js';
 export * from './text.js';

@@ -64,7 +64,7 @@ export interface BindingStoreConfig {
 }
 
 /**
- * Channel Workspace strategy (plan §5.1). Controls how a channel conversation
+ * Channel Workspace strategy. Controls how a channel conversation
  * is mapped to a Session working directory and a Harness `WorkspaceRegistry`
  * member.
  */
@@ -146,7 +146,7 @@ export const Config: Schema<Config> = Schema.object({
   bindingStore: Schema.object({
     // File-backed by default so session bindings survive restarts; the file
     // path is resolved at runtime (`<channel-data-dir>/bindings.json`) so
-    // bindings no longer depend on the process cwd (plan §5.2).
+    // bindings no longer depend on the process cwd.
     type: Schema.union(['memory', 'file']).default('file'),
     path: Schema.string(),
   }),

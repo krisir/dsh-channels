@@ -1,12 +1,10 @@
 /**
- * Migration integrity verification (attachment-gateway plan §15 / §28 —
- * Phase F, P1-4).
+ * Migration integrity verification.
  *
- * Lazy migration is COPY + VERIFY, never move (plan §15.1): after the legacy
- * bytes are copied into the native backend we read them back and compare the
- * recomputed SHA-256 (and byte length) against the legacy record. Any
- * mismatch means the native copy is NOT trusted and the legacy backend stays
- * authoritative (plan §15.2).
+ * Lazy migration is COPY + VERIFY, never move: after the legacy bytes are
+ * copied into the native backend we read them back and compare the recomputed
+ * SHA-256 (and byte length) against the legacy record. Any mismatch means the
+ * native copy is NOT trusted and the legacy backend stays authoritative.
  */
 import { sha256Hex } from '../attachments/hash.js';
 

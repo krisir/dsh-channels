@@ -1,5 +1,5 @@
 /**
- * ChannelStorageAccessPolicyStore tests (plan §15): get / set / delete / getRaw
+ * ChannelStorageAccessPolicyStore tests: get / set / delete / getRaw
  * over an in-memory ChannelStorage, including the missing-vs-invalid distinction.
  */
 import { describe, expect, it } from 'vitest';

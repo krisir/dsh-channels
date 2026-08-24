@@ -1,5 +1,5 @@
 /**
- * Phase C (plan §25) — v1 permanent reader + schema evolution.
+ * Phase C — v1 permanent reader + schema evolution.
  *
  * C1 (v1 permanent reader): a legacy v1 tree hand-written on disk
  * (`sessions/<sessionId>/<messageId>/<attachmentId>/{meta.json, raw.bin,
@@ -67,7 +67,7 @@ async function writeLegacyAsset(
   if (opts.extracted !== undefined) {
     await writeFile(join(dir, 'extracted.md'), opts.extracted, 'utf8');
   }
-  // Record the lookup entry in the durable index (v1 layout, plan §42).
+  // Record the lookup entry in the durable index (v1 layout).
   const indexPath = join(root, 'index.json');
   let index: Record<string, { sessionId: string; messageId: string }> = {};
   try {
@@ -255,7 +255,7 @@ describe('§25-C1 — v1 permanent reader on a hand-written legacy tree', () => 
       const def = registerReadChannelAttachmentTool({ store });
       await def.execute({ attachment_id: 'att-legacy' }, execFor('S'));
 
-      // Reads must be free of side effects (plan §25-C2: never rewrite on read).
+      // Reads must be free of side effects (never rewrite on read).
       expect(await listFiles(root)).toEqual(before);
       expect(existsSync(join(root, '.staging'))).toBe(false);
       expect(
@@ -378,7 +378,7 @@ describe('§25-C2 — schema evolution (reader tolerance, never rewrite on read)
       });
 
       const store = new FileChannelInboundAssetStore({ root });
-      // Corrupt metadata is never partially trusted (plan §45): get is undefined...
+      // Corrupt metadata is never partially trusted: get is undefined...
       expect(await store.get('att-corrupt')).toBeUndefined();
       // ...and the resolver surfaces NOT_FOUND, not a guessed or repaired asset.
       await expect(

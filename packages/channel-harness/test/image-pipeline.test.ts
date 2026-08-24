@@ -1,5 +1,5 @@
 /**
- * Official rc.2 image pipeline integration (upgrade plan P0-2).
+ * Official rc.2 image pipeline integration.
  *
  * The channel only hands raw images to the Harness Attachment Store
  * (saveImage -> ImageAttachmentRef -> ImageBlock); whether the model can see

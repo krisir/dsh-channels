@@ -1,5 +1,5 @@
 /**
- * DOCX text extractor (plan §48).
+ * DOCX text extractor.
  *
  * Uses the established, pure-JS mammoth@1.12.1 (exact-pinned) to render the
  * document to plain text. mammoth understands paragraphs, headers, lists

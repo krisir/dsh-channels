@@ -1,6 +1,5 @@
 /**
- * Multi-channel binary ingress contract (attachment-gateway plan §32) for
- * Telegram.
+ * Multi-channel binary ingress contract for Telegram.
  *
  * Every case drives the REAL inbound entry — `InboundProcessor.handle(raw)`
  * which runs mapper + hydration + `ctx.emit` — mirroring

@@ -1,5 +1,5 @@
 /**
- * Extractor contracts (plan §48 / §49).
+ * Extractor contracts.
  *
  * An extractor turns a supported file's raw bytes into a *readable text*
  * surface (plain text or markdown) that the private asset store publishes via
@@ -7,7 +7,7 @@
  * derived projection written to `extracted.md` for the
  * `read_channel_attachment` tool.
  *
- * Parser caps (plan §49) are enforced OUTSIDE the extractors by the
+ * Parser caps are enforced OUTSIDE the extractors by the
  * registry / pipeline: input beyond `maxInputBytes` short-circuits to
  * `too-large` without parsing, and extracted output beyond
  * `maxOutputBytes` is truncated by the pipeline with a marker. Extractors

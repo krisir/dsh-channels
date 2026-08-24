@@ -71,13 +71,13 @@ export interface InboundProcessorOptions {
   now?: () => number;
   /**
    * Secure remote media fetcher used to hydrate inbound image URLs into
-   * `localData` (plan §32A). Injectable for offline tests; defaults to a real
+   * `localData`. Injectable for offline tests; defaults to a real
    * `SecureRemoteMediaFetcher` bound to the global fetch.
    */
   secureFetch?: RemoteMediaFetchLike;
   /**
    * DingTalk OpenAPI media resolver used to turn opaque file mediaIds into
-   * trusted bytes during file ingress (plan §32A / §86). Injectable for offline
+   * trusted bytes during file ingress. Injectable for offline
    * tests; when absent, opaque file handles are deferred to `resourceRef`.
    */
   resolveMedia?: MediaResolverLike;
@@ -109,7 +109,7 @@ export class InboundProcessor {
     // Per-message download context (official robot schema): the callback's
     // downloadCode + robotCode are transient upstream state the official
     // /v1.0/robot/messageFiles/download API needs. Read from the raw payload
-    // and passed to hydration — never persisted onto core parts (plan §9/§46).
+    // and passed to hydration — never persisted onto core parts.
     const parsedDownloadContext = downloadContextSchema.safeParse(raw);
     const rawValue = parsedDownloadContext.success ? parsedDownloadContext.data : undefined;
     const downloadContext = {
@@ -132,14 +132,14 @@ export class InboundProcessor {
       },
     });
     // Hydrate generic file parts: genuine http(s) urls via the secure fetcher;
-    // opaque mediaIds via the DingTalk OpenAPI media resolver (plan §86 / §32A).
+    // opaque mediaIds via the DingTalk OpenAPI media resolver.
     await hydrateFiles(event.message.content, {
       secureFetch: this.options.secureFetch,
       resolveMedia: this.options.resolveMedia,
       downloadContext,
       signal: this.options.ctx.signal,
     });
-    // Hydrate audio/video parts (plan §23-A5): audio/video follow the exact
+    // Hydrate audio/video parts: audio/video follow the exact
     // same URL-or-opaque resolution as image/file — genuine http(s) urls via
     // the secure fetcher, opaque downloadCodes via the official
     // messageFiles/download seam (the connector oracle downloads voice/video

@@ -1,20 +1,20 @@
 /***
- * Official DingTalk OpenAPI port implementation (plan §33 / §34).
+ * Official DingTalk OpenAPI port implementation.
  *
- * Positioned as `DingTalkOpenApiPortImpl` (plan §34): it is the thin
+ * Positioned as `DingTalkOpenApiPortImpl`: it is the thin
  * implementation of `DingTalkOpenApiPort`, and it also implements the
  * `DingTalkUpstream` outbound surface so `DingTalkStreamUpstream` can keep
  * delegating to it unchanged. Stream-mode reply messages carry a short-lived
- * sessionWebhook used ONLY for the current inbound reply (plan §35); AI Cards
+ * sessionWebhook used ONLY for the current inbound reply; AI Cards
  * and proactive sends use the documented DingTalk OpenAPI with an application
  * access token. Neither path requires the legacy local gateway.
  *
- * Behavior oracle / payload contract (plan §32 / §33):
+ * Behavior oracle / payload contract:
  *   `@dingtalk-real-ai/dingtalk-connector@0.8.24`.
  * Every port method records its official-behavior basis in
  * `DingTalkOpenApiPortImpl.OFFICIAL_BASIS` (and its own docblock). Methods with
  * no official-behavior basis are marked `@upstream-gap` / `@deprecated` with a
- * reason, per plan §34 (delete any protocol with no official basis).
+ * reason (delete any protocol with no official basis).
  */
 import type { ChannelTarget } from '@wsz987/channel-core';
 import { ChannelError, SecureRemoteMediaFetcher } from '@wsz987/channel-core';
@@ -69,9 +69,9 @@ interface CachedToken {
 }
 
 /**
- * Official DingTalk OpenAPI port implementation (plan §34 rename of the former
+ * Official DingTalk OpenAPI port implementation (rename of the former
  * `DingTalkOfficialUpstream`). Implements the small `DingTalkOpenApiPort`
- * (plan §33) plus the `DingTalkUpstream` outbound surface it always had.
+ * plus the `DingTalkUpstream` outbound surface it always had.
  *
  * The legacy name `DingTalkOfficialUpstream` is preserved as an alias below so
  * existing import/call sites and tests keep compiling unchanged.
@@ -91,7 +91,7 @@ export class DingTalkOpenApiPortImpl implements DingTalkOpenApiPort, DingTalkUps
     throw new ChannelError('CHANNEL_ERROR', 'official DingTalk outbound driver does not receive messages');
   }
 
-  /** Reply path (plan §35): sessionWebhook is ONLY for the current inbound reply. */
+  /** Reply path: sessionWebhook is ONLY for the current inbound reply. */
   async sendText(target: ChannelTarget, text: string): Promise<unknown> {
     const targetData = this.targetData(target);
     const sessionWebhook = targetData.sessionWebhook;
@@ -132,7 +132,7 @@ export class DingTalkOpenApiPortImpl implements DingTalkOpenApiPort, DingTalkUps
   }
 
   /**
-   * Proactive plain-text robot send (plan §35 / §69): official proactive API,
+   * Proactive plain-text robot send: official proactive API,
    * never sessionWebhook. Official behavior basis: DingTalk robot message send
    * (`POST /v1.0/robot/groupMessages/send` for groups;
    * `POST /v1.0/robot/oToMessages/batchSend` for single chat), msgKey `sampleText`,
@@ -155,7 +155,7 @@ export class DingTalkOpenApiPortImpl implements DingTalkOpenApiPort, DingTalkUps
   }
 
   /**
-   * Upload a media file (plan §86 media upload). Official behavior basis:
+   * Upload a media file. Official behavior basis:
    * DingTalk media upload `POST /media/upload?access_token=...&type=image|file`
    * as used by the connector. Standard `FormData` delegates multipart framing
    * to fetch instead of reproducing a platform protocol in this package.
@@ -184,7 +184,7 @@ export class DingTalkOpenApiPortImpl implements DingTalkOpenApiPort, DingTalkUps
   }
 
   /**
-   * Send an uploaded mediaId as a robot image/file message (plan §86 media send).
+   * Send an uploaded mediaId as a robot image/file message.
    * Official behavior basis: DingTalk robot message send with msgKey
    * `sampleImageMsg` with `{ photoURL: mediaId }` for images, and
    * `sampleFile` with `{ mediaId, fileName, fileType }` for files, matching
@@ -294,7 +294,7 @@ export class DingTalkOpenApiPortImpl implements DingTalkOpenApiPort, DingTalkUps
 
   /**
    * Resolve an opaque DingTalk media handle (mediaId / downloadCode) into
-   * trusted bytes (plan §32A). Official behavior basis: the connector's
+   * trusted bytes. Official behavior basis: the connector's
    * `downloadMediaByCode` / `getFileDownloadUrl` — POST
    * `/v1.0/robot/messageFiles/download` with `{ downloadCode, robotCode }`
    * and the application access token returns `{ downloadUrl }`; the URL is
@@ -420,7 +420,7 @@ export class DingTalkOpenApiPortImpl implements DingTalkOpenApiPort, DingTalkUps
 }
 
 /**
- * Official-behavior basis for every port method (plan §33): maps a port method
+ * Official-behavior basis for every port method: maps a port method
  * name to the corresponding official connector implementation location / behavior
  * oracle, or an explicit `@upstream-gap` / `@deprecated` marker with a reason.
  * The port-inventory test asserts every interface method has a non-empty entry
@@ -439,7 +439,7 @@ export const OFFICIAL_BASIS: Record<string, string> = {
   getMediaDownloadUrl: "oracle=@dingtalk-real-ai/dingtalk-connector@0.8.24 :: connector getFileDownloadUrl — POST /v1.0/robot/messageFiles/download {downloadCode,robotCode} -> {downloadUrl} (message-handler)",
 };
 
-/** Legacy alias (plan §34 rename): `DingTalkOfficialUpstream` -> `DingTalkOpenApiPortImpl`. */
+/** Legacy alias (rename): `DingTalkOfficialUpstream` -> `DingTalkOpenApiPortImpl`. */
 export const DingTalkOfficialUpstream = DingTalkOpenApiPortImpl;
 
 function extensionOf(fileName: string | undefined): string {

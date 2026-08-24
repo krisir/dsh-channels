@@ -1,5 +1,5 @@
 /**
- * Inbound Identity Contract test (execution plan §45).
+ * Inbound Identity Contract test.
  *
  * `runInboundIdentityContract(input)` registers a vitest suite that validates
  * the canonical identity facts an adapter mapper must produce on an inbound
@@ -7,7 +7,7 @@
  * it with the mapped events its own mapper produces and prove the identity
  * contract holds, independent of channel-core/harness wiring.
  *
- * Minimum invariants asserted (per §45):
+ * Minimum invariants asserted:
  *  - `sender.id` is a non-empty string and !== 'unknown' (unless allowed)
  *  - `conversation.id` is a non-empty string
  *  - `conversation.type` ∈ 'dm' | 'group'
@@ -19,10 +19,10 @@
  *    asserts `conversation.id !== sender.id`.
  *  - mapping stability (for `meta.stableSender`): when a second event is
  *    supplied, the two `sender.id` values must be equal for the same remote
- *    subject (plan §45 "同一远程主体映射稳定").
+ *    subject ("同一远程主体映射稳定").
  *
  * A legacy fixture may legitimately produce `sender.id === 'unknown'` when the
- * upstream payload genuinely lacks a sender (plan §45 note). That is allowed
+ * upstream payload genuinely lacks a sender. That is allowed
  * at the MAPPER level — but it is exactly the fact the Access Controller (in
  * channel-harness) must REJECT. This contract therefore FAILS on 'unknown' by
  * default, and only a caller that opts in via `allowUnknown: true` (legacy

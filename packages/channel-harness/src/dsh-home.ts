@@ -1,10 +1,10 @@
 /**
- * Harness Home (`$DSH_HOME`, fallback `~/.dsh`) path resolution (plan M0).
+ * Harness Home (`$DSH_HOME`, fallback `~/.dsh`) path resolution.
  *
  * channel-harness keeps its persistent state (the binding store) and its
  * channel workspace root under the Harness Home instead of the process cwd,
  * so bindings no longer "disappear" when the host is started from a different
- * directory (plan §2.4 / §5.2).
+ * directory.
  *
  * The `~` prefix in an explicit `$DSH_HOME` is expanded against the OS home
  * directory; unset `$DSH_HOME` falls back to `~/.dsh`.

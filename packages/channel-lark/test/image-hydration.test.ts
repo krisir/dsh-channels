@@ -1,5 +1,5 @@
 /**
- * Image hydration tests (plan §96 / §79A Lark): a fake media port returns
+ * Image hydration tests (Lark): a fake media port returns
  * bytes which the emitted event carries as localData + mimeType; failures
  * keep the resourceRef, set a stable ingressFailure, and never block text
  * delivery; images without a resourceRef are left untouched.

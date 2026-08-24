@@ -1,6 +1,6 @@
 /**
  * Channel Access Policy — the shared, versioned, cross-package contract for
- * inbound access control (execution plan §4.1, §5, §7, §12, §20).
+ * inbound access control.
  *
  * This module defines ONLY stable cross-package semantics:
  *

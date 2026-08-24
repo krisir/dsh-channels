@@ -34,7 +34,7 @@ export class UnsafeHostError extends Error {
   }
 }
 
-/** Default maximum redirect hop count (plan §12). */
+/** Default maximum redirect hop count. */
 export const DEFAULT_MAX_REDIRECTS = 5;
 
 /** Parse an IPv4 dotted-quad string to a 32-bit unsigned int, or null. */
@@ -159,7 +159,7 @@ export interface AssertSafeMediaUrlOptions {
  * - Must be http(s); `allowHttp` opts a naked `http` scheme in.
  * - IP-literal hosts are checked directly against `isPrivateIp`.
  * - Hostnames are resolved through the injected `resolver` and rejected if any
- *   address is unsafe (DNS rebinding defense, plan §12).
+ *   address is unsafe (DNS rebinding defense).
  *
  * Pure and offline when no resolver is injected. Throws `UnsafeHostError` on
  * any violation. Resolves the validated `URL` otherwise.

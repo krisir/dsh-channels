@@ -1,5 +1,5 @@
 /**
- * LarkOpenApiMediaPort tests (offline, fake media client) — plan §96.
+ * LarkOpenApiMediaPort tests (offline, fake media client).
  *
  * Verifies the official-SDK method mapping: downloadMessageResource calls
  * `im.v1.messageResource.get` with `message_id` + `file_key`, normalizes the

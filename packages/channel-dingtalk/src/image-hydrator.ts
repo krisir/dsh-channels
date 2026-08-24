@@ -1,5 +1,5 @@
 /**
- * DingTalk inbound image/file/media hydration (plan §32A / §79A / §23-A5).
+ * DingTalk inbound image/file/media hydration.
  *
  * After the pure mapper (`mapInbound`) produces the stable `MessageReceived`
  * shape, this module walks the binary parts and turns a genuine `http(s)`
@@ -12,7 +12,7 @@
  *   -> existing Harness saveImage()/ImageBlock path (host owns that)
  * ```
  *
- * Audio/video parts (`hydrateMedia`, plan §23-A5) follow the identical
+ * Audio/video parts (`hydrateMedia`) follow the identical
  * URL-or-opaque rule: a genuine http(s) URL is fetched through the secure
  * fetcher; an opaque handle (downloadCode / mediaId) is moved to
  * `resourceRef` and resolved through the official DingTalk OpenAPI port —
@@ -23,14 +23,14 @@
  *
  * This module performs NO platform-protocol implementation. It only calls the
  * shared secure host boundary (`@wsz987/channel-core` `SecureRemoteMediaFetcher`)
- * — it never re-implements DingTalk download logic (plan §12 / §13 / §93).
+ * — it never re-implements DingTalk download logic.
  *
- * Failure handling (plan §79A DoD): a download failure never blocks text
+ * Failure handling: a download failure never blocks text
  * delivery. On failure we KEEP the original locator, stamp a stable
  * de-identified `ingressFailure` code on the part (mapped through the core
  * `toIngressFailureCode` seam) and let the message continue to emit unaltered.
  *
- * mediaId/opaque handle handling (plan §32A): DingTalk modern robot picture
+ * mediaId/opaque handle handling: DingTalk modern robot picture
  * messages deliver a real `picture.url` (see `stream-upstream.ts` →
  * `picUrl`), so the common ingress is the URL path above. If a part carries
  * an opaque locator instead (a `mediaId` that is not a genuine http(s) URL),
@@ -118,7 +118,7 @@ export interface HydrateImagesOptions {
   idleTimeoutMs?: number;
   /**
    * DingTalk OpenAPI media resolver used to turn an opaque image handle
-   * (picMediaId / downloadCode) into trusted bytes (plan §32A). Injectable for
+   * (picMediaId / downloadCode) into trusted bytes. Injectable for
    * offline tests; when absent, opaque handles stay on `resourceRef` and are
    * left unresolved (the message still delivers, as a text placeholder).
    */
@@ -155,7 +155,7 @@ export async function hydrateImages(parts: MessagePart[], options: HydrateImages
     // Opaque handle: either the mapper already placed it in resourceRef, or a
     // non-http url needs moving there first. Resolve via the DingTalk OpenAPI
     // port (official downloadCode flow) when a resolver is wired — never via a
-    // generic fetch (plan §9/§13).
+    // generic fetch.
     let opaque: string | undefined = part.resourceRef;
     if (!opaque) {
       const kind = classifyLocator(part.url);
@@ -206,7 +206,7 @@ export async function hydrateImages(parts: MessagePart[], options: HydrateImages
 export const FILE_MAX_BYTES = 50 * 1024 * 1024;
 
 /**
- * Options for one generic-file hydration pass (plan §86 generic file inbound).
+ * Options for one generic-file hydration pass.
  * @extends HydrateImagesOptions
  */
 export interface HydrateFilesOptions {
@@ -217,7 +217,7 @@ export interface HydrateFilesOptions {
   secureFetch?: SecureRemoteMediaFetcher | RemoteMediaFetchLike;
   /**
    * The OpenAPI media resolver used to turn an opaque file mediaId into trusted
-   * bytes (plan §32A). Injectable for offline tests. When absent, opaque file
+   * bytes. Injectable for offline tests. When absent, opaque file
    * handles are deferred to `resourceRef` and left unresolved.
    */
   resolveMedia?: MediaResolverLike;
@@ -236,7 +236,7 @@ export interface HydrateFilesOptions {
 }
 
 /**
- * Hydrate generic file parts in place (plan §86):
+ * Hydrate generic file parts in place:
  *   - http(s) url  -> SecureRemoteMediaFetcher -> `localData` + `mimeType` + `size`
  *   - opaque mediaId -> move to `resourceRef` -> `resolveMedia` -> `localData`
  * On failure the original locator is kept and a stable `ingressFailure` is
@@ -303,7 +303,7 @@ function classifyPartLocator(url: string | undefined): 'http-url' | 'opaque' | '
 export const MEDIA_MAX_BYTES = 100 * 1024 * 1024;
 
 /**
- * Options for one audio/video hydration pass (plan §23-A5 media ingress).
+ * Options for one audio/video hydration pass.
  * @extends HydrateFilesOptions
  */
 export interface HydrateMediaOptions {
@@ -314,7 +314,7 @@ export interface HydrateMediaOptions {
   secureFetch?: SecureRemoteMediaFetcher | RemoteMediaFetchLike;
   /**
    * The OpenAPI media resolver used to turn an opaque audio/video handle
-   * (downloadCode / mediaId) into trusted bytes (plan §32A). Injectable for
+   * (downloadCode / mediaId) into trusted bytes. Injectable for
    * offline tests. When absent, opaque handles stay on `resourceRef`.
    */
   resolveMedia?: MediaResolverLike;
@@ -333,7 +333,7 @@ export interface HydrateMediaOptions {
 }
 
 /**
- * Hydrate audio/video parts in place (plan §23-A5). Audio/video follow the
+ * Hydrate audio/video parts in place. Audio/video follow the
  * exact same URL-or-opaque resolution as image/file:
  *   - http(s) url  -> SecureRemoteMediaFetcher -> `localData` + `mimeType` + `size`
  *   - opaque handle -> move to `resourceRef` -> `resolveMedia` (official

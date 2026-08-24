@@ -1,11 +1,11 @@
 /**
- * The `/new` command (plan §12 / §13).
+ * The `/new` command.
  *
  * Starts a brand-new Harness session for the current channel conversation by
  * delegating to `deps.startNewSession` (supplied by the bridge). The old
  * session is NOT disposed by this handler: creating B and re-pointing the
  * binding at B happens here, but retiring the previous agent for A is left to
- * the bridge's post-command cleanup (plan §14) after the official
+ * the bridge's post-command cleanup after the official
  * `command/done` settles.
  */
 import { type CommandDefinition } from '@deepseek-ai/dsh-commands';

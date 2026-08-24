@@ -1,5 +1,5 @@
 /**
- * Public type surface of @wsz987/channel-control (execution plan §14–§18).
+ * Public type surface of @wsz987/channel-control.
  *
  * These types define the stable boundary between the Channel Control Plane
  * and every downstream consumer (channel adapters, the Web control plane in
@@ -212,7 +212,7 @@ export interface ChannelRuntimeStatus {
 }
 
 /**
- * How a channel determines its local operator / owner identity (plan §10, §24).
+ * How a channel determines its local operator / owner identity.
  * - `account`: the domain account is identified up front (e.g. Weixin's
  *   scanning QR userId); owner is bootstrapped automatically.
  * - `claim`: no upfront identity; the owner identifies themselves via the
@@ -224,7 +224,7 @@ export interface ChannelRuntimeStatus {
 export type OwnerDiscoveryMode = 'account' | 'claim' | 'manual' | 'platform';
 
 /**
- * Declared access capability of a channel (plan §10). Adapters publish it; the
+ * Declared access capability of a channel. Adapters publish it; the
  * control plane and harness use it to decide what a policy may express and
  * whether owner bootstrap applies.
  */
@@ -238,7 +238,7 @@ export interface ChannelAccessDescriptor {
 }
 
 /**
- * High-level access state of a channel (plan §27), surfaced to the Web control
+ * High-level access state of a channel, surfaced to the Web control
  * plane so an operator can see at a glance why inbound is gated.
  */
 export type ChannelAccessReadiness =
@@ -248,7 +248,7 @@ export type ChannelAccessReadiness =
   | 'invalid-policy';
 
 /**
- * Full access picture for one channel+account (plan §27). The `policy` carries
+ * Full access picture for one channel+account. The `policy` carries
  * canonical sender/group IDs — never any secret — because these are exactly what
  * the operator edits in the ACL.
  */
@@ -260,7 +260,7 @@ export interface ChannelAccessState {
 }
 
 /**
- * Lifecycle phase of a local owner-claim session (plan §21).
+ * Lifecycle phase of a local owner-claim session.
  * - `waiting-message`: a challenge is outstanding; no valid candidate yet.
  * - `candidate`: a valid DM reply carried the exact challenge code.
  * - `confirmed`: the local operator confirmed the candidate (owner persisted).
@@ -275,7 +275,7 @@ export type OwnerClaimPhase =
   | 'cancelled';
 
 /**
- * Browser-facing owner-claim session (plan §21). This is the ONLY claim DTO
+ * Browser-facing owner-claim session. This is the ONLY claim DTO
  * surfaced outside the host. `challengeCode` is a short one-time challenge the
  * local browser shows the operator who then sends it to the bot; it is NOT a
  * platform credential and must never be logged.
@@ -299,7 +299,7 @@ export interface ChannelSummary {
   mounted: boolean;
   runtime: 'running' | 'stopped';
   connection: 'connected' | 'degraded' | 'disconnected' | 'unknown';
-  /** Access readiness of the channel (plan §28). */
+  /** Access readiness of the channel. */
   access: ChannelAccessReadiness;
 }
 
@@ -359,7 +359,7 @@ export interface ChannelDefinition {
   createAdapter(): Promise<ChannelAdapter>;
   /** Whether this channel should auto-mount when configured (headless, doc §27). Default true. */
   autoStart?: boolean;
-  /** Required: declared access capability descriptor (execution plan §10). */
+  /** Required: declared access capability descriptor. */
   access: ChannelAccessDescriptor;
   /**
    * Only implemented by ownerDiscovery='account' channels. Returns the canonical

@@ -1,5 +1,5 @@
 /**
- * validateAccessPolicy tests (plan §31): schema validity, owner-only-without-
+ * validateAccessPolicy tests: schema validity, owner-only-without-
  * owner, descriptor-relative gating (mentions / groups / DM), and normalization
  * (trim + exact dedupe of allowFrom).
  */

@@ -13,11 +13,10 @@
  * is resolved through the official registry and its `CommandResult` is
  * rendered directly to the channel — it is never sent to the model and never
  * creates `assistant/message` (`ReplyRouter` is bypassed). An UNREGISTERED
- * slash command follows rc.2 official Host semantics (upgrade plan §10.2):
- * it is rejected with a direct channel notice and never enters the Agent
- * prompt — `commands.execute` returns `undefined` for admission misses,
- * which (given the syntax already parsed) means `ctx.commands.find(agent,
- * name)` missed.
+ * slash command follows rc.2 official Host semantics: it is rejected with a
+ * direct channel notice and never enters the Agent prompt — `commands.execute`
+ * returns `undefined` for admission misses, which (given the syntax already
+ * parsed) means `ctx.commands.find(agent, name)` missed.
  *
  * Per-conversation serialization: all `message.received` handling for one
  * canonical key runs through a lightweight per-key promise chain so a `/new`
@@ -104,10 +103,10 @@ export interface ChannelHarnessBridgeOptions {
   getAdapter(channelId: string): ChannelAdapter | undefined;
   replyContexts: ReplyContextStore;
   logger: ChannelLogger;
-  /** Fail-closed Access Gate resolver (plan §17, §32). */
+  /** Fail-closed Access Gate resolver. */
   accessResolver: ChannelAccessPolicyResolver;
   /**
-   * Namespaced logger for access decisions (plan §42, namespace
+   * Namespaced logger for access decisions (namespace
    * `channel-access`). Falls back to `logger` when not provided. Never logs
    * message body / challenge codes / raw payload / tokens.
    */
@@ -158,7 +157,7 @@ export interface ChannelHarnessBridgeOptions {
 /**
  * Retained for API compatibility: an error historically raised when Workspace
  * attach failed inside fresh Session creation. As of the soft-attach semantics
- * (plan §11 revision), a Workspace attach failure NO LONGER throws — the
+ * (soft-attach semantics), a Workspace attach failure NO LONGER throws — the
  * freshly-created session is kept, grouped as ungrouped, and the binding +
  * followup continue. This class is no longer produced by the bridge.
  *
@@ -199,7 +198,7 @@ export class ChannelHarnessBridge {
   private readonly commandDeps: ChannelCommandDependencies;
   /** Per-conversation generation counters, invalidated by /stop (spec §6). */
   private readonly conversationGenerations = new Map<string, number>();
-  /** Pure fail-closed access decision engine (plan §19). No I/O. */
+  /** Pure fail-closed access decision engine. No I/O. */
   private readonly accessController = new InboundAccessController();
 
   constructor(private readonly options: ChannelHarnessBridgeOptions) {
@@ -335,11 +334,11 @@ export class ChannelHarnessBridge {
       .join('');
 
     // ------------------------------------------------------------------
-    // FAIL-CLOSED ACCESS GATE (plan §32). Runs BEFORE any side effect:
+    // FAIL-CLOSED ACCESS GATE. Runs BEFORE any side effect:
     // before conversationKey / parseCommand / /stop / binding writes /
     // session / workspace / agent. A drop here means NO side effect at all
     // (incl. /stop fast path — an unauthorized user can never cancel a live
-    // agent or bump the generation, plan §33).
+    // agent or bump the generation).
     // ------------------------------------------------------------------
     if (await this.enforceAccessGate(normalizedEvent, text)) return;
 
@@ -477,7 +476,7 @@ export class ChannelHarnessBridge {
     // M4: Agent-scoped read_channel_attachment tool. Registered on the agent's
     // own scope so it is disposed with the agent. Best-effort: a tool-install
     // failure must never roll back the agent setup. The tool stays registered
-    // through the provider's OPTIONAL compatibility path (plan §10.1) while it
+    // through the provider's OPTIONAL compatibility path while it
     // is the only generic-attachment reader. The deprecated installTools name
     // remains a fallback for one cycle; providers with neither hook skip it.
     if (this.options.fileProvider) {
@@ -555,24 +554,24 @@ export class ChannelHarnessBridge {
   }
 
   /**
-   * FAIL-CLOSED Access Gate (plan §32, §33, §42). Returns true when the message
+   * FAIL-CLOSED Access Gate. Returns true when the message
    * must be DROPPED with NO side effect (agent / command / session / binding /
    * workspace / generation / /stop fast path), false to let it proceed.
    *
-   * Order (plan §32):
+   * Order:
    *   1. Reserved claim suppression (/dsh-claim never reaches anything).
-   *   2. Identity validation (plan §9): sender + conversation ids.
+   *   2. Identity validation: sender + conversation ids.
    *   3. Resolve policy (missing/invalid -> drop, fail closed).
    *   4. Authorize (security gate) + activate (activation gate).
    *
-   * Logging follows plan §42: `channel-access` logger, minimal fields
+   * Logging follows the `channel-access` logger convention: minimal fields
    * (channel / account / conversationType / reason), never message body,
    * challenge code, raw payload or tokens.
    */
   private async enforceAccessGate(event: MessageReceived, text: string): Promise<boolean> {
     const accessLogger = this.options.accessLogger ?? this.options.logger;
 
-    // 1. Reserved owner-claim suppression (plan §20, §34): /dsh-claim must
+    // 1. Reserved owner-claim suppression: /dsh-claim must
     //    NEVER reach model / command dispatcher / Session / Binding, even when
     //    no access policy exists. Static drop — no policy read is needed.
     if (isReservedClaimCommand(text)) {
@@ -583,7 +582,7 @@ export class ChannelHarnessBridge {
       return true;
     }
 
-    // 2. Identity validation (plan §9): sender.id must be a non-empty string
+    // 2. Identity validation: sender.id must be a non-empty string
     //    and !== 'unknown'; conversation.id must be non-empty.
     const senderId = event.sender.id;
     const conversationId = event.conversation.id;
@@ -600,7 +599,7 @@ export class ChannelHarnessBridge {
       return true;
     }
 
-    // 3. Resolve the policy (fail closed; plan §15/§17).
+    // 3. Resolve the policy (fail closed).
     let resolved: ResolvedAccessPolicy;
     try {
       resolved = await this.options.accessResolver.resolve(event.channel, event.accountId);
@@ -793,7 +792,7 @@ export class ChannelHarnessBridge {
       this.options.agentManager.registerBinding(binding);
     }
 
-    // --- Command admission (rc.2 Host parity, upgrade plan §10.2) -----------
+    // --- Command admission (rc.2 Host parity) -------------------------------
     // Registered commands run on the Human Command Plane; an UNREGISTERED
     // slash command is always rejected with a direct channel notice and never
     // enters the Agent prompt.

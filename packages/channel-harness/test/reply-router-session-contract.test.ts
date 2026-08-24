@@ -1,5 +1,5 @@
 /**
- * ReplyRouter × rc.2 Session contract tests (upgrade plan §9 / §21 P0-5).
+ * ReplyRouter × rc.2 Session contract tests.
  *
  * Locks the ReplyRouter against the REAL `@deepseek-ai/dsh-session`
  * `0.1.1-rc.2` event model — the fixtures are produced by the real

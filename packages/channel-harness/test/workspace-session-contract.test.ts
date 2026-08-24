@@ -1,5 +1,5 @@
 /**
- * M5.1 — real Harness live-Session contract (plan §21 revision).
+ * M5.1 — real Harness live-Session contract.
  *
  * The official Workspace `attachSession()` reads the target session's header
  * FIRST from the live store (`ctx.sessions.get(id)` → `header.cwd`), only

@@ -129,7 +129,8 @@ update testedVersion
    `channels-dingtalk`, `channels-lark`, `channels-telegram`,
    `channels-web` — with their
    `inject` lists (`channels-harness` → `[channels, agents, agentDefaultModel,
-   llm, commands]`, `channels-control` → `[channels, credentials]`, the channel
+   agentPresets, llm, commands, apiProxy]`, `channels-control` →
+   `[channels, credentials]`, the channel
    adapters → `[channels, (credentials,) channelControl]`);
 2. dynamically `import()`s every bundle-owned plugin specifier — this enforces
    Node ESM **exports-map resolution** (`@wsz987/dsh-channels/service`, etc.)

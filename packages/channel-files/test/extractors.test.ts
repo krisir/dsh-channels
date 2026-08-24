@@ -1,5 +1,5 @@
 /**
- * M4 text-extractor + registry tests (plan §48 / §49 / §81).
+ * M4 text-extractor + registry tests.
  *
  * Covers the dependency-free text path across txt/md/json/yaml/xml/csv/log/
  * source, BOM handling, control-char sanitization, the parser input cap
@@ -89,7 +89,7 @@ describe('extractor registry picking', () => {
   });
 });
 
-describe('parser caps (plan §49)', () => {
+describe('parser caps', () => {
   it('too-large input short-circuits without parsing', async () => {
     const big = enc('x'.repeat(100));
     const result = await attemptExtraction({

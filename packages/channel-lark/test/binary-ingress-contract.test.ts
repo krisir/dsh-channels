@@ -1,6 +1,5 @@
 /**
- * Multi-channel binary ingress contract (attachment-gateway plan §32) for
- * Lark.
+ * Multi-channel binary ingress contract for Lark.
  *
  * Every case drives the REAL inbound entry — `InboundProcessor.handle(raw)` —
  * mirroring `test/media-hydration.test.ts`: a fake `LarkMediaPort` returns
@@ -14,8 +13,8 @@
  *   `bytes` (and backed by `capabilities.media.inbound.video === 'bytes'`).
  * - image `inbound-image` / audio `inbound-audio` — the fixture locators are
  *   genuine http(s) URLs (`picUrl` / `mediaUrl`), which the mapper places on
- *   the `url` carrier (plan §9); Lark's `MediaHydrator` resolves ONLY
- *   `resourceRef` handles through the media port (plan §28), so through the
+ *   the `url` carrier; Lark's `MediaHydrator` resolves ONLY
+ *   `resourceRef` handles through the media port, so through the
  *   real ingress these fixtures truthfully yield a URL LOCATOR, never bytes.
  *   Asserting `bytes` here would claim something the real fixture cannot
  *   produce, so the honest §32 state is `locator` (URL retained, no fabricated

@@ -1,5 +1,5 @@
 /*
- * Access Gate integration tests (execution plan §32, §33, §54).
+ * Access Gate integration tests.
  *
  * Verifies that the FAIL-CLOSED Access Gate runs before EVERY side effect:
  * agent.followup, session create/resume, binding writes, command plane
@@ -200,7 +200,7 @@ function makeInteractionEvent(): InteractionReceived {
   };
 }
 
-describe('Fail-closed Access Gate (plan §54)', () => {
+describe('Fail-closed Access Gate', () => {
   it('rejects bridge construction without an access resolver', () => {
     const gateway = new FakeGateway();
     const manager = new AgentManager(gateway, silentLogger, 4);
@@ -277,7 +277,7 @@ describe('Fail-closed Access Gate (plan §54)', () => {
     expect(await bindingStore.get('weixin:main:user_123')).toBeUndefined();
   });
 
-  it('unauthorized /stop -> NO cancel, NO generation bump, NO ack notice (plan §33)', async () => {
+  it('unauthorized /stop -> NO cancel, NO generation bump, NO ack notice', async () => {
     // Establish a live agent as an authorized user first.
     const { gateway, bindingStore, resolver, adapter, bridge } = makeFixture(new StubResolver());
     resolver.resolveState = { state: 'present', policy: openDm };
@@ -369,7 +369,7 @@ describe('Fail-closed Access Gate (plan §54)', () => {
     expect(gateway.followups).toHaveLength(0);
   });
 
-  it('reserved /dsh-claim never reaches agent/command/session/binding (plan §20, §34)', async () => {
+  it('reserved /dsh-claim never reaches agent/command/session/binding', async () => {
     const { gateway, bindingStore, resolver, adapter, bridge } = makeFixture(new StubResolver());
     resolver.resolveState = { state: 'present', policy: openDm };
     await bridge.handleChannelEvent(makeMessageEvent(textEvent('m1', '/dsh-claim SECRETCODE123')));
@@ -380,7 +380,7 @@ describe('Fail-closed Access Gate (plan §54)', () => {
     expect(adapter.sent).toHaveLength(0);
   });
 
-  it('authorized /stop still works (plan §33 regression)', async () => {
+  it('authorized /stop still works (regression)', async () => {
     const { gateway, resolver, adapter, bridge } = makeFixture(new StubResolver());
     resolver.resolveState = { state: 'present', policy: openDm };
     await bridge.handleChannelEvent(makeMessageEvent(textEvent('m1', 'hello')));

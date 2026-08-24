@@ -1,11 +1,11 @@
 /**
  * `useChannelAuth` — the shared interactive-auth lifecycle for one expanded
- * channel (plan §11–§17, §39.4–§39.8).
+ * channel.
  *
  * Hard requirements implemented here:
  *   - explicit user action: `begin()` is only ever called from a user click
- *     (red line W7); expanding a row never auto-begins auth (39.4)
- *   - poll loop is `setTimeout`-after-`await`, never `setInterval` (§14) and
+ *     (red line W7); expanding a row never auto-begins auth
+ *   - poll loop is `setTimeout`-after-`await`, never `setInterval` and
  *     aborts the in-flight request before scheduling (AbortSignal, §16)
  *   - polling only while the session is pending AND the document is visible
  *     (§11/§13); hidden → pause (timer cleared, session kept), visible →

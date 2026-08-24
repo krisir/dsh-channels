@@ -1,8 +1,7 @@
 /**
- * Lazy migration (attachment-gateway plan §15 / §28 — Phase F, P1-4) +
- * integrity verification, covering the plan §34 subset that belongs to this
- * module (v1-no-catalog -> skipped-legacy is a resolver concern, out of
- * scope here).
+ * Lazy migration + integrity verification, covering the contract that belongs
+ * to this module (v1-no-catalog -> skipped-legacy is a resolver concern, out
+ * of scope here).
  *
  * Contract under test: disabled / native-unavailable -> skipped-legacy;
  * copy + read-back + sha256/bytes verify -> catalog switch to harness-native
@@ -313,7 +312,7 @@ describe('migrateOnRead — every failure keeps legacy authoritative', () => {
   });
 });
 
-describe('migrateOnRead — legacy bytes are never deleted (plan §15.1 / §16)', () => {
+describe('migrateOnRead — legacy bytes are never deleted', () => {
   it('only copy/read-back/catalog operations ever run; no delete-like op is ever invoked', async () => {
     const catalog = new FakeCatalog();
     catalog.put(makeRecord());
@@ -347,7 +346,7 @@ describe('migrateOnRead — legacy bytes are never deleted (plan §15.1 / §16)'
   });
 });
 
-describe('verify helpers (plan §15 read-back verify)', () => {
+describe('verify helpers (read-back verify)', () => {
   it('verifyFileIntegrity compares recomputed sha256 against the expected digest', () => {
     expect(verifyFileIntegrity(BYTES, SHA)).toBe(true);
     expect(verifyFileIntegrity(BYTES, 'f'.repeat(64))).toBe(false);

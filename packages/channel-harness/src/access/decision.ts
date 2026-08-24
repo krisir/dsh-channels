@@ -1,5 +1,5 @@
 /**
- * Access decision types (execution plan §18, §53).
+ * Access decision types.
  *
  * `AccessDecisionReason` enumerates every fail-closed outcome the Harness
  * Access Gate can produce. `InboundAccessDecision` is the pure controller's

@@ -1,6 +1,5 @@
 /**
- * Pending-question state machine for channel question interactions
- * (upgrade plan §5 / §21 P0-3).
+ * Pending-question state machine for channel question interactions.
  *
  * Owns exactly the runtime bookkeeping of an in-flight question batch:
  * the pending registry (by backend correlation key and by channel

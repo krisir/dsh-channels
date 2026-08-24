@@ -1,12 +1,12 @@
 /**
- * Activation (mention) Contract test (execution plan §46).
+ * Activation (mention) Contract test.
  *
  * `runActivationContract(input)` registers a vitest suite verifying that a
  * channel supporting mention produces CONCRETE, reliable boolean activation
  * facts on its mapped inbound events.
  *
  * A channel may only flip `descriptor.mentions = true` after both the
- * with-mention and without-mention fixtures AND this contract pass (plan §13).
+ * with-mention and without-mention fixtures AND this contract pass.
  * It must NOT pass on `undefined` — an empty activation fact would otherwise
  * let a rule requiring a mention silently fail-open.
  *

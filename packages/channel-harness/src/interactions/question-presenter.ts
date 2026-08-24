@@ -1,6 +1,5 @@
 /**
- * Channel question presentation — the half the channel layer truly owns
- * (upgrade plan §5.1 / §21 P0-3).
+ * Channel question presentation — the half the channel layer truly owns.
  *
  * Responsibilities kept here (and ONLY here):
  *

@@ -56,7 +56,7 @@ export {
 } from './sdk-client.js';
 export { InboundProcessor } from './inbound.js';
 export { hydrateMediaParts, type MediaHydratorOptions } from './media-hydrator.js';
-// One-version compatibility alias (plan §23-A3): the hydrator was renamed
+// One-version compatibility alias: the hydrator was renamed
 // image-hydrator → media-hydrator; keep the legacy names importable for now.
 export { hydrateImageParts, type ImageHydratorOptions } from './image-hydrator.js';
 export { OutboundSender, toReplyTarget } from './outbound.js';

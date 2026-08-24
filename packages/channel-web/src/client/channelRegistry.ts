@@ -1,15 +1,15 @@
 /**
  * Web presentation metadata for channels — the ONLY place platform UI/UX
- * differences may live (refactor plan §5; red lines W1/W2).
+ * differences may live.
  *
  * This is NOT business logic: the channel list itself comes from the host
  * `GET /channels`; this module only adds display metadata (title copy keys,
  * ordering, accent, field labels, auth prerequisites and official docs links).
  * Unknown future channels fall back to [createGenericChannelWebDefinition]
- * instead of crashing (plan §7).
+ * instead of crashing.
  *
  * The small pure helpers at the bottom are the generic replacement for the old
- * `authSetup.ts` platform branches (plan §18): every decision is derived from
+ * `authSetup.ts` platform branches: every decision is derived from
  * registry metadata, never from a `channelId === 'lark'` check.
  */
 import type { AuthMethod, ChannelSetupDescriptor } from './api.js';
@@ -124,7 +124,7 @@ export function channelWebDefinition(channelId: string): ChannelWebDefinition {
 /**
  * Display title for a channel row. Unknown channels use their raw id as the
  * title key; a translator that has no entry for it (or returns an empty string)
- * must still render the id instead of a blank row (plan §7).
+ * must still render the id instead of a blank row.
  */
 export function channelWebTitle(definition: ChannelWebDefinition, t: (key: string) => string): string {
   return t(definition.titleKey) || definition.titleKey;

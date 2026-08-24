@@ -12,7 +12,7 @@ status: as-built
 > **核验基线日期：2026-08-22**（registry 快照：`@deepseek-ai/dsh-*` 的 npm `latest`
 > 停在 `0.1.0-rc.6`，`0.1.1-rc.2` 位于 `next`）。Harness 处于 Developer Preview
 > （官方声明会有 breaking change），因此兼容性按**版本线**声明，不做同一包版本内的
-> 运行时双兼容（升级方案 §17）。
+> 运行时双兼容。
 
 ## 1. 版本线矩阵
 
@@ -39,7 +39,7 @@ status: as-built
 | 22.19.x | 支持 | 支持 | 本仓库 CI 核验线（`ci.yml` Node 22 + frozen lockfile） |
 | 24.x | 支持 | 支持（发布前需手动 smoke） | CI 当前只跑 Node 22；24.x 在发版前手动或 `workflow_dispatch` 验证（遗留项，见 release.md） |
 
-## 3. 0.5.x 发布必测场景（升级方案 §24）
+## 3. 0.5.x 发布必测场景
 
 覆盖状态标注：`offline` = 本仓库离线测试套件已覆盖（`pnpm ci:check` 全绿）；
 `live` = 需要真实环境验证（clean profile / 真实渠道 / 真实模型账号），发版前手动执行。

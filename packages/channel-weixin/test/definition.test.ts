@@ -1,5 +1,5 @@
 /**
- * Weixin ChannelDefinition tests (execution plan §43, M2B + M4 Task 9).
+ * Weixin ChannelDefinition tests (M2B + M4 Task 9).
  *
  * Verifies that the control-plane entry (createWeixinDefinition) delegates the
  * M1 QR flow to the mounted adapter byte-for-byte while exposing the structured

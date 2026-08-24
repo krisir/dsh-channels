@@ -1,9 +1,9 @@
 /**
- * M4 read_channel_attachment tool tests (plan §94 matrix).
+ * M4 read_channel_attachment tool tests.
  *
  * Uses a REAL FileChannelInboundAssetStore pointed at a temp dir (mirroring
  * asset-store.test.ts). The ACL is sessionId-bound: same cwd + different
- * session is DENIED (plan §42), unknown id NOT_FOUND, own session PASS.
+ * session is DENIED, unknown id NOT_FOUND, own session PASS.
  */
 import { describe, expect, it } from 'vitest';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -51,7 +51,7 @@ function execFor(sessionId: string | undefined, signal: AbortSignal = new AbortC
   return sessionId === undefined ? base : { ...base, agent: { id: sessionId } };
 }
 
-describe('read_channel_attachment ACL (plan §53 / §94)', () => {
+describe('read_channel_attachment ACL', () => {
   it('own session asset -> PASS', async () => {
     const root = await tempRoot();
     try {
@@ -114,7 +114,7 @@ describe('read_channel_attachment ACL (plan §53 / §94)', () => {
   });
 });
 
-describe('read_channel_attachment pagination + caps (plan §94)', () => {
+describe('read_channel_attachment pagination + caps', () => {
   it('offset -> PASS', async () => {
     const root = await tempRoot();
     try {
@@ -217,7 +217,7 @@ describe('read_channel_attachment pagination + caps (plan §94)', () => {
   });
 });
 
-describe('read_channel_attachment schema + render (plan §94)', () => {
+describe('read_channel_attachment schema + render', () => {
   it('schema -> PASS (only attachment_id/offset/limit parameters)', async () => {
     const store = new FileChannelInboundAssetStore({ root: await tempRoot() });
     const def: any = registerReadChannelAttachmentTool({ store });

@@ -1,5 +1,5 @@
 /**
- * Compatibility shim coverage (plan §23-A3).
+ * Compatibility shim coverage.
  *
  * `src/image-hydrator.ts` was renamed to `src/media-hydrator.ts`; the old
  * entry now re-exports the new implementation under the legacy names

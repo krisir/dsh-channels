@@ -53,12 +53,12 @@ const outboundBinaryCapabilitySchema = z.enum(['bytes', 'unsupported'], {
 });
 
 /**
- * `ChannelMediaCapabilities` shape validated at the contract boundary
- * (attachment-gateway plan §7.1): per-binary-kind inbound and outbound media
- * precision. Values under any kind key must be one of the declared literals;
- * missing kinds are allowed (partial record), while unknown kind keys are
- * rejected so the runtime contract stays aligned with `BinaryKind`. Extra
- * object keys outside the inbound/outbound maps pass through (loose).
+ * `ChannelMediaCapabilities` shape validated at the contract boundary:
+ * per-binary-kind inbound and outbound media precision. Values under any kind
+ * key must be one of the declared literals; missing kinds are allowed (partial
+ * record), while unknown kind keys are rejected so the runtime contract stays
+ * aligned with `BinaryKind`. Extra object keys outside the inbound/outbound
+ * maps pass through (loose).
  */
 export const mediaCapabilitiesSchema: z.ZodType<ChannelMediaCapabilities> = z.object({
   inbound: z.partialRecord(z.enum(BINARY_KINDS), inboundBinaryCapabilitySchema, {

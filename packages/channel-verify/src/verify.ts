@@ -455,7 +455,7 @@ function checkCapabilities(adapter: AdapterShape | undefined): VerifyCheck {
 // ---------------------------------------------------------------------------
 
 /**
- * Directional media capability check (attachment-gateway plan §7.2):
+ * Directional media capability check:
  *
  * - `capabilities.media` is optional; when absent the coarse transport flags
  *   remain authoritative and the check reports `media-capabilities-absent`
@@ -463,7 +463,7 @@ function checkCapabilities(adapter: AdapterShape | undefined): VerifyCheck {
  * - When present, the media map must pass `mediaCapabilitiesSchema` (the same
  *   schema the contract boundary uses). An invalid map fails with
  *   `media-capabilities-invalid`.
- * - Cross-flag coherence (plan §7.1): the legacy `image/file/audio/video`
+ * - Cross-flag coherence: the legacy `image/file/audio/video`
  *   booleans are intentionally coarse *transport* flags that cannot express
  *   directionality or byte precision — e.g. Weixin keeps legacy `audio: false`
  *   (no audio OUTBOUND) while `media.inbound.audio === 'bytes'` (inbound voice
@@ -515,7 +515,7 @@ function checkMediaCapabilities(adapter: AdapterShape | undefined): VerifyCheck 
         items.push(
           warn(
             'media-capabilities-mismatch',
-            `capabilities.media.inbound.${kind} claims 'bytes' but capabilities.${kind} is false — the legacy flag is a coarse transport boolean (plan §7.1) and cannot express directionality; the directional media map is authoritative and this is not a verification failure`,
+            `capabilities.media.inbound.${kind} claims 'bytes' but capabilities.${kind} is false — the legacy flag is a coarse transport boolean and cannot express directionality; the directional media map is authoritative and this is not a verification failure`,
           ),
         );
       }

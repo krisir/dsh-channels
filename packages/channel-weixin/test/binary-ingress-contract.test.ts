@@ -1,6 +1,5 @@
 /**
- * Multi-channel binary ingress contract (attachment-gateway plan §32) for
- * Weixin.
+ * Multi-channel binary ingress contract for Weixin.
  *
  * Weixin's real inbound is polling-driven, so `deliver(raw)` runs the FULL
  * poll -> handle path exactly like `test/media-hydration-regression.test.ts`:

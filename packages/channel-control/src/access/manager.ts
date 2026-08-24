@@ -1,12 +1,11 @@
 /**
- * ChannelAccessManager — the control-plane owner of a channel's access state
- * (execution plan §4.3, §24, §27).
+ * ChannelAccessManager — the control-plane owner of a channel's access state.
  *
  * Responsibilities:
  * - read a channel's declared access descriptor from its definition.
  * - compute access readiness from the stored policy + descriptor + owner
  *   discovery, including safe owner bootstrap for `ownerDiscovery='account'`
- *   channels (plan §24: missing policy + resolvable account owner -> materialize
+ *   channels (missing policy + resolvable account owner -> materialize
  *   and persist owner-only, then report ready).
  * - validate + persist a policy via `saveAccess`.
  *
@@ -57,7 +56,7 @@ export class ChannelAccessManager {
     this.logger = options.logger ?? { info: () => {}, warn: () => {} };
   }
 
-  /** Compute the access state for one channel+account (plan §24, §27). */
+  /** Compute the access state for one channel+account. */
   async getState(channelId: string, accountId = 'main'): Promise<ChannelAccessState> {
     const definition = this.registry.require(channelId);
     const descriptor = definition.access;
@@ -77,7 +76,7 @@ export class ChannelAccessManager {
     }
 
     // No policy at all.
-    // ownerDiscovery='account' -> safe owner bootstrap (plan §24).
+    // ownerDiscovery='account' -> safe owner bootstrap.
     if (descriptor.ownerDiscovery === 'account') {
       const ownerId = await this.resolveOwnerIdentity(channelId, accountId);
       if (ownerId) {
@@ -142,7 +141,7 @@ export class ChannelAccessManager {
     };
   }
 
-  /** Simple owner-source heuristic (plan §27). No secrets involved. */
+  /** Simple owner-source heuristic. No secrets involved. */
   private deriveOwner(
     policy: ChannelAccessPolicy | undefined,
     descriptor: ChannelAccessDescriptor,

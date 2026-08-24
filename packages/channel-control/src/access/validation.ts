@@ -1,6 +1,6 @@
 /**
  * Access Policy validation — the entry constrains what a policy may express
- * against a channel's declared access descriptor (execution plan §31).
+ * against a channel's declared access descriptor.
  *
  * Validation is two-layered:
  * 1. The shared `channelAccessPolicySchema` (version pinning, canonical id

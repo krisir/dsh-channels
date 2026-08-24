@@ -113,7 +113,7 @@ describe('doctor — all four official channels (M4 surface)', () => {
     console.log(text);
   });
 
-  it('renders a fixed upstream section per official channel (M8, plan §99)', async () => {
+  it('renders a fixed upstream section per official channel (M8)', async () => {
     const diagnostics = await diagnose([weixin, qq, dingtalk, lark]);
     const text = formatDoctor(diagnostics);
 

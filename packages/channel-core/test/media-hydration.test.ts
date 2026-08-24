@@ -1,6 +1,5 @@
 /**
- * Protocol-neutral binary hydration helper + directional media capabilities
- * (attachment-gateway plan §6.3 / §7.1).
+ * Protocol-neutral binary hydration helper + directional media capabilities.
  *
  * Covers `applyHydrationResult` (incl. the too-large / size edge), the
  * `isHydratableBinaryPart` type guard, `mediaCapabilitiesSchema`, and the

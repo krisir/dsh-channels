@@ -1,5 +1,5 @@
 /**
- * M4 put-then-extract integration (plan §50).
+ * M4 put-then-extract integration.
  *
  * storeBinaryPart + the registry-backed extractor on a REAL store: a txt file
  * is put, then the extractor runs putExtracted so the stored asset's
@@ -30,7 +30,7 @@ function context(sessionId = 's1') {
   };
 }
 
-describe('pipeline two-phase extraction (plan §50)', () => {
+describe('pipeline two-phase extraction', () => {
   it('puts a txt file then extracts it to ready via putExtracted', async () => {
     const root = await tempRoot();
     try {

@@ -1,14 +1,12 @@
 /**
- * Native Harness Generic Attachment capability seam (attachment-gateway plan
- * §14 / §27 — Phase E, P1-3).
+ * Native Harness Generic Attachment capability seam.
  *
- * Phase E hard rule (plan §27 — "只定义接口与 fake。不要在 Harness 官方 Generic
- * Attachment 出现前虚构实现"): this module defines the INTERFACE and the FAKE
- * only. There is deliberately NO real Harness generic attachment
- * implementation here, because DeepSeek Harness (distribution 0.1.1-rc.2)
- * only ships an IMAGE attachment seam (`@deepseek-ai/dsh-attachment`
- * SaveImageHook / ImageAttachmentRef / ImageBlock) — an image-only service
- * MUST NOT be mistaken for a generic attachment surface (plan §2.2 / §14).
+ * This module defines the INTERFACE and the FAKE only. There is deliberately
+ * NO real Harness generic attachment implementation here, because DeepSeek
+ * Harness (distribution 0.1.1-rc.2) only ships an IMAGE attachment seam
+ * (`@deepseek-ai/dsh-attachment` SaveImageHook / ImageAttachmentRef /
+ * ImageBlock) — an image-only service MUST NOT be mistaken for a generic
+ * attachment surface.
  *
  * No runtime detector is exported yet: guessing future method or capability
  * names would create a false public contract. When Harness publishes a real
@@ -35,8 +33,7 @@ export const NO_NATIVE_GENERIC_ATTACHMENT: NativeGenericAttachmentCapability = {
 
 /**
  * Kinds the generic backend covers. `image` is deliberately excluded: images
- * belong to the Harness image seam, not to the generic attachment backend
- * (plan §2.2).
+ * belong to the Harness image seam, not to the generic attachment backend.
  */
 const GENERIC_KINDS: readonly BinaryKind[] = BINARY_KINDS.filter(
   (kind) => kind !== 'image',

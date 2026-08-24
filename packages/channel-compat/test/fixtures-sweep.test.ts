@@ -22,7 +22,7 @@ interface ChannelCase {
 }
 
 /**
- * The M0 upstream contract-fixture skeleton (plan §73) lives at
+ * The M0 upstream contract-fixture skeleton lives at
  * `fixtures/upstream/<channel>/<version>/` — a different layout from the
  * legacy `fixtures/<channel>/*.json` channel cases. It is not a channel root
  * and must not be swept here.

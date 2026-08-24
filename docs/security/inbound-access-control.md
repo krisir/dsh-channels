@@ -57,7 +57,7 @@
 
 ## 授权顺序
 
-见计划 §32。核心：
+核心：
 
 1. Reserved claim 检查（`/dsh-claim` 由 Control Plane 观察，Harness 吞掉）
 2. Identity validation

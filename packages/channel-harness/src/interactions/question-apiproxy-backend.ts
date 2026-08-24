@@ -1,6 +1,5 @@
 /**
- * Web-profile question backend: the official ApiProxy mux transport
- * (upgrade plan §5.1 / §21 P0-3).
+ * Web-profile question backend: the official ApiProxy mux transport.
  *
  * In the Web profile the ApiProxy gateway is itself the registered
  * `UserQuestionProvider`; it forwards every `ask_user_question` as a

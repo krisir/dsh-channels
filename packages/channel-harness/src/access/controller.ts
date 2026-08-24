@@ -1,5 +1,5 @@
 /**
- * Pure Inbound Access Controller (execution plan §18, §19).
+ * Pure Inbound Access Controller.
  *
  * NO I/O, NO imports of storage/adapters/model. This is a deterministic pure
  * function of a resolved policy + inbound identity facts. The bridge resolves
@@ -14,7 +14,7 @@
  *    must be enabled; then the
  *    sender gate (allowlist/open); finally the ACTIVATION gate: requireMention
  *    without mentionedBot === true is NOT activated (`undefined !== true`, no
- *    fail-open — plan §14).
+ *    fail-open).
  *
  * The plan separates the Security Gate (authorized) from the Activation Gate
  * (activated). `reason` is always the single most-specific cause.

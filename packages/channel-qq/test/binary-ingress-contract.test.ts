@@ -1,5 +1,5 @@
 /**
- * Multi-channel binary ingress contract (attachment-gateway plan §32) for QQ.
+ * Multi-channel binary ingress contract for QQ.
  *
  * Every case drives the REAL inbound entry: `QQAdapter.start(ctx)` wires the
  * SDK client's `onMessage` -> `InboundProcessor.handle` (mapper + media

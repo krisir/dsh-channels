@@ -21,7 +21,7 @@ mention 支持。所有 ID 一律作为 **opaque string** 处理（在 Harness a
 - dm/group：C2C → dm；Group → group
 - owner discovery：`platform`（QQ 私聊仅创建者；不显示本地 claim）
 - mention：descriptor 先 `false`，完成 activation contract 后再置 `true`
-- fact：映射稳定；按 plan §11
+- fact：映射稳定；QQ 私聊仅创建者（`platform`，不显示本地 claim）
 
 ## DingTalk
 

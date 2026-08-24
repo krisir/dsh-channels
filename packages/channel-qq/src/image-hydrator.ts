@@ -1,5 +1,5 @@
 /**
- * One-version compatibility shim (plan §23-A3).
+ * One-version compatibility shim.
  *
  * The QQ inbound hydrator was renamed from `image-hydrator.ts` to
  * `media-hydrator.ts` (it now covers image / file / audio / video). This entry

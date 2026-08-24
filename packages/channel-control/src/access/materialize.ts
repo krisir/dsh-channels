@@ -1,5 +1,5 @@
 /**
- * Policy materialization helpers (execution plan §6, §24, §25).
+ * Policy materialization helpers.
  *
  * `ownerOnlyPolicy` builds the canonical owner-only materialization:
  *   dmPolicy=allowlist, allowFrom=[ownerId], groupPolicy=disabled, groups={}.
@@ -24,7 +24,7 @@ export function materializeAccessPolicy(policy: ChannelAccessPolicy): ChannelAcc
   return policy;
 }
 
-/** The canonical owner-only policy materialization (plan §6 / §24 / §25). */
+/** The canonical owner-only policy materialization. */
 export function ownerOnlyPolicy(ownerId: string): ChannelAccessPolicy {
   return {
     version: 1,
@@ -53,7 +53,7 @@ export function platformPrivatePolicy(): ChannelAccessPolicy {
 }
 
 /**
- * Rebind a policy to a new owner identity (plan §25). Returns a NEW policy
+ * Rebind a policy to a new owner identity. Returns a NEW policy
  * object; the input is never mutated. When `newOwner` is empty this is a no-op
  * returning the input unchanged (callers guard upstream).
  */

@@ -1,5 +1,5 @@
 /*
- * Command-plane test suite (plan §27, specs A–L).
+ * Command-plane test suite, specs A–L.
  *
  * Exercises the official @deepseek-ai/dsh-commands command plane wired into
  * the channel bridge: parseCommand admission, direct CommandResult rendering,
@@ -793,7 +793,7 @@ describe('F. command result rendering', () => {
   });
 });
 
-describe('G. unknown slash command is rejected (rc.2 Host parity, plan §10.2)', () => {
+describe('G. unknown slash command is rejected (rc.2 Host parity)', () => {
   it('replies with an unknown-command notice and never sends the line to the model', async () => {
     const rootCtx = new Context();
     new CommandRuntime(rootCtx);

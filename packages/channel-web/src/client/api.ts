@@ -39,7 +39,7 @@ export interface ChannelSummary {
   mounted: boolean;
   runtime: RuntimeState;
   connection: ConnectionState;
-  /** Access readiness of the channel (plan §28). */
+  /** Access readiness of the channel. */
   access: ChannelAccessReadiness;
 }
 
@@ -104,7 +104,7 @@ export interface PublicError {
 }
 
 // ---------------------------------------------------------------------------
-// Access-control DTOs (plan §27, §29) — mirror @wsz987/channel-control shapes.
+// Access-control DTOs — mirror @wsz987/channel-control shapes.
 // Policies carry ONLY canonical owner/sender/group ids — never any secret.
 // ---------------------------------------------------------------------------
 
@@ -114,10 +114,10 @@ export type ChannelAccessReadiness =
   | 'missing-policy'
   | 'invalid-policy';
 
-/** How a channel determines its local operator / owner identity (plan §10). */
+/** How a channel determines its local operator / owner identity. */
 export type OwnerDiscoveryMode = 'account' | 'claim' | 'manual' | 'platform';
 
-/** Declared access capability of a channel (plan §10). */
+/** Declared access capability of a channel. */
 export interface ChannelAccessDescriptor {
   directMessages: boolean;
   groups: boolean;
@@ -152,7 +152,7 @@ export interface ChannelAccessPolicy {
   defaultGroupRule?: GroupAccessRule;
 }
 
-/** Full access picture for one channel+account (plan §27). */
+/** Full access picture for one channel+account. */
 export interface ChannelAccessState {
   descriptor: ChannelAccessDescriptor;
   readiness: ChannelAccessReadiness;
@@ -167,7 +167,7 @@ export type OwnerClaimPhase =
   | 'expired'
   | 'cancelled';
 
-/** Browser-facing owner-claim session (plan §21). */
+/** Browser-facing owner-claim session. */
 export interface PublicOwnerClaimSession {
   id: string;
   channelId: string;
@@ -380,7 +380,7 @@ export async function cancelAuth(
 }
 
 // ---------------------------------------------------------------------------
-// Access-control API (plan §30)
+// Access-control API
 // ---------------------------------------------------------------------------
 
 /** GET /channels/:id/access → ChannelAccessState */

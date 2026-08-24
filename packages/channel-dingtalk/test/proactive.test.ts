@@ -1,6 +1,6 @@
 /**
- * M7C: outbound REPLY vs PROACTIVE split (plan §35 / §69) + outbox
- * capability flags (plan §71). Fully offline with a fake proactive port.
+ * M7C: outbound REPLY vs PROACTIVE split + outbox
+ * capability flags. Fully offline with a fake proactive port.
  */
 import { describe, expect, it } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
@@ -82,7 +82,7 @@ class FakeStreamClient implements DingTalkStreamClient {
   socketCallBackResponse(): void {}
 }
 
-describe('OutboundSender — REPLY vs PROACTIVE split (plan §35 / §69)', () => {
+describe('OutboundSender — REPLY vs PROACTIVE split', () => {
   it('a target WITH a sessionWebhook reply goes through the sessionWebhook path', async () => {
     const reply = new FakeReplyUpstream();
     const { port, proactiveCalls } = fakePort();
@@ -147,7 +147,7 @@ describe('OutboundSender — REPLY vs PROACTIVE split (plan §35 / §69)', () =>
   });
 });
 
-describe('outbox capability flags (plan §71) — fail closed', () => {
+describe('outbox capability flags — fail closed', () => {
   it('OutboundSender exposes the supplied capabilities', () => {
     const sender = new OutboundSender({
       reply: new FakeReplyUpstream(),

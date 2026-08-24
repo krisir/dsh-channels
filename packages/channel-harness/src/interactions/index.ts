@@ -1,8 +1,8 @@
 /**
- * Channel-side human interactions (upgrade plan §5 / §19 / §21 P0-3).
+ * Channel-side human interactions.
  *
  * `QuestionInteraction*` today; the directory and interface naming leave
- * room for an `ApprovalInteraction` sibling (plan P1-3) without sharing
+ * room for an `ApprovalInteraction` sibling (future) without sharing
  * interfaces prematurely — the official mux already carries
  * `approval/requested` / `approval/resolved` frames.
  */

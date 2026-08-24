@@ -1,5 +1,5 @@
 /**
- * Generic outbound actions contract (plan §3.6 / §20.11).
+ * Generic outbound actions contract.
  *
  * Verifies the new platform-agnostic interaction surface added to channel-core:
  * `OutboundMessage.actions` (button rows), the optional

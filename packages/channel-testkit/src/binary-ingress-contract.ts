@@ -1,24 +1,22 @@
 /**
- * Multi-channel binary ingress contract (attachment-gateway execution plan
- * §32 "多渠道 Contract Test" and §7.2 "建议目标矩阵").
+ * Multi-channel binary ingress contract.
  *
  * `runBinaryIngressContract(options)` registers a vitest suite that drives an
  * adapter's inbound binary hydration with real platform fixtures and asserts
- * the three transport states the plan defines:
+ * the three transport states:
  *
  * - `bytes`   — the adapter produced trusted `localData` bytes for the kind
  *               and the case claim matches `capabilities.media.inbound[kind]`
- *               (plan §7.2: `capabilities.media.inbound[kind] === 'bytes'`
- *               must be proven by `part.localData.byteLength > 0` before
- *               emit);
+ *               (`capabilities.media.inbound[kind] === 'bytes'` must be proven
+ *               by `part.localData.byteLength > 0` before emit);
  * - `locator` — the part keeps its platform locator (`resourceRef` or an
  *               http(s) `url`) with NO fabricated bytes, and any failure state
  *               present uses a stable, de-identified `BinaryIngressFailureCode`
  *               rather than a platform exception string;
  * - `failure` — the ingress failed with a stable binary ingress failure code
  *               while the text part is still delivered and the binary part is
- *               retained (plan §31 failure semantics: text delivery is never
- *               blocked by a media failure).
+ *               retained (failure semantics: text delivery is never blocked by
+ *               a media failure).
  *
  * The runner is fixture-driven exactly like the adapters' own mapper/hydration
  * tests (`channel-telegram/test/adapter.test.ts`,
@@ -133,7 +131,7 @@ export interface RunBinaryIngressContractOptions {
   /**
    * When true (default), a case declaring `expected: 'bytes'` fails unless
    * `adapter.capabilities.media.inbound[kind] === 'bytes'` (the claim must be
-   * backed by the directional capability, plan §7.2). Set to `false` when
+   * backed by the directional capability). Set to `false` when
    * testing adapters that hydrate without yet declaring the media map.
    */
   assertCapabilityConsistency?: boolean;
@@ -202,7 +200,7 @@ export function extractDeliveredParts(delivered: unknown): { parts: LooseBinaryP
   return { parts, problems };
 }
 
-/** Keys that must never appear on a binary part (plan §32: no raw platform credential). */
+/** Keys that must never appear on a binary part (no raw platform credential). */
 const CREDENTIAL_FIELD_PATTERN = /token|secret|authorization/i;
 
 /** A locator `url` must be a genuine http(s) URL (core `BinaryPartBase` rule). */
@@ -238,17 +236,17 @@ function errorMessage(error: unknown): string {
  * vitest dependency). Returns a list of human-readable failure messages —
  * `[]` means the case passed.
  *
- * Assertions per plan §32:
- * - `bytes`   (plan §32 `bytes`): the `kind` part is present with hydrated
+ * Assertions:
+ * - `bytes`: the `kind` part is present with hydrated
  *   `localData` (`byteLength > 0`); no raw platform credential fields/url;
  *   when `options.assertCapabilityConsistency !== false` a bytes case must be
- *   backed by `capabilities.media.inbound[kind] === 'bytes'` (§7.2).
- * - `locator` (plan §32 `locator`): the `kind` part is present with a
+ *   backed by `capabilities.media.inbound[kind] === 'bytes'`.
+ * - `locator`: the `kind` part is present with a
  *   `resourceRef` or an http(s) `url`; `localData` is undefined (no fake
  *   bytes); failure/status is explicit — a present `ingressFailure` must be a
  *   stable `BinaryIngressFailureCode` (a locator-only part without any
  *   failure code is the allowed "locator deferred" state).
- * - `failure` (plan §32 `failure`): the delivered message still contains a
+ * - `failure`: the delivered message still contains a
  *   text part, the `kind` part is retained, and its `ingressFailure` is one of
  *   the stable `BinaryIngressFailureCode`s.
  *
@@ -266,7 +264,7 @@ export function evaluateBinaryIngressCase(
   const problems: string[] = [];
 
   // Consistency: a bytes claim in a case must be backed by the directional
-  // capability (plan §7.2: capabilities.media.inbound[kind] === 'bytes').
+  // capability (capabilities.media.inbound[kind] === 'bytes').
   if (cas.expected === 'bytes' && options.assertCapabilityConsistency !== false) {
     const claimed = capabilities.media?.inbound?.[cas.kind];
     if (claimed !== 'bytes') {

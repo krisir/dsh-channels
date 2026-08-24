@@ -1,16 +1,16 @@
 /***
  * Outbound sending: channel message -> dingtalk payload -> upstream.
  *
- * Two explicit send paths (plan §69):
+ * Two explicit send paths:
  *   - REPLY: the target carries an inbound `sessionWebhook` (or the upstream is
  *     the legacy gateway, which has no proactive path). sessionWebhook belongs
- *     ONLY to the current inbound reply (plan §35) — never a durable outbox route.
+ *     ONLY to the current inbound reply — never a durable outbox route.
  *   - PROACTIVE: a target with no reply context / an arbitrary conversation id
  *     is sent through the official proactive OpenAPI port (`sendProactiveText`,
  *     and proactive media via `uploadMedia` + `sendMedia`) — never via a stale
- *     sessionWebhook (plan §35 / §69).
+ *     sessionWebhook.
  *
- * Capability flags (`outboxCapabilities`, plan §71) fail CLOSED: they only read
+ * Capability flags (`outboxCapabilities`) fail CLOSED: they only read
  * `true` when the matching official path is actually wired. Streaming replies go
  * through `DingTalkCardReply`; this sender is the buffered fallback path
  * (`adapter.send`) used when no card was created.
@@ -48,7 +48,7 @@ export interface OutboundSenderOptions {
    */
   proactive?: DingTalkOpenApiPort;
   /**
-   * Resolved proactive capability flags (plan §71). Provided by the adapter;
+   * Resolved proactive capability flags. Provided by the adapter;
    * defaults to all-false (fail closed) when not supplied.
    */
   capabilities?: OutboxCapabilities;
@@ -67,7 +67,7 @@ export class OutboundSender {
     this.capabilities = options.capabilities ?? { proactiveText: false, proactiveMedia: false };
   }
 
-  /** Proactive capability flags the harness outbox reads (plan §71). */
+  /** Proactive capability flags the harness outbox reads. */
   get outboxCapabilities(): OutboxCapabilities {
     return { ...this.capabilities };
   }
@@ -89,7 +89,7 @@ export class OutboundSender {
         return { delivered: true, raw: response };
       }
 
-      // PROACTIVE path: official proactive API (plan §35 / §69).
+      // PROACTIVE path: official proactive API.
       const robotCode = (probe.robotCode ?? '').trim() || undefined;
       const conversationType = target.conversationType;
       const media = this.proactiveMediaPart(message);

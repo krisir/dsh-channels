@@ -1,6 +1,5 @@
 /**
- * OwnerClaimSessionManager — in-memory owner-claim lifecycle (execution plan
- * §21, §22, §24, §25).
+ * OwnerClaimSessionManager — in-memory owner-claim lifecycle.
  *
  * When a channel declares `ownerDiscovery='claim'`, the local operator claims
  * owner identity by beginning a session, showing the short `challengeCode`,
@@ -11,7 +10,7 @@
  *   candidate from a DM,
  * - confirms a candidate by persisting/rebinding the access policy owner.
  *
- * Security rules (plan §21):
+ * Security rules:
  *   1. Only local Web/API may begin.
  *   2. 16 random bytes / >=128-bit challenge, hex-encoded (>=32 chars).
  *   3. 5 minute TTL.
@@ -178,7 +177,7 @@ export class OwnerClaimSessionManager {
    * Observe an inbound channel event. NO-OP for everything except
    * `message.received`. Consumes a `/dsh-claim` command and, when every check
    * passes, captures the FIRST valid candidate. NEVER throws — errors are
-   * caught and logged as warnings (plan §22). Challenge codes are never logged.
+   * caught and logged as warnings. Challenge codes are never logged.
    */
   observe(event: ChannelEvent): void {
     if (event.type !== 'message.received') return;
@@ -220,7 +219,7 @@ export class OwnerClaimSessionManager {
   }
 
   /**
-   * Confirm a candidate, persisting/rebinding the owner (plan §25), then mark
+   * Confirm a candidate, persisting/rebinding the owner, then mark
    * the session confirmed. Requires phase === 'candidate' (a claim without a
    * valid sender cannot be confirmed). Returns the public session.
    */
@@ -247,7 +246,7 @@ export class OwnerClaimSessionManager {
     return this.publicView(session);
   }
 
-  /** Persist/rebind the owner per plan §25. */
+  /** Persist/rebind the owner. */
   private async rebindOwner(
     channelId: string,
     accountId: string,

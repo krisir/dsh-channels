@@ -188,7 +188,7 @@ export function mediaOpts(message: OutboundMessage): MediaOptions {
 /**
  * Resolve a media part to the SDK's single-source shape (`url` or `fileData`).
  *
- * Carrier precedence (plan §65 / §85): trusted bytes in hand win, then an
+ * Carrier precedence: trusted bytes in hand win, then an
  * inline data URI, then a genuine `http(s)` `url`. `localData` /
  * `dataUri` are both base64-encoded for the QQ `uploadMedia` `fileData`
  * field — never sent as `url` (the QQ upload API fetches `url` over HTTP and

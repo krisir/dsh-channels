@@ -1,5 +1,5 @@
 /**
- * M7C: DingTalk generic FILE inbound hydration (plan §86 / §32A).
+ * M7C: DingTalk generic FILE inbound hydration.
  *
  * Covers the `InboundProcessor` file-hydration step: a genuine http(s) file
  * url is fetched into `localData` + `mimeType` + `size` via the secure fetcher;

@@ -1,9 +1,9 @@
 /**
- * §33 Session ACL regression — resolver + tool level.
+ * Session ACL regression — resolver + tool level.
  *
- * Mirrors the plan §33 matrix against the CURRENT code paths:
+ * Mirrors the plan matrix against the CURRENT code paths:
  *
- * | §33 row                                            | test                                                     |
+ * | row                                                 | test                                                     |
  * |----------------------------------------------------|----------------------------------------------------------|
  * | Session A stores att-1                             | (setup in every test)                                    |
  * | Session A reads att-1 -> success                   | 'owner session resolves its own asset (bytes match)'     |
@@ -15,7 +15,7 @@
  * | legacy v1 file same Session -> success             | 'legacy v1 asset: owner reads, foreign denied'           |
  * | legacy v1 file different Session -> denied         | (same test; resolver + tool)                             |
  *
- * The ACL is `attachment.sessionId === invoking sessionId` (plan §17.1) —
+ * The ACL is `attachment.sessionId === invoking sessionId` —
  * never cwd, never channel/account/conversation identity. The `/new` row
  * proves a NEW Harness session for the SAME conversation does NOT inherit old
  * attachments; the resume row proves a FRESH store instance with the SAME
@@ -79,7 +79,7 @@ async function putOwnedText(
   await store.putExtracted(opts.id, { text: opts.text, format: 'text' });
 }
 
-describe('plan §33 — Session A stores att-1, Session A reads att-1 -> success', () => {
+describe('Session A stores att-1, Session A reads att-1 -> success', () => {
   it('owner session resolves its own asset (bytes match)', async () => {
     const root = await tempRoot();
     try {
@@ -98,7 +98,7 @@ describe('plan §33 — Session A stores att-1, Session A reads att-1 -> success
   });
 });
 
-describe('plan §33 — Session B reads att-1 -> ATTACHMENT_ACCESS_DENIED', () => {
+describe('Session B reads att-1 -> ATTACHMENT_ACCESS_DENIED', () => {
   it('foreign session -> ATTACHMENT_ACCESS_DENIED via resolver (OutboxError)', async () => {
     const root = await tempRoot();
     try {
@@ -144,7 +144,7 @@ describe('plan §33 — Session B reads att-1 -> ATTACHMENT_ACCESS_DENIED', () =
   });
 });
 
-describe('plan §33 + §17.2 — same conversation /new -> Session B', () => {
+describe('same conversation /new -> Session B', () => {
   it('/new on the same conversation does NOT inherit old attachments (resolver + tool)', async () => {
     const root = await tempRoot();
     try {
@@ -185,7 +185,7 @@ describe('plan §33 + §17.2 — same conversation /new -> Session B', () => {
   });
 });
 
-describe('plan §33 + §17.3 — Session A resume', () => {
+describe('Session A resume', () => {
   it('resume (fresh store instance, same recorded sessionId) keeps attachment access', async () => {
     const root = await tempRoot();
     try {
@@ -212,7 +212,7 @@ describe('plan §33 + §17.3 — Session A resume', () => {
   });
 });
 
-describe('plan §33 — legacy v1 file ingested under Session A', () => {
+describe('legacy v1 file ingested under Session A', () => {
   it('legacy v1 asset: same session reads OK (resolver + tool), different session DENIED', async () => {
     const root = await tempRoot();
     try {

@@ -1,5 +1,5 @@
 /**
- * ChannelAttachmentProvider compatibility (plan §10).
+ * ChannelAttachmentProvider compatibility.
  *
  * The canonical provider port is `ChannelAttachmentProvider`; the deprecated
  * `ChannelFile*` aliases keep old imports working. `installCompatibilityTools`
@@ -25,7 +25,7 @@ const baseStore = async (_context: ChannelAttachmentContext, _part: StoredBinary
 const baseResolve = async () => ({ kind: 'file' as const, data: new Uint8Array(), name: 'a.bin' });
 
 // 1. installCompatibilityTools is optional: a provider WITHOUT it satisfies
-//    the canonical interface (plan §10.1 — tool install is not core).
+//    the canonical interface (tool install is not core).
 const providerWithoutTools = {
   store: baseStore,
   resolveAttachment: baseResolve,
@@ -52,7 +52,7 @@ const legacyShaped = {
 };
 const legacyShapedProvider: ChannelAttachmentProvider = legacyShaped;
 
-describe('ChannelAttachmentProvider compatibility (plan §10)', () => {
+describe('ChannelAttachmentProvider compatibility', () => {
   it('accepts providers with and without installCompatibilityTools', () => {
     expect(providerWithoutTools).toBeDefined();
     expect(providerWithTools).toBeDefined();

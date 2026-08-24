@@ -45,7 +45,7 @@ export interface WeixinAdapterDeps {
   /** Injectable random source for X-WECHAT-UIN (tests). */
   rand?: () => number;
   /**
-   * Injectable upstream (tests / plan §96). Defaults to the real
+   * Injectable upstream (tests). Defaults to the real
    * [createWeixinUpstream]. When supplied, the adapter drives this fake as its
    * protocol boundary.
    */
@@ -90,7 +90,7 @@ export class WeixinAdapter implements ChannelAdapter {
     reactions: false,
     threads: false,
     streaming: 'buffered',
-    // Directional per-kind media precision (attachment-gateway plan §7.1).
+    // Directional per-kind media precision.
     // CODE-CONFIRMED:
     //   inbound — TencentWeixinUpstream.enrichInboundMedia downloads + AES
     //     decrypts image/file/video and download+decrypt+transcodeSilkVoice for
@@ -100,7 +100,7 @@ export class WeixinAdapter implements ChannelAdapter {
     //     sendMedia over iLink 2.4.6) upload real bytes; audio has no Tencent
     //     2.4.6 outbound path (adapter.send() rejects voice parts with
     //     CHANNEL_UNSUPPORTED), so it is `unsupported`.
-    // Legacy booleans above stay unchanged (coarse flags, plan §5.1).
+    // Legacy booleans above stay unchanged (coarse flags).
     media: {
       inbound: {
         image: 'bytes',

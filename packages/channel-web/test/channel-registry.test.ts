@@ -1,5 +1,5 @@
 /**
- * channelRegistry tests (refactor plan §5, §7, §18): presentation metadata for
+ * channelRegistry tests: presentation metadata for
  * the built-in channels, the unknown-channel fallback, and the GENERIC setup
  * logic that replaced the old per-channel branches in authSetup.ts.
  */

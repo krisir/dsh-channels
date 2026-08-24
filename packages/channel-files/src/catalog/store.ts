@@ -1,7 +1,7 @@
 /**
- * Attachment Catalog v2 store (attachment-gateway plan §12 / §26 — Phase D).
+ * Attachment Catalog v2 store.
  *
- * Filesystem layout (plan §12):
+ * Filesystem layout:
  *
  * \`\`\`
  * attachments/
@@ -16,10 +16,10 @@
  * updates also use its cross-process writer lock. A reader never observes a
  * half-written record. `get` treats missing AND corrupt records the same way — it returns
  * `undefined` and never throws; corrupt JSON is logged and skipped. This is
- * deliberate (plan §12 / §26): the catalog is an OPTIONAL index — "catalog
- * miss MUST be a non-fatal fallback", nothing may break if the catalog
- * directory is absent. The legacy `attachments/v1` tree remains the
- * authoritative fallback for reads.
+ * deliberate: the catalog is an OPTIONAL index — "catalog miss MUST be a
+ * non-fatal fallback", nothing may break if the catalog directory is absent.
+ * The legacy `attachments/v1` tree remains the authoritative fallback for
+ * reads.
  *
  * Records are validated with zod `safeParse` on BOTH write and read
  * (AGENTS.md 5.4 — trusted-boundary payloads must be parsed, never cast).
@@ -117,8 +117,8 @@ export interface CatalogStoreOptions {
 
 /**
  * Patch accepted by `CatalogStore.update` — deliberately limited to the
- * fields lazy migration transitions (plan §15 / §28): the storage locator and
- * the migration state block.
+ * fields lazy migration transitions: the storage locator and the migration
+ * state block.
  */
 export interface CatalogRecordPatch {
   storage?: AttachmentCatalogRecordV2['storage'];
@@ -197,8 +197,8 @@ export class CatalogStore {
   }
 
   /**
-   * Apply a migration-state patch (plan §15 / §28) atomically: read current,
-   * merge `storage` / `migration` onto it, write back under a writer lock.
+   * Apply a migration-state patch atomically: read current, merge `storage` /
+   * `migration` onto it, write back under a writer lock.
    * Returns the merged record; `undefined` when the attachment id is missing
    * (non-fatal — nothing is written). A merged record that fails zod
    * validation raises `CatalogStoreError` (programmer misuse).

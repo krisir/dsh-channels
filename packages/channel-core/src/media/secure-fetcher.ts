@@ -1,6 +1,6 @@
 /**
  * `SecureRemoteMediaFetcher` — the DSH host's generic, untrusted remote
- * binary security boundary (plan §12 / §13).
+ * binary security boundary.
  *
  * Combines the pure SSRF policy (`remote-policy.ts`) with the bounded stream
  * reader (`bounded-response.ts`) over an injectable `fetch`. It is the ONLY
@@ -8,7 +8,7 @@
  *
  * It NEVER fetches a `resourceRef`. The fetcher accepts only genuine
  * `http(s)` URLs; resolving a platform opaque handle (image_key / file_key /
- * file_id / mediaId) is exclusively the platform upstream's job (plan §9).
+ * file_id / mediaId) is exclusively the platform upstream's job.
  */
 
 import {
@@ -132,7 +132,7 @@ export class SecureRemoteMediaFetcher {
   /**
    * Download a real `http(s)` URL under the secure boundary.
    *
-   * Validation order (plan §12):
+   * Validation order:
    * 1. scheme + SSRF policy checked before any fetch (via `assertSafeMediaUrl`)
    * 2. every redirect hop re-checked against the policy
    * 3. redirect depth bounded by `redirectPolicy.maxRedirects`

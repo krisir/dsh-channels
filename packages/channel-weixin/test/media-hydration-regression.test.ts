@@ -1,6 +1,5 @@
 /**
- * media-hydration-regression.test.ts — attachment-gateway plan A6 regression
- * for the Weixin binary media path.
+ * media-hydration-regression.test.ts — Weixin binary media path regression.
  *
  * Weixin is the ONLY channel that already hydrates all four binary kinds —
  * image / file / voice (audio) / video — to `localData` before the monitor
@@ -13,7 +12,7 @@
  *   2. a failed download keeps the locator part, sets `ingressFailure` and
  *      never fabricates bytes (the missing `ingressFailure` assertion that
  *      upstream-facade.test.ts 'keeps the URL-only part' currently skips);
- *   3. `capabilities.media` (plan §7.1) parses via the channel-core
+ *   3. `capabilities.media` parses via the channel-core
  *      `mediaCapabilitiesSchema` and declares per-kind inbound 'bytes' and
  *      outbound image/file/video 'bytes' / audio 'unsupported'.
  *
@@ -208,7 +207,7 @@ describe('weixin inbound media hydration regression (plan A6)', () => {
 });
 
 /* ------------------------------------------------------------------ */
-/* 2. capabilities.media contract (plan §7.1)                          */
+/* 2. capabilities.media contract                              */
 /* ------------------------------------------------------------------ */
 
 describe('weixin capabilities.media contract', () => {

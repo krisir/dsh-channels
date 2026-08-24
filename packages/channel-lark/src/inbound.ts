@@ -65,7 +65,7 @@ export interface InboundProcessorOptions {
   now?: () => number;
   /**
    * Optional media port used to hydrate inbound binary resourceRefs into bytes
-   * before emit (Milestone M2A + plan §23-A4). When absent, binary parts keep
+   * before emit (Milestone M2A). When absent, binary parts keep
    * their resourceRef untouched (no ingress).
    */
   mediaPort?: LarkMediaPort;

@@ -1,35 +1,35 @@
 /**
- * DingTalkOpenApiPort — the thin official DingTalk OpenAPI port (plan §30 / §33).
+ * DingTalkOpenApiPort — the thin official DingTalk OpenAPI port.
  *
- * Two layers make up the DingTalk adapter (plan §30):
+ * Two layers make up the DingTalk adapter:
  *
  *   DingTalkStreamPort      -> dingtalk-stream SDK (own module: stream-upstream.ts)
  *   DingTalkOpenApiPort     -> official DingTalk OpenAPI (this port)
  *
- * This port is deliberately SMALL (plan §33). It is the outbound counterpart to
+ * This port is deliberately SMALL. It is the outbound counterpart to
  * the stream callbacks: everything that is an HTTP call back into DingTalk
  * (access token, proactive robot messages, media upload/send, AI Card
  * create/update/finish, opaque-mediaId resolution) lives here.
  *
- * Behavior oracle (plan §32 / §33): the official connector
+ * Behavior oracle: the official connector
  * `@dingtalk-real-ai/dingtalk-connector@0.8.24`. Its npm exports are only
  * `.` and `./bundled` and its root entry depends on OpenClaw, so the package
- * cannot be used as a host-neutral SDK today (plan §32). Therefore THIS adapter
+ * cannot be used as a host-neutral SDK today. Therefore THIS adapter
  * re-implements the thin OpenAPI calls itself — mirroring the connector's
  * token / HTTP patterns — and records the corresponding official-behavior basis
  * on every method (`DingTalkOpenApiPortImpl.OFFICIAL_BASIS`). If the connector
  * later exposes host-neutral `./media` / `./messaging` / `./openapi`
  * subpaths, the internal implementation is swapped out without touching the
- * adapter (plan §34 "Adapter 无需改").
+ * adapter.
  *
- * No second DingTalk SDK is introduced (plan §31 / §86 / §93). The port never
+ * No second DingTalk SDK is introduced. The port never
  * hand-writes a Stream websocket protocol — that is dingtalk-stream's job.
  */
 import type { ChannelTarget } from '@wsz987/channel-core';
 
 /**
  * Capability flags the harness outbox reads to decide whether proactive sends
- * are available (plan §71). Fails CLOSED: a feature is only `true` when its
+ * are available. Fails CLOSED: a feature is only `true` when its
  * official OAPI path is actually implemented and wired by the adapter.
  */
 export interface OutboxCapabilities {
@@ -53,7 +53,7 @@ export interface DingTalkOpenApiCredentials {
   now?: () => number;
 }
 
-/** Target of a proactive robot message (plan §69: official proactive API). */
+/** Target of a proactive robot message. */
 export interface ProactiveTextInput {
   /** Robot's open conversation id (group) or, for a DM, the recipient userId. */
   conversationId: string;
@@ -110,7 +110,7 @@ export interface RobotMessageSendResult {
   raw?: unknown;
 }
 
-/** One opaque-platform-handle resolution (plan §32A): locator -> trusted bytes. */
+/** One opaque-platform-handle resolution: locator -> trusted bytes. */
 export interface ResolvedMedia {
   /** Trusted bytes already downloaded by the platform upstream. */
   data: Uint8Array;
@@ -120,18 +120,18 @@ export interface ResolvedMedia {
   size?: number;
 }
 
-/** The thin official DingTalk OpenAPI port (plan §33 plus §32A hard-download). */
+/** The thin official DingTalk OpenAPI port. */
 export interface DingTalkOpenApiPort {
   /** Mint (and cache) the application access token. */
   getAccessToken(): Promise<string>;
 
-  /** Send a proactive plain-text message to a conversation (plan §35 / §69). */
+  /** Send a proactive plain-text message to a conversation. */
   sendProactiveText(input: ProactiveTextInput): Promise<RobotMessageSendResult>;
 
-  /** Upload a media file, returning the DingTalk mediaId (plan §86 media upload). */
+  /** Upload a media file, returning the DingTalk mediaId. */
   uploadMedia(input: MediaUploadInput): Promise<MediaUploadResult>;
 
-  /** Send an uploaded mediaId as a robot image/file message (plan §86 media send). */
+  /** Send an uploaded mediaId as a robot image/file message. */
   sendMedia(input: MediaSendInput): Promise<RobotMessageSendResult>;
 
   /** Create an AI Card with initial content. */
@@ -145,7 +145,7 @@ export interface DingTalkOpenApiPort {
 
   /**
    * Resolve an opaque platform handle (a DingTalk mediaId / downloadCode) into
-   * trusted bytes (plan §32A). Official behavior basis: the connector's
+   * trusted bytes. Official behavior basis: the connector's
    * `downloadMediaByCode` / `getFileDownloadUrl` — POST
    * `/v1.0/robot/messageFiles/download` with `{ downloadCode, robotCode }`
    * returns a `downloadUrl`, which is then fetched as raw bytes. A genuine
@@ -177,7 +177,7 @@ export interface DingTalkOpenApiPort {
 
 /** A minimal, injectable subset of the port used by inbound hydration. */
 export interface MediaResolverLike {
-  /** Resolve one opaque media handle into trusted bytes (plan §32A). */
+  /** Resolve one opaque media handle into trusted bytes. */
   resolveMedia(
     ref: string,
     options?: {

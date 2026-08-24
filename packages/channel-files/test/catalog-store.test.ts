@@ -1,5 +1,5 @@
 /**
- * Attachment Catalog v2 (attachment-gateway plan §12 / §26 — Phase D).
+ * Attachment Catalog v2.
  *
  * Covers: per-record atomic JSON layout under `catalog/v2/by-id` (no partial
  * files, no `.tmp` leftovers), put/get round-trip, missing -> undefined,
@@ -339,7 +339,7 @@ describe('catalog v2 write-time validation (zod, AGENTS.md 5.4)', () => {
   });
 });
 
-describe('catalog v2 legacy backfill (pure builder, plan §12/§26)', () => {
+describe('catalog v2 legacy backfill (pure builder)', () => {
   it('buildCatalogRecordFromLegacy maps every v1 field to v2', () => {
     const record = buildCatalogRecordFromLegacy(makeLegacyAsset());
     expect(record.schemaVersion).toBe(CATALOG_SCHEMA_VERSION);
@@ -372,7 +372,7 @@ describe('catalog v2 legacy backfill (pure builder, plan §12/§26)', () => {
     expect(record.file).not.toHaveProperty('mimeType');
   });
 
-  it('keeps the logical attachment id unchanged (plan §11)', () => {
+  it('keeps the logical attachment id unchanged', () => {
     const record = buildCatalogRecordFromLegacy(makeLegacyAsset());
     expect(record.attachmentId).toBe(makeLegacyAsset().attachmentId);
   });

@@ -1,6 +1,6 @@
 /**
  * compat.ts — glue that maps between the official upstream shapes and the
- * `WeixinUpstream` port (execution plan §7/§38).
+ * `WeixinUpstream` port.
  *
  * THIS FILE CONTAINS SHAPE MAPPING ONLY — no protocol logic, no AES, no token /
  * retry / reconnect / upload-algorithm implementation. Those rules live behind

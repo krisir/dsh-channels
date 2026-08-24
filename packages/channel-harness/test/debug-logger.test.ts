@@ -51,7 +51,7 @@ describe('installDebugConsoleExporter', () => {
     );
   });
 
-  it('exports the channel-access gate namespace (plan §42)', () => {
+  it('exports the channel-access gate namespace', () => {
     vi.stubEnv(CHANNELS_DEBUG_ENV, '1');
     const consoleInfo = vi.spyOn(console, 'info').mockImplementation(() => {});
     const ctx = new Context();

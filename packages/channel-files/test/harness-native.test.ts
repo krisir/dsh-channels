@@ -1,6 +1,5 @@
 /**
- * Native Harness Generic Attachment capability seam (attachment-gateway plan
- * §14 / §27 — Phase E, P1-3).
+ * Native Harness Generic Attachment capability seam.
  *
  * Harness rc.2 has no generic attachment API, so this module only tests the
  * unavailable production capability and the explicit fake used by migration

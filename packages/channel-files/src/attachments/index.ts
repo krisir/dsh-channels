@@ -1,5 +1,5 @@
 /**
- * Private Channel Asset Store (plan §42-§54).
+ * Private Channel Asset Store.
  *
  * Public surface of the channel-harness attachments module.
  */

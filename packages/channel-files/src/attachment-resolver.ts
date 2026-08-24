@@ -1,11 +1,11 @@
 /**
- * Outbound attachment resolution (plan §63 / §64).
+ * Outbound attachment resolution.
  *
  * `resolveAttachment` turns a private-store `attachment_id` into bounded raw
  * bytes for an outbound media part, enforcing the Session ACL (the asset's
  * `sessionId` must equal the sender's session). The outbound path is
  * by-private-store-id ONLY: there is NO model-visible `file_path` anywhere in
- * this milestone (plan §64), so the resolver never touches a filesystem path —
+ * this milestone, so the resolver never touches a filesystem path —
  * the store owns byte access.
  */
 import type { ChannelInboundAssetStore } from './attachments/store.js';
@@ -20,7 +20,7 @@ export type ResolvedOutboundAttachment = ResolvedChannelAttachment;
 
 /**
  * Resolve a private-store attachment id to bounded bytes for an outbound send
- * (plan §63). ACL: the asset must be owned by `sessionId`. Oversize reads
+ * ACL: the asset must be owned by `sessionId`. Oversize reads
  * surface `ATTACHMENT_TOO_LARGE`; a missing asset `ATTACHMENT_NOT_FOUND`;
  * a foreign asset `ATTACHMENT_ACCESS_DENIED`.
  */

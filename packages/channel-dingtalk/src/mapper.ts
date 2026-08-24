@@ -51,7 +51,7 @@ interface DingTalkRaw {
   [key: string]: unknown;
 }
 
-/** True only for genuine http(s) locators (plan §9: url is reserved for those). */
+/** True only for genuine http(s) locators. */
 function isHttpUrl(locator: string | undefined): locator is string {
   return typeof locator === 'string' && /^https?:\/\//i.test(locator);
 }
@@ -103,7 +103,7 @@ function partsFor(raw: DingTalkRaw): MessagePart[] {
     case 'picture': {
       // Official robot picture messages carry an opaque picMediaId/downloadCode
       // (NOT a URL): resourceRef holds the opaque handle, url only a genuine
-      // http(s) URL (plan §9). Resolving resourceRef is the upstream's job.
+      // http(s) URL. Resolving resourceRef is the upstream's job.
       const url = isHttpUrl(raw.picUrl) ? raw.picUrl : undefined;
       const opaque = raw.picMediaId ?? raw.picDownloadCode ?? (raw.picUrl ? raw.picUrl : undefined);
       return [{ type: 'image', ...(url ? { url } : opaque ? { resourceRef: opaque } : {}), alt: raw.title }];

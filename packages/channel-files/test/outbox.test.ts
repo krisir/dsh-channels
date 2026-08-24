@@ -1,5 +1,5 @@
 /**
- * M6 durable outbox service tests (plan §95 matrix).
+ * M6 durable outbox service tests.
  *
  * Covers the durable binding authority path: current binding PASS, restart
  * PASS (a NEW service against the same on-disk files), old session after /new
@@ -111,7 +111,7 @@ async function tempBindings(): Promise<{ store: FileBindingStore; dir: string }>
   return { store: new FileBindingStore(join(dir, 'bindings.json')), dir };
 }
 
-describe('durable binding authority (plan §58 / §95)', () => {
+describe('durable binding authority', () => {
   it('current durable binding PASS: adapter.send called with the binding-derived target', async () => {
     const dir = await tempRoot();
     try {
@@ -240,7 +240,7 @@ describe('durable binding authority (plan §58 / §95)', () => {
   });
 });
 
-describe('attachment send (plan §63)', () => {
+describe('attachment send', () => {
   it.each(['file', 'audio', 'video'] as const)(
     'attachment_id preserves stored %s kind and localData',
     async (kind) => {
@@ -274,7 +274,7 @@ describe('attachment send (plan §63)', () => {
         expect('localData' in part && part.localData).toBeInstanceOf(Uint8Array);
         expect('localData' in part && Array.from(part.localData!)).toEqual(Array.from(bytes));
         expect('name' in part && part.name).toBe('report.pdf');
-        // The store re-verifies mime by magic sniffing (plan §47): text bytes are
+        // The store re-verifies mime by magic sniffing: text bytes are
         // sniffed text/plain, overriding the adapter hint.
         expect('mimeType' in part && part.mimeType).toBe('text/plain');
       } finally {
@@ -342,7 +342,7 @@ describe('attachment send (plan §63)', () => {
   });
 });
 
-describe('proactive capability gate (plan §69 / §71)', () => {
+describe('proactive capability gate', () => {
   it('fail closed: outboxCapabilities.proactiveText=false -> OUTBOX_CAPABILITY_UNAVAILABLE', async () => {
     const { store, dir } = await tempBindings();
     try {

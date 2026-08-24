@@ -1,12 +1,12 @@
 /**
- * read_channel_attachment — the M4 Harness tool (plan §52 / §53 / §54 / §94).
+ * read_channel_attachment — the M4 Harness tool.
  *
  * Lets the model read a stored channel asset's extracted text, paginated by
  * optional offset/limit. It accepts ONLY { attachment_id, offset, limit } —
- * never session_id / path / channel_id / conversation_id (plan §53), and its
+ * never session_id / path / channel_id / conversation_id, and its
  * ACL is bound to the SESSION that owns the asset, never the workspace cwd.
  *
- * Agent-scoped registration (plan §81): installReadChannelAttachmentTool
+ * Agent-scoped registration: installReadChannelAttachmentTool
  * registers through the official @deepseek-ai/dsh-tools ctx.tools.register on
  * the agent's own scope, so it shadows nothing globally and is disposed with
  * the agent.
@@ -19,7 +19,7 @@ import type { StoredAssetDescriptor } from './types.js';
 import type { ChannelInboundAssetStore } from './store.js';
 import type { Context } from '@deepseek-ai/cordis';
 
-/** Stable, machine-routable tool failure code (plan §53). */
+/** Stable, machine-routable tool failure code. */
 export type AttachmentReadErrorCode = 'ATTACHMENT_NOT_FOUND' | 'ATTACHMENT_ACCESS_DENIED';
 
 /** Typed ACL error carried as a HarnessError so the tool pipeline records a stable code. */
@@ -38,7 +38,7 @@ const MAX_LINE_LIMIT = 1000;
 export interface RegisterReadChannelAttachmentToolOptions {
   /** The private channel asset store backing the tool. */
   store: ChannelInboundAssetStore;
-  /** Byte caps; defaults to the plan §49 defaults. */
+  /** Byte caps; defaults to the attachment policy defaults. */
   policy?: AttachmentPolicy;
 }
 
@@ -77,8 +77,8 @@ export function registerReadChannelAttachmentTool(
           text: { type: 'string' },
         },
       },
-      // Plan §54: the rendered surface leads with the compact descriptor (id,
-      // name, mime, size, readable) and only then the bounded window the model
+      // The rendered surface leads with the compact descriptor (id, name,
+      // mime, size, readable) and only then the bounded window the model
       // asked for — never an unbounded raw dump.
       render: (args: unknown, value: Record<string, unknown>) => {
         const descriptor: StoredAssetDescriptor = {
@@ -98,7 +98,7 @@ export function registerReadChannelAttachmentTool(
       args: { attachment_id: string; offset?: number; limit?: number },
       exec,
     ) {
-      // --- Session ACL (plan §53 / §42): the key is sessionId, never cwd. ---
+      // --- Session ACL: the key is sessionId, never cwd. ---
       const currentSessionId = exec.agent ? String(exec.agent.id) : undefined;
       const asset = await store.get(args.attachment_id);
       if (!asset) {
@@ -193,7 +193,7 @@ export function registerReadChannelAttachmentTool(
   });
 }
 
-/** Install the tool on an Agent scoped context (plan §81 Agent-scoped registration). */
+/** Install the tool on an Agent scoped context. */
 export async function installReadChannelAttachmentTool(
   agentCtx: Context,
   options: RegisterReadChannelAttachmentToolOptions,

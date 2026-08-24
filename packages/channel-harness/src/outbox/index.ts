@@ -1,5 +1,5 @@
 /**
- * Durable Channel Outbox (plan §60-§69 / §71 / §95).
+ * Durable Channel Outbox.
  *
  * Public surface of the outbox module: the request + error types, the durable
  * binding/target/attachment resolvers, the proactive capability resolver, the

@@ -59,7 +59,7 @@ export interface ChannelControlLike {
   pollAuth(sessionId: string): Promise<PublicAuthStatus>;
   submitAuthInput(sessionId: string, input: AuthInput): Promise<PublicAuthStatus>;
   cancelAuth(sessionId: string): Promise<void>;
-  // ---- access control (plan §29) ------------------------------------------
+  // ---- access control ------------------------------------------
   getAccess(channelId: string, accountId?: string): Promise<ChannelAccessState>;
   saveAccess(
     channelId: string,
@@ -325,7 +325,7 @@ export class ChannelApiV2 {
     return run(() => this.control.cancelAuth(sid.value), () => ({ status: 204, body: undefined }));
   }
 
-  /** GET /channels/:channelId/access → ChannelAccessState (plan §27). */
+  /** GET /channels/:channelId/access → ChannelAccessState. */
   async getAccess(channelId: string): Promise<ApiResultV2> {
     const found = await this.channelOr404(channelId);
     if (!found.ok) return found.result;
@@ -333,7 +333,7 @@ export class ChannelApiV2 {
   }
 
   /**
-   * PUT /channels/:channelId/access → ChannelAccessState (plan §31).
+   * PUT /channels/:channelId/access → ChannelAccessState.
    * Body is a strict ChannelAccessPolicy; malformed input is a 400 INVALID_INPUT
    * before it reaches the control plane.
    */
@@ -348,7 +348,7 @@ export class ChannelApiV2 {
     }));
   }
 
-  /** POST /channels/:channelId/access/owner-claims → 201 PublicOwnerClaimSession (plan §29). */
+  /** POST /channels/:channelId/access/owner-claims → 201 PublicOwnerClaimSession. */
   async beginOwnerClaim(channelId: string): Promise<ApiResultV2> {
     const found = await this.channelOr404(channelId);
     if (!found.ok) return found.result;
@@ -358,7 +358,7 @@ export class ChannelApiV2 {
     }));
   }
 
-  /** GET /channels/:channelId/access/owner-claims/:claimId → PublicOwnerClaimSession (plan §29). */
+  /** GET /channels/:channelId/access/owner-claims/:claimId → PublicOwnerClaimSession. */
   async getOwnerClaim(channelId: string, claimId: unknown): Promise<ApiResultV2> {
     const found = await this.channelOr404(channelId);
     if (!found.ok) return found.result;
@@ -370,7 +370,7 @@ export class ChannelApiV2 {
     }));
   }
 
-  /** POST /channels/:channelId/access/owner-claims/:claimId/confirm → ChannelAccessState (plan §29). */
+  /** POST /channels/:channelId/access/owner-claims/:claimId/confirm → ChannelAccessState. */
   async confirmOwnerClaim(channelId: string, claimId: unknown): Promise<ApiResultV2> {
     const found = await this.channelOr404(channelId);
     if (!found.ok) return found.result;
@@ -382,7 +382,7 @@ export class ChannelApiV2 {
     }));
   }
 
-  /** DELETE /channels/:channelId/access/owner-claims/:claimId → 204 (plan §29). */
+  /** DELETE /channels/:channelId/access/owner-claims/:claimId → 204. */
   async cancelOwnerClaim(channelId: string, claimId: unknown): Promise<ApiResultV2> {
     const found = await this.channelOr404(channelId);
     if (!found.ok) return found.result;
@@ -432,7 +432,7 @@ export class ChannelApiV2 {
       return this.submitInput(safeDecode(input[1]!), safeDecode(input[2]!), body);
     }
 
-    // ---- access control (plan §30) ---------------------------------------
+    // ---- access control ---------------------------------------
     const access = /^\/channels\/([^/]+)\/access$/.exec(clean);
     if (access) {
       const id = safeDecode(access[1]!);
@@ -560,7 +560,7 @@ const enabledPatchSchema = z.object({
 }, 'enabled must be a boolean').loose();
 
 // ---------------------------------------------------------------------------
-// Access control body schema (plan §31)
+// Access control body schema
 // ---------------------------------------------------------------------------
 
 /**

@@ -1,5 +1,5 @@
 /**
- * M6 send_channel_message tool tests (plan §95 matrix).
+ * M6 send_channel_message tool tests.
  *
  * Covers the model-facing tool: parameters schema is EXACTLY
  * { text, attachment_id } (no recipient / channel / account / conversation /
@@ -101,7 +101,7 @@ async function tempRoot(): Promise<string> {
   return mkdtemp(join(tmpdir(), 'dsh-tool-asset-'));
 }
 
-describe('send_channel_message schema (plan §62 / §95)', () => {
+describe('send_channel_message schema', () => {
   it('parameter keys are EXACTLY text + attachment_id (no recipient/channel/account/conversation/user_id/openid/file_path)', async () => {
     const { adapter } = makeAdapter();
     const { service, dir } = await makeService(adapter);
@@ -115,16 +115,16 @@ describe('send_channel_message schema (plan §62 / §95)', () => {
     }
   });
 
-  it('the request type has NO recipient field (type-level, plan §95)', () => {
+  it('the request type has NO recipient field (type-level)', () => {
     const req: ChannelOutboundRequest = { text: 'hello' };
     expect(req.text).toBe('hello');
-    // @ts-expect-error - recipient must NOT exist on ChannelOutboundRequest (plan §95)
+    // @ts-expect-error - recipient must NOT exist on ChannelOutboundRequest
     const withRecipient: ChannelOutboundRequest = { recipient: 'someone' };
     void withRecipient;
   });
 
-  it('the request type has NO file_path field (type-level, plan §95)', () => {
-    // @ts-expect-error - model file_path must NOT exist anywhere (plan §95)
+  it('the request type has NO file_path field (type-level)', () => {
+    // @ts-expect-error - model file_path must NOT exist anywhere
     const withFilePath: ChannelOutboundRequest = { file_path: '/tmp/x' };
     void withFilePath;
   });
@@ -143,7 +143,7 @@ describe('send_channel_message schema (plan §62 / §95)', () => {
   });
 });
 
-describe('send_channel_message execution (plan §95)', () => {
+describe('send_channel_message execution', () => {
   it('text send: session-id-scoped, renders a confirmation with messageId', async () => {
     const { adapter, sent } = makeAdapter();
     const { service, dir } = await makeService(adapter);
@@ -269,7 +269,7 @@ describe('send_channel_message execution (plan §95)', () => {
   });
 });
 
-describe('send_channel_message capability + abort (plan §69/§71)', () => {
+describe('send_channel_message capability + abort', () => {
   it('capability fail-closed: proactiveText=false -> OUTBOX_CAPABILITY_UNAVAILABLE', async () => {
     const { adapter, sent } = makeAdapter({ proactiveText: false });
     const { service, dir } = await makeService(adapter);

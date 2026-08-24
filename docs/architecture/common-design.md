@@ -369,7 +369,7 @@ transport hydration 由 `@wsz987/channel-core`（media/hydration）的共享协�
 `applyHydrationResult` 执行；各适配器通过方向化的 `capabilities.media` 声明媒体能力
 ——inbound 逐 kind 为 `'bytes' | 'locator' | 'unsupported'`，outbound 为
 `'bytes' | 'unsupported'`，旧的粗粒度 `image/file/audio/video` 布尔字段保留至少一个
-兼容周期（计划 §7.1），新 Attachment Gateway / `channel-verify` 优先读
+兼容周期，新 Attachment Gateway / `channel-verify` 优先读
 `capabilities.media`。
 
 二进制元数据分为两个信任等级：
@@ -959,7 +959,7 @@ pnpm 将传递依赖提升到 profile 根目录。根入口同时承载 Web host
 
     - id: channels-harness
       name: '@wsz987/dsh-channels/harness'
-      inject: [channels, agents, agentDefaultModel, llm, commands, apiProxy]
+      inject: [channels, agents, agentDefaultModel, agentPresets, llm, commands, apiProxy]
 
     - id: channels-control
       name: '@wsz987/dsh-channels/control'
@@ -1001,7 +1001,7 @@ pnpm 将传递依赖提升到 profile 根目录。根入口同时承载 Web host
 - **patch 语义**：`cordis.patch.yml` / profile patch 是**整体替换**目标插件 `config`，不是深度合并；覆盖时必须保留该插件完整字段。
 - **Cordis 插件形态**：`export const name` / `export const inject` / `export function apply(ctx, config)`；WS、long-poll、Gateway、heartbeat 等手动资源放 `ctx.effect()`；事件监听走 `ctx.on()` 由框架自动清理。
 - **inject 名称**：只用 Harness public service 名（`channels`、`channelControl`、`agents`、`credentials`、`llm`、`commands`、`agentDefaultModel`、`apiProxy`），禁止私造 key。
-- **命令**：统一走 `commandFactories` / `ctx.commands.register`；命令名 lowercase、以 `/` 开头；handler 返回 `{ kind: 'success' | 'error', text }`；未注册命令不再被拦截（作为普通用户输入交给模型）；命令结果不进模型历史。
+- **命令**：统一走 `commandFactories` / `ctx.commands.register`；命令名 lowercase、以 `/` 开头；handler 返回 `{ kind: 'success' | 'error', text }`；**未注册斜杠指令直接拒绝**（`commands.execute` 未命中注册名时回复「未知命令」提示，**不进**模型历史，也不作为普通用户输入交给模型，与官方 rc.2 Host 一致）；命令结果不进模型历史。
 - **Agent 输入语义**：普通聊天 `agent.followup()`；执行中纠偏才用 `agent.steer()`；额外上下文用 `agent.inject()`（不得代替聊天）。
 - **回复只消费官方 `session/event`**：`assistant/chunk`、`assistant/message`、`turn/end`；`tool/call` / `tool/result` 只作可选 UX，不混入回复协议。
 - **User Questions 只走官方 ApiProxy client contract**：`channel-harness` 消费 `ctx.apiProxy.events.mux()` 的 `question/requested`，只匹配当前 active ReplyContext，并用 `ctx.apiProxy.respond()` 返回结构化答案；禁止 adapter 访问 `ctx.userQuestions`，也禁止注册第二个 Provider。Web 与渠道同时展示时首个 accepted response 获胜，`question/resolved` 负责清理陈旧渠道按钮。
@@ -1110,7 +1110,7 @@ Harness `0.1.1-rc.2` 的 `ctx.attachments` 仍然只提供栅格图片的验证�
 ```
 
 - **存储与 ACL**：跨渠道非图片附件按 Session 隔离存储，读取经 Session ACL 校验，
-  稳定逻辑 id 为 `att-*`（计划 §11）；`read_channel_attachment` 是**兼容工具**，
+  稳定逻辑 id 为 `att-*`；`read_channel_attachment` 是**兼容工具**，
   经 provider 的可选 `installCompatibilityTools?` 注册（channel-harness bridge 在
   agent 组装时调用）。
 - **提取是兼容行为**：PDF（`unpdf`）/ DOCX（`mammoth`）/ XLSX（`xlsx`）/ 文本解析
@@ -1118,17 +1118,17 @@ Harness `0.1.1-rc.2` 的 `ctx.attachments` 仍然只提供栅格图片的验证�
   能力**（ASR / 视频分析 / OCR / PPTX 等放到 Harness / Skill / 独立 plugin /
   MCP）。
 - **Native-first 预留（默认关闭）**：未来 Harness 提供官方 Generic Attachment 后，
-  通过 **public capability detection**（禁止 Harness version-string 猜测，计划
-  §14）接入 native backend（`src/backends/harness-native.ts`：目前只有接口与 fake
+  通过 **public capability detection**（禁止 Harness version-string 猜测）接入 native
+  backend（`src/backends/harness-native.ts`：目前只有接口与 fake
   seam）；惰性 **copy + verify** 迁移基础设施（Catalog v2
   `attachments/catalog/v2` + `src/migration/`）已就位但默认关闭，迁移失败自动保持
-  legacy 为 authoritative（计划 §15 / §27 / §28）。
-- **旧 v1 数据永久可读**：升级不扫描、不原地 rewrite、不删除旧 bytes（计划 §12 /
-  §15）；`channel-files` 仍可长期作为 legacy reader / migration backend /
+  legacy 为 authoritative。
+- **旧 v1 数据永久可读**：升级不扫描、不原地 rewrite、不删除旧 bytes；`channel-files`
+  仍可长期作为 legacy reader / migration backend /
   compatibility tool 加载。
 - **Provider 端口已改名**：`ChannelFileProvider` → `ChannelAttachmentProvider`
   （`ChannelFileContext` / `ChannelFileDescriptor` 同步），旧名保留为 `@deprecated`
-  别名本轮不删除（计划 §10）。
+  别名本轮不删除。
 
 `channel-core` 与五个适配器不知道解析格式；`channel-harness` 也不依赖扩展包，
 只通过 `ctx.get('channelFiles')` 尝试获取 provider。bundle 默认加载该扩展，但可
@@ -1153,8 +1153,10 @@ PDF 解析使用 `unpdf`（PDF.js），DOCX 使用 `mammoth`，XLSX 使用 `xlsx
   排队消息），并配合 per-conversation generation barrier 与 stop barrier 覆盖 `/new` 竞态；
   `/model` 通过官方 Host `session.selectModel` 或 headless
   `installModelSelection` 切换模型，绝不改写 `binding.route`。
-  **未注册的斜杠指令不再被拦截**：`commands.execute()` 对未知指令返回 `undefined`，
-  渠道回退为普通用户输入交给模型；Agent scope 会 shadow 同名 global（同 scope 重名注册直接报错）。
+  **未注册的斜杠指令直接拒绝**：`commands.execute()` 对未知注册名返回 `undefined`
+  （已 parse 出命令名但 registry miss），渠道回复一条「未知命令：/xxx，输入 /help
+  查看命令。」提示，**绝**不作为普通用户输入交给模型（与官方 rc.2 Host 一致）；Agent
+  scope 会 shadow 同名 global（同 scope 重名注册直接报错）。
 - **通用控制面 + Web 设置**（`channel-control` + `channel-web`，见上文「通用 Channel
   Control Plane」）：扫码 / 设备授权 / 凭证表单统一为 `AuthSession` 模型，浏览器只
   消费净化的 `PublicAuthSession`，Secret 永不离开进程。

@@ -37,8 +37,8 @@ import { z } from 'zod';
 
 
 /**
- * A genuine http(s) URL (the only string allowed in the `url` carrier per
- * plan §9). Anything else (image_key, file_key, mediaId, …) is a
+ * A genuine http(s) URL (the only string allowed in the `url` carrier).
+ * Anything else (image_key, file_key, mediaId, …) is a
  * platform-opaque handle and must be mapped into `resourceRef` instead.
  */
 function isHttpUrl(value: string | undefined): value is string {
@@ -172,7 +172,7 @@ function partsFor(raw: LarkRaw): MessagePart[] {
       return textParts(raw.content ?? '');
     case 'image':
     case 'picture': {
-      // Per plan §28/§9 a Lark image locator is an opaque image_key (NOT a
+      // Per the url/resourceRef rule a Lark image locator is an opaque image_key (NOT a
       // URL): it MUST live in `resourceRef`, never `url` — `url` is reserved
       // for genuine http(s) URLs. The real SDK path sets picUrl = image_key
       // (opaque → resourceRef); a legacy gateway that already resolved it to

@@ -75,7 +75,7 @@ export interface DingTalkAdapterDeps {
   secureFetch?: RemoteMediaFetchLike;
   /**
    * DingTalk OpenAPI media resolver used to hydrate opaque file mediaIds into
-   * trusted bytes during inbound file ingress (plan §32A / §86). Injectable for
+   * trusted bytes during inbound file ingress. Injectable for
    * offline tests; defaults to the running official port in sdk mode.
    */
   resolveMedia?: MediaResolverLike;
@@ -100,7 +100,7 @@ export class DingTalkAdapter implements ChannelAdapter {
     reactions: false,
     threads: false,
     streaming: 'edit',
-    // Directional media precision (attachment-gateway plan §7.1). Inbound
+    // Directional media precision. Inbound
     // image/file have an established official download path. Audio/video are
     // conservatively declared as locators until official callback/download
     // documentation and a real-account live gate prove byte hydration; the
@@ -140,7 +140,7 @@ export class DingTalkAdapter implements ChannelAdapter {
    */
   private officialPort?: DingTalkOpenApiPortImpl;
   /**
-   * Proactive outbox capabilities (plan §71). Read by the harness outbox;
+   * Proactive outbox capabilities. Read by the harness outbox;
    * fails CLOSED (all-false) in gateway mode / when not wired.
    */
   private capProactive: OutboxCapabilities = { proactiveText: false, proactiveMedia: false };
@@ -264,9 +264,9 @@ export class DingTalkAdapter implements ChannelAdapter {
       return;
     }
     // The official OpenAPI port implements BOTH the `DingTalkUpstream` outbound
-    // surface (sessionWebhook reply, plan §35) and the `DingTalkOpenApiPort`
-    // proactive/media surface (plan §33). Proactive is implemented in sdk mode,
-    // so the outbox capabilities are enabled (plan §69: capability true only when
+    // surface (sessionWebhook reply) and the `DingTalkOpenApiPort`
+    // proactive/media surface. Proactive is implemented in sdk mode,
+    // so the outbox capabilities are enabled (capability true only when
     // actually implemented — never faked).
     this.officialPort = new DingTalkOpenApiPortImpl({
       transport: this.transport,
@@ -285,7 +285,7 @@ export class DingTalkAdapter implements ChannelAdapter {
   }
 
   /**
-   * Proactive outbox capabilities (plan §71) exposed for the harness outbox.
+   * Proactive outbox capabilities exposed for the harness outbox.
    * Fails CLOSED: all-false in gateway mode / when not wired.
    */
   get outboxCapabilities(): OutboxCapabilities {

@@ -1,5 +1,5 @@
 /**
- * Telegram inbound media hydration (attachment-gateway plan §5 / §23-A2).
+ * Telegram inbound media hydration.
  *
  * Covers `hydrateTelegramParts` at the resolver level (photo/document/voice/
  * audio/video all reach `localData` with authoritative size, hint merge rules,

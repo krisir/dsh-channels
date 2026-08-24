@@ -1,5 +1,5 @@
 /**
- * DingTalk audio/video inbound hydration (plan §23-A5).
+ * DingTalk audio/video inbound hydration.
  *
  * Audio/video parts follow the SAME URL-or-opaque resolution as image/file:
  *   - genuine http(s) url -> SecureRemoteMediaFetcher -> localData + mimeType + size
@@ -68,7 +68,7 @@ async function handleMedia(
   return received;
 }
 
-describe('InboundProcessor audio hydration (plan §23-A5)', () => {
+describe('InboundProcessor audio hydration', () => {
   it('audio with a genuine http(s) url -> fetched into localData + mimeType + size', async () => {
     const { fetcher, calls } = okFetcher();
     const { processor, service, ctx } = makeProcessor({ fetcher });
@@ -147,7 +147,7 @@ describe('InboundProcessor audio hydration (plan §23-A5)', () => {
   });
 });
 
-describe('InboundProcessor video hydration (plan §23-A5)', () => {
+describe('InboundProcessor video hydration', () => {
   it('video with a genuine http(s) url -> fetched into localData + mimeType + size', async () => {
     const { fetcher, calls } = okFetcher();
     const { processor, service, ctx } = makeProcessor({ fetcher });

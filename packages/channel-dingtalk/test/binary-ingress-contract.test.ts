@@ -1,6 +1,5 @@
 /**
- * Multi-channel binary ingress contract (attachment-gateway plan §32) for
- * DingTalk.
+ * Multi-channel binary ingress contract for DingTalk.
  *
  * Every case drives the REAL inbound entry — `InboundProcessor.handle(raw)` —
  * mirroring `test/image-hydration.test.ts` / `test/media-hydration.test.ts`:

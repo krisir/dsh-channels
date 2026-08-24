@@ -10,8 +10,7 @@
  * `commands` is a required capability (no optional fallback) so the bridge can
  * install Agent-scoped channel commands.
  *
- * `apiProxy` is deliberately absent from the PLUGIN's own `inject` (plan §5 /
- * §21 P0-3): the Web profile mounts it (questions then ride the official
+ * `apiProxy` is deliberately absent from the PLUGIN's own `inject`: the Web profile mounts it (questions then ride the official
  * ApiProxy mux), but headless deployments do not, and the channel-harness
  * must still start there — its question backend probes `apiProxy` once at
  * startup and otherwise registers the official UserQuestionProvider through

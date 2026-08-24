@@ -197,7 +197,7 @@ export class ChannelControlService extends Service {
     }
     const enabled = definition.enabled;
     const running = this.runtime.isRunning(definition.id);
-    // Access readiness (plan §28): cheap, failure-tolerant; default to
+    // Access readiness: cheap, failure-tolerant; default to
     // 'missing-policy' so a broken definition never breaks the collapsed row.
     const access = await this.accessReadiness(definition.id);
     if (running) {
@@ -442,12 +442,12 @@ export class ChannelControlService extends Service {
     return this.auth.cancel(sessionId);
   }
 
-  /** Access state for a channel+account (plan §27, §29). */
+  /** Access state for a channel+account. */
   getAccess(channelId: string, accountId = 'main'): Promise<ChannelAccessState> {
     return this.access.getState(channelId, accountId);
   }
 
-  /** Validate + persist an access policy, returning the resulting state (plan §29, §31). */
+  /** Validate + persist an access policy, returning the resulting state. */
   saveAccess(
     channelId: string,
     policy: ChannelAccessPolicy,
@@ -456,9 +456,9 @@ export class ChannelControlService extends Service {
     return this.access.saveAccess(channelId, policy, accountId);
   }
 
-  // ---- owner claim surface (plan §29, §55) ----------------------------------
+  // ---- owner claim surface ----------------------------------
 
-  /** Begin a local owner-claim session (plan §21). */
+  /** Begin a local owner-claim session. */
   beginOwnerClaim(channelId: string, accountId = 'main'): PublicOwnerClaimSession {
     return this.ownerClaims.begin(channelId, accountId);
   }
@@ -470,7 +470,7 @@ export class ChannelControlService extends Service {
 
   /**
    * Confirm a candidate and persist the owner, then return the resulting
-   * access state for the channel+account (plan §25, §29).
+   * access state for the channel+account.
    */
   async confirmOwnerClaim(
     channelId: string,
@@ -480,7 +480,7 @@ export class ChannelControlService extends Service {
     return this.access.getState(channelId, session.accountId);
   }
 
-  /** Cancel an owner-claim session (plan §29). */
+  /** Cancel an owner-claim session. */
   cancelOwnerClaim(channelId: string, claimId: string): void {
     this.ownerClaims.cancel(channelId, claimId);
   }

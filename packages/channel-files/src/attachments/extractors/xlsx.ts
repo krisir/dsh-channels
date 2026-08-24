@@ -1,5 +1,5 @@
 /**
- * XLSX (and xls) text extractor (plan §48).
+ * XLSX (and xls) text extractor.
  *
  * Uses the established, pure-JS xlsx@0.18.5 (SheetJS, exact-pinned) to read
  * the workbook cells and render each sheet as a markdown table. Shared

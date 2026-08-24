@@ -1,5 +1,5 @@
 /**
- * ChannelControlService access surface tests (plan §24, §27, §29, §31):
+ * ChannelControlService access surface tests:
  * getAccess readiness, owner 'account' bootstrap, saveAccess persist/re-read,
  * and malformed policy rejection.
  */
@@ -194,7 +194,7 @@ describe('ChannelControlService.saveAccess', () => {
   });
 });
 
-describe('ChannelControlService owner claim (plan §29)', () => {
+describe('ChannelControlService owner claim', () => {
   it('beginOwnerClaim rejects CLAIM_NOT_SUPPORTED for ownerDiscovery=account', () => {
     const { service } = harness([
       makeDef('weixin', accountDescriptor, { resolveOwnerIdentity: async () => 'wx-user' }),

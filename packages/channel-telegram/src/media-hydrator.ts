@@ -11,9 +11,9 @@
  * Every transportable binary kind — `image`, `file`, `audio` and `video`
  * (voice notes and audio messages both map to AudioPart, video messages to
  * VideoPart) — is hydrated: Transport is transport, so a `resourceRef` is
- * resolved into real bytes before emit for whichever binary part carries one
- * (attachment-gateway plan §5 / §23-A2). The download seam is generic for any
- * supported file_id (photo / document / voice / audio / video).
+ * resolved into real bytes before emit for whichever binary part carries one.
+ * The download seam is generic for any supported file_id (photo / document /
+ * voice / audio / video).
  *
  * Failure handling follows the shared contract: a download failure never
  * blocks text delivery. The part keeps its `resourceRef` and records a stable

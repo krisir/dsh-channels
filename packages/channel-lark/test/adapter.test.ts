@@ -235,10 +235,10 @@ describe('mapper (fixture-driven)', () => {
     expect(event.message.content).toEqual(expected.message.content);
   });
 
-  it('maps an opaque Lark image_key into resourceRef, not url (plan §28/§9)', () => {
+  it('maps an opaque Lark image_key into resourceRef, not url', () => {
     // The real SDK path sets picUrl = image_key (an opaque platform handle),
     // so the mapper must place it in resourceRef — never in url, which is
-    // reserved for genuine http(s) URLs (plan §9).
+    // reserved for genuine http(s) URLs.
     const raw = {
       type: 'image',
       msgId: 'm_img_key',
@@ -279,10 +279,10 @@ describe('mapper (fixture-driven)', () => {
     expect((file.message.content[0] as { url?: string }).url).toBe('https://x/doc.pdf');
   });
 
-  it('maps an opaque Lark file_key into resourceRef, not url (plan §28/§84)', () => {
+  it('maps an opaque Lark file_key into resourceRef, not url', () => {
     // The real SDK path routes the file body's opaque file_key through
     // raw.mediaUrl (lark-sdk-upstream.ts). As with image_key, that opaque
-    // handle must live in resourceRef — never url (plan §9) — so the media
+    // handle must live in resourceRef — never url — so the media
     // port can resolve it via messageResource.get into localData.
     const raw = {
       type: 'file',
@@ -305,8 +305,8 @@ describe('mapper (fixture-driven)', () => {
   });
 
   it('maps opaque audio/video file_keys into resourceRef, keeping genuine URLs in url', () => {
-    // SDK audio/video bodies carry opaque file_keys; mirror the file rule
-    // (plan §28). Genuine http(s) URLs stay in url (plan §9).
+    // SDK audio/video bodies carry opaque file_keys; mirror the file rule.
+    // Genuine http(s) URLs stay in url.
     const audio = mapInbound(
       { type: 'audio', msgId: 'a1', senderId: 'ou_1', conversationId: 'oc_1', chatType: 'group', mediaUrl: 'file_v2_voice', durationMs: 1200 },
       meta,

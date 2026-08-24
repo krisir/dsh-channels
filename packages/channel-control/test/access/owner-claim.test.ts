@@ -1,5 +1,5 @@
 /**
- * OwnerClaimSessionManager tests (execution plan §21, §55).
+ * OwnerClaimSessionManager tests.
  *
  * Matrix covered:
  * - begin claim (challenge >= 32 hex chars, TTL, phase waiting-message)
@@ -318,7 +318,7 @@ describe('OwnerClaimSessionManager.cancel / get', () => {
   });
 });
 
-describe('OwnerClaimSessionManager.confirm (plan §25 rebind)', () => {
+describe('OwnerClaimSessionManager.confirm (rebind)', () => {
   it('throws CLAIM_INVALID when there is no candidate yet', async () => {
     const { manager } = makeManager();
     const claim = manager.begin('qq');

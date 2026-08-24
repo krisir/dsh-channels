@@ -1,11 +1,10 @@
 /**
- * Channel display labels and safe path/title helpers (plan §4.2 / P1).
+ * Channel display labels and safe path/title helpers.
  *
  * Workspace titles group channel sessions under a human-readable name using a
  * registry of channel display labels, and account identity is reduced to a
  * stable, non-sensitive short string so that tokens / openids / full phone
- * numbers are never exposed in a Workspace title or directory path (plan §4.2
- * "不要直接把 token、openid、完整手机号等敏感 accountId 展示").
+ * numbers are never exposed in a Workspace title or directory path.
  */
 import { createHash } from 'node:crypto';
 
@@ -29,7 +28,7 @@ export function channelLabel(channelId: string): string {
 }
 
 /**
- * Workspace title for a channel/account pair (plan §4.2):
+ * Workspace title for a channel/account pair:
  * - single-account channels (id in the small default set): `Channels · 微信`
  * - multi-account: `Channels · 微信 · <accountLabel>`, where
  *   `<accountLabel>` is the readable account label when {@link safeAccountLabel}

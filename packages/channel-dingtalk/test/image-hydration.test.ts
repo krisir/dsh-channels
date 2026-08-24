@@ -1,5 +1,5 @@
 /**
- * M2A: DingTalk native image ingress hydration (plan §32A / §79A).
+ * M2A: DingTalk native image ingress hydration.
  *
  * Covers the `InboundProcessor` image-hydration step: a fake secure
  * fetcher turns a genuine http(s) picUrl into `localData` + `mimeType` on

@@ -1,11 +1,10 @@
 /**
- * Legacy -> Catalog v2 backfill builder (attachment-gateway plan §12 / §13 /
- * §26 — Phase D).
+ * Legacy -> Catalog v2 backfill builder.
  *
  * A pure function mapping a `StoredChannelAsset` (schemaVersion 1) to an
  * `AttachmentCatalogRecordV2` that points `storage.backend` at `channel-v1`.
  * It only RE-INDEXES already-stored v1 data — it never rewrites or moves the
- * v1 tree (plan §12.1: "旧数据不动 / 新 writer 写最新格式 / 旧 reader 永远兼容").
+ * v1 tree (旧数据不动 / 新 writer 写最新格式 / 旧 reader 永远兼容).
  *
  * This module performs NO file I/O by design: constructing the in-memory
  * record is pure; all store I/O lives in `catalog/store.ts`.

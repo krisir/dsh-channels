@@ -1,5 +1,5 @@
 /**
- * Harness-side Access Policy Resolver (execution plan §17, §15).
+ * Harness-side Access Policy Resolver.
  *
  * Failure-closed resolution over the shared ChannelStorage. The Harness DOES
  * NOT depend on channel-control: it reads the shared versioned policy KV via
