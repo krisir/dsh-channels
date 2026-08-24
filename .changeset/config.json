@@ -7,5 +7,9 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "@wsz987/channel-testkit",
+    "@wsz987/channel-compat",
+    "@wsz987/channel-verify"
+  ]
 }

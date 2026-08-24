@@ -7,8 +7,6 @@
 '@wsz987/channel-lark': minor
 '@wsz987/channel-dingtalk': minor
 '@wsz987/channel-weixin': minor
-'@wsz987/channel-testkit': minor
-'@wsz987/channel-verify': minor
 '@wsz987/dsh-channels': minor
 ---
 

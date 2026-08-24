@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -92,6 +93,15 @@ test('release allowlist rejects an omitted workspace dependency', () => {
   );
   entries.push(entry('@wsz987/channel-testkit', '0.1.0'));
   assert.throws(() => releasePackages(entries), /depends on non-release workspace package/);
+});
+
+test('Changesets ignores development and governance packages', () => {
+  const config = JSON.parse(readFileSync(new URL('../.changeset/config.json', import.meta.url), 'utf8'));
+  assert.deepEqual(config.ignore, [
+    '@wsz987/channel-testkit',
+    '@wsz987/channel-compat',
+    '@wsz987/channel-verify',
+  ]);
 });
 
 test('npm dist-tag follows the bundle release channel', () => {
