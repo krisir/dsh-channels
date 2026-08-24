@@ -140,6 +140,7 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
       questionIndex: 0,
       selected: new Set(),
       awaitingCustom: false,
+      state: 'pending',
       processing: false,
       responding: false,
       target,
@@ -157,7 +158,7 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
       return false;
     }
     this.state.armTimeout(pending, this.options.timeoutMs, (expired) => {
-      void this.cancel(expired, '问题已超时，请重新发起。');
+      void this.cancel(expired, '问题已超时，请重新发起。', 'expired');
     });
     this.options.logger.info('[channel-harness] presenting user question on channel', {
       sessionId,
@@ -174,9 +175,16 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
   }
 
   /** Another client answered, or the owning tool call aborted: drop controls. */
-  async questionSettledExternally(key: string): Promise<void> {
+  async questionSettledExternally(
+    key: string,
+    state: 'aborted' | 'externally-settled' = 'externally-settled',
+  ): Promise<void> {
     const pending = this.state.getByKey(key);
-    if (pending) await this.cleanup(pending);
+    if (!pending) return;
+    // Mark terminal before the first await. A channel handler may still hold
+    // this object after the store indexes are removed.
+    if (pending.state === 'pending') pending.state = state;
+    await this.cleanup(pending);
   }
 
   // ---------------------------------------------------------------------------
@@ -195,6 +203,7 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
     adapter: ChannelAdapter,
     edit: boolean,
   ): Promise<void> {
+    if (pending.state !== 'pending') return;
     const question = pending.questions[pending.questionIndex];
     if (!question) return this.submit(pending);
     this.state.clearActions(pending);
@@ -205,7 +214,14 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
       return;
     }
     const result = await adapter.send(pending.target, message);
-    pending.messageId = result.messageId;
+    if (pending.state !== 'pending') {
+      if (message.actions?.length && result.messageId && adapter.edit) {
+        await adapter.edit(pending.target, result.messageId, { actions: [] }).catch(() => {});
+      }
+      return;
+    }
+    if (message.replyPrompt) pending.promptMessageId = result.messageId;
+    else pending.messageId = result.messageId;
   }
 
   /**
@@ -233,12 +249,13 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
         `${index + 1}. ${option.label}${option.description ? `\n   ${option.description}` : ''}`,
       ));
     }
+    const needsTextReply = pending.awaitingCustom || !question.options?.length;
     if (pending.awaitingCustom) lines.push('请直接回复你的自定义答案。');
-    else if (!question.options?.length) lines.push('请直接回复文字，或选择“跳过本题”。');
+    else if (!question.options?.length) lines.push('请直接回复文字，或输入“跳过”。');
 
     const approveLabel = planReview ? intent.approve : undefined;
     const actions: OutboundActionRow[] = [];
-    if (!pending.awaitingCustom) {
+    if (!needsTextReply) {
       for (const [index, option] of (question.options ?? []).entries()) {
         const selected = pending.selected.has(option.label);
         actions.push({
@@ -256,8 +273,13 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
         }
       }
     }
-    actions.push({ actions: [{ id: this.state.bindAction(pending, { kind: 'skip' }), label: '跳过本题' }] });
-    return { text: lines.filter(Boolean).join('\n\n'), actions };
+    if (!needsTextReply) {
+      actions.push({ actions: [{ id: this.state.bindAction(pending, { kind: 'skip' }), label: '跳过本题' }] });
+    }
+    return {
+      text: lines.filter(Boolean).join('\n\n'),
+      ...(needsTextReply ? { replyPrompt: { kind: 'text' as const } } : { actions }),
+    };
   }
 
   private async handleInteraction(event: InteractionReceived): Promise<boolean> {
@@ -265,7 +287,7 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
     if (!ref || ref.pending.conversationKey !== eventKey(event)) return false;
     const pending = ref.pending;
     if (String(event.sender.id) !== pending.allowedSenderId) return true;
-    if (pending.processing || pending.responding) return true;
+    if (pending.state !== 'pending' || pending.processing || pending.responding) return true;
     const question = pending.questions[pending.questionIndex];
     if (!question) return true;
     const action = ref.action;
@@ -277,7 +299,11 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
       } else if (action.kind === 'custom') {
         pending.awaitingCustom = true;
         const adapter = this.options.getAdapter(pending.target.channelId);
-        if (adapter) await this.present(pending, adapter, true);
+        if (adapter) {
+          await this.removeButtons(pending);
+          if (pending.state !== 'pending') return true;
+          await this.present(pending, adapter, false);
+        }
       } else if (action.kind === 'done') {
         if (pending.selected.size > 0) {
           await this.advance(pending, { id: question.id, selected: [...pending.selected] });
@@ -309,9 +335,15 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
     if (String(event.sender.id) !== pending.allowedSenderId) return false;
     const text = textOf(event);
     if (!text || text.startsWith('/')) return false;
-    if (pending.processing || pending.responding) return true;
+    if (pending.state !== 'pending' || pending.processing || pending.responding) return true;
     const question = pending.questions[pending.questionIndex];
     if (!question) return false;
+    if (
+      pending.target.conversationType === 'group' &&
+      (!pending.promptMessageId || event.message.replyTo !== pending.promptMessageId)
+    ) {
+      return false;
+    }
     pending.processing = true;
     try {
       if (text === '跳过' || text === '跳过本题') {
@@ -345,18 +377,21 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
   }
 
   private async advance(pending: PendingChannelQuestion, answer: AskUserQuestionAnswerItem): Promise<void> {
+    if (pending.state !== 'pending') return;
     await this.removeButtons(pending);
+    if (pending.state !== 'pending') return;
     pending.answers.push(answer);
     pending.questionIndex += 1;
     pending.selected.clear();
     pending.awaitingCustom = false;
+    pending.promptMessageId = undefined;
     const adapter = this.options.getAdapter(pending.target.channelId);
     if (!adapter) return this.cancel(pending, '渠道已断开，问题已取消。');
     await this.present(pending, adapter, false);
   }
 
   private async submit(pending: PendingChannelQuestion): Promise<void> {
-    if (pending.responding) return;
+    if (pending.state !== 'pending' || pending.responding) return;
     pending.responding = true;
     try {
       await this.options.backend.resolve({
@@ -364,15 +399,25 @@ export class ChannelQuestionPresenter implements QuestionInteractionSink {
         sessionId: pending.sessionId,
         answer: { answers: pending.answers },
       });
+      if (pending.state === 'pending') pending.state = 'resolved';
       await this.cleanup(pending);
     } catch (error) {
+      if (pending.state !== 'pending') {
+        await this.cleanup(pending);
+        return;
+      }
       pending.responding = false;
       throw error;
     }
   }
 
-  private async cancel(pending: PendingChannelQuestion, notice: string): Promise<void> {
-    if (pending.responding) return;
+  private async cancel(
+    pending: PendingChannelQuestion,
+    notice: string,
+    state: 'expired' | 'aborted' = 'aborted',
+  ): Promise<void> {
+    if (pending.state !== 'pending' || pending.responding) return;
+    pending.state = state;
     pending.responding = true;
     await this.removeButtons(pending);
     const adapter = this.options.getAdapter(pending.target.channelId);

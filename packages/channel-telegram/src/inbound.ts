@@ -35,6 +35,7 @@ import {
   isCallbackQueryUpdate,
   mapCallbackQuery,
   mapInbound,
+  TelegramInboundValidationError,
   type TelegramInboundMeta,
 } from './mapper.js';
 
@@ -131,7 +132,15 @@ export class InboundProcessor {
       return;
     }
 
-    await this.handleMessage(raw);
+    try {
+      await this.handleMessage(raw);
+    } catch (error) {
+      if (!(error instanceof TelegramInboundValidationError)) throw error;
+      // Invalid identities must not enter the contract or block the polling
+      // cursor forever. This is intentionally a silent protocol-level drop.
+      this.options.ctx.logger.warn('[channel-telegram] dropped invalid inbound update');
+      return;
+    }
     if (this.options.dedupEnabled) this.seen.set(key, this.now());
   }
 

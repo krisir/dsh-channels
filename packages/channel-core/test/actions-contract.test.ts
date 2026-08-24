@@ -39,6 +39,15 @@ describe('OutboundMessage.actions (generic interactive buttons)', () => {
     const plain: OutboundMessage = { text: 'hi' };
     expect(plain.actions).toBeUndefined();
   });
+
+  it('carries a platform-neutral free-text reply prompt', () => {
+    const message: OutboundMessage = {
+      text: 'Where should this be created?',
+      replyPrompt: { kind: 'text', placeholder: 'Enter a path' },
+    };
+    expect(message.replyPrompt).toEqual({ kind: 'text', placeholder: 'Enter a path' });
+    expect(Object.keys(message)).not.toContain('force_reply');
+  });
 });
 
 describe('capabilities.interactiveActions', () => {

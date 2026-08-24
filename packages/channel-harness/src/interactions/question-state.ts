@@ -33,6 +33,14 @@ export interface PendingQuestionActionRef {
   action: PendingQuestionAction;
 }
 
+/** Explicit lifecycle so removed objects held by an async handler stay terminal. */
+export type QuestionLifecycleState =
+  | 'pending'
+  | 'resolved'
+  | 'expired'
+  | 'aborted'
+  | 'externally-settled';
+
 /**
  * One in-flight question batch as presented on one channel conversation.
  * Transport-neutral: `key` is whatever correlation id the active backend
@@ -48,6 +56,7 @@ export interface PendingChannelQuestion {
   questionIndex: number;
   selected: Set<string>;
   awaitingCustom: boolean;
+  state: QuestionLifecycleState;
   processing: boolean;
   responding: boolean;
   target: ChannelTarget;
@@ -59,6 +68,8 @@ export interface PendingChannelQuestion {
    */
   allowedSenderId: string;
   actionIds: Set<string>;
+  /** Message that a free-text response must reply to in a group or forum. */
+  promptMessageId?: string;
   messageId?: string;
   renderedText?: string;
   timer?: ReturnType<typeof setTimeout>;

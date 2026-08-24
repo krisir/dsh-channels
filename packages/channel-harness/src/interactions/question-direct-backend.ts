@@ -152,7 +152,7 @@ export class DirectQuestionBackend implements QuestionInteractionBackend, UserQu
         });
         // Drop the channel-side presentation (buttons/state) after the ask
         // itself settled; a racing channel answer becomes a backend no-op.
-        void sink.questionSettledExternally(key);
+        void sink.questionSettledExternally(key, 'aborted');
       };
       pending.onAbort = onAbort;
       request.signal?.addEventListener('abort', onAbort, { once: true });

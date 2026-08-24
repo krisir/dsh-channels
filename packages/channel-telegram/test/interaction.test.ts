@@ -20,6 +20,7 @@ import {
   mapCallbackQuery,
   isCallbackQueryUpdate,
   actionsToReplyMarkup,
+  OutboundSender,
   createTelegramDefinition,
 } from '../src/index.ts';
 import type { HttpTransport, HttpRequestInit } from '../src/index.ts';
@@ -61,6 +62,7 @@ function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
     reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10, maxRetries: 2 },
     dedup: { enabled: true, windowMs: 5000 },
     streaming: { enabled: true, placeholder: '…' },
+    typing: { enabled: true, refreshMs: 4000 },
     maxDownloadBytes: 20 * 1024 * 1024,
     ...overrides,
   });
@@ -108,6 +110,46 @@ describe('callback_query -> interaction.received', () => {
     expect(() => mapCallbackQuery({ callback_query: { id: 5 } }, META)).toThrow();
     expect(() => mapCallbackQuery('not-an-object', META)).toThrow();
   });
+
+  it('fails closed when a callback lacks a message chat or sender identity', () => {
+    const withoutChat = {
+      callback_query: {
+        ...CALLBACK_UPDATE.callback_query,
+        message: { message_id: 501 },
+      },
+    };
+    const withoutSender = {
+      callback_query: {
+        ...CALLBACK_UPDATE.callback_query,
+        from: { first_name: 'Alice' },
+      },
+    };
+
+    expect(isCallbackQueryUpdate(withoutChat)).toBe(false);
+    expect(() => mapCallbackQuery(withoutChat, META)).toThrow(/invalid callback_query payload/);
+    expect(isCallbackQueryUpdate(withoutSender)).toBe(false);
+    expect(() => mapCallbackQuery(withoutSender, META)).toThrow(/invalid callback_query payload/);
+  });
+
+  it('keeps Forum callback topics separate for interaction routing', () => {
+    const inTopic = (threadId: number) => mapCallbackQuery({
+      ...CALLBACK_UPDATE,
+      callback_query: {
+        ...CALLBACK_UPDATE.callback_query,
+        message: {
+          message_id: 501,
+          message_thread_id: threadId,
+          chat: { id: -100123, type: 'supergroup' },
+        },
+      },
+    }, META);
+
+    const topicA = inTopic(123);
+    const topicB = inTopic(456);
+    expect(topicA.conversation).toEqual({ id: '-100123', type: 'group', threadId: '123' });
+    expect(topicB.conversation).toEqual({ id: '-100123', type: 'group', threadId: '456' });
+    expect(topicB.conversation).not.toEqual(topicA.conversation);
+  });
 });
 
 describe('InboundProcessor callback handling', () => {
@@ -151,6 +193,33 @@ describe('InboundProcessor callback handling', () => {
     });
     await processor.handle(CALLBACK_UPDATE);
     expect(interaction).toHaveLength(1); // ACK failed but the interaction still arrives
+  });
+
+  it('drops callbacks without message chat context without ACKing or emitting', async () => {
+    const service = new ChannelService(new Context());
+    const ctx = createTestContext(service);
+    const ackCallback = vi.fn(async () => undefined);
+    const processor = new InboundProcessor({
+      ctx,
+      meta: META,
+      dedupEnabled: false,
+      dedupWindowMs: 0,
+      ackCallback,
+    });
+    const interaction: InteractionReceived[] = [];
+    service.on((event) => {
+      if (event.type === 'interaction.received') interaction.push(event);
+    });
+
+    await processor.handle({
+      callback_query: {
+        ...CALLBACK_UPDATE.callback_query,
+        message: { message_id: 501 },
+      },
+    });
+
+    expect(ackCallback).not.toHaveBeenCalled();
+    expect(interaction).toHaveLength(0);
   });
 });
 
@@ -224,6 +293,67 @@ describe('InlineKeyboardMarkup + callback_data gate', () => {
   });
 });
 
+describe('ForceReply free-text prompts', () => {
+  it('maps a generic reply prompt to Telegram ForceReply', async () => {
+    const transport = new FakeTransport();
+    transport.route(tgPath('sendMessage'), () => ({ ok: true, result: { message_id: 17 } }));
+    const upstream = new HttpTelegramUpstream({ transport, token: TOKEN, longPollTimeoutMs: 500 });
+    const sender = new OutboundSender(
+      upstream,
+      { debug() {}, info() {}, warn() {}, error() {} } as never,
+      { formatting: { mode: 'plain' } },
+    );
+
+    const result = await sender.send(
+      { channelId: 'telegram' as never, accountId: 'main' as never, conversationId: '123' as never },
+      { text: 'Reply with a directory', replyPrompt: { kind: 'text', placeholder: 'D:/workspace' } },
+    );
+
+    expect(result.messageId).toBe('17');
+    expect(transport.calls[0]?.init?.body).toMatchObject({
+      reply_markup: { force_reply: true, input_field_placeholder: 'D:/workspace' },
+    });
+  });
+
+  it('rejects a ForceReply prompt combined with inline actions', async () => {
+    const transport = new FakeTransport();
+    const upstream = new HttpTelegramUpstream({ transport, token: TOKEN, longPollTimeoutMs: 500 });
+    const sender = new OutboundSender(
+      upstream,
+      { debug() {}, info() {}, warn() {}, error() {} } as never,
+      { formatting: { mode: 'plain' } },
+    );
+
+    await expect(sender.send(
+      { channelId: 'telegram' as never, accountId: 'main' as never, conversationId: '123' as never },
+      {
+        text: 'Reply',
+        replyPrompt: { kind: 'text' },
+        actions: [{ actions: [{ id: 'skip', label: 'Skip' }] }],
+      },
+    )).rejects.toThrow(/cannot be combined/);
+  });
+
+  it('rejects a ForceReply placeholder longer than 64 characters', async () => {
+    const transport = new FakeTransport();
+    const upstream = new HttpTelegramUpstream({ transport, token: TOKEN, longPollTimeoutMs: 500 });
+    const sender = new OutboundSender(
+      upstream,
+      { debug() {}, info() {}, warn() {}, error() {} } as never,
+      { formatting: { mode: 'plain' } },
+    );
+
+    await expect(sender.send(
+      { channelId: 'telegram' as never, accountId: 'main' as never, conversationId: '123' as never },
+      { text: 'Reply', replyPrompt: { kind: 'text', placeholder: 'x'.repeat(65) } },
+    )).rejects.toMatchObject({
+      code: 'CHANNEL_SEND_FAILED',
+      message: expect.stringContaining('64-character limit'),
+    });
+    expect(transport.calls).toHaveLength(0);
+  });
+});
+
 describe('Telegram definition formatting persistence', () => {
   it('saves, snapshots, and restores formatting as an independent nested config', async () => {
     const definition = createTelegramDefinition({
@@ -234,14 +364,22 @@ describe('Telegram definition formatting persistence', () => {
         set: async () => undefined,
       },
     });
-    await definition.saveConfig({ formatting: { mode: 'html' } });
+    await definition.saveConfig({ formatting: { mode: 'html' }, typing: { enabled: false, refreshMs: 6000 } });
     const saved = definition.snapshotConfig() as TelegramConfig;
     expect(saved.formatting.mode).toBe('html');
+    expect(saved.typing).toEqual({ enabled: false, refreshMs: 6000 });
     saved.formatting.mode = 'plain';
+    saved.typing.enabled = true;
     expect((definition.snapshotConfig() as TelegramConfig).formatting.mode).toBe('html');
+    expect((definition.snapshotConfig() as TelegramConfig).typing.enabled).toBe(false);
 
-    await definition.restoreConfig({ ...makeConfig(), formatting: { mode: 'rich-markdown', fallback: 'plain' } });
+    await definition.restoreConfig({
+      ...makeConfig(),
+      formatting: { mode: 'rich-markdown', fallback: 'plain' },
+      typing: { enabled: true, refreshMs: 5000 },
+    });
     expect((definition.snapshotConfig() as TelegramConfig).formatting.mode).toBe('rich-markdown');
+    expect((definition.snapshotConfig() as TelegramConfig).typing).toEqual({ enabled: true, refreshMs: 5000 });
   });
 });
 

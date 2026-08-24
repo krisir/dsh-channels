@@ -166,6 +166,17 @@ export interface OutboundActionRow {
   actions: OutboundAction[];
 }
 
+/**
+ * A platform-neutral prompt that asks the recipient to reply with free text.
+ * Adapters may map this to their native reply UI (for example, Telegram
+ * ForceReply) or fall back to a normal text message.
+ */
+export interface OutboundReplyPrompt {
+  kind: 'text';
+  /** Optional native input hint. */
+  placeholder?: string;
+}
+
 /** Outbound message sent through `ChannelAdapter.send()`. */
 export interface OutboundMessage {
   /** Plain text payload; most platforms support at least this. */
@@ -181,6 +192,11 @@ export interface OutboundMessage {
    * is echoed back on the matching `interaction.received` event.
    */
   actions?: OutboundActionRow[];
+  /**
+   * Request a free-text reply. This is deliberately platform-neutral; it
+   * carries no Telegram- or adapter-specific wire fields.
+   */
+  replyPrompt?: OutboundReplyPrompt;
   /** Adapter-agnostic metadata (never passed to the model surface). */
   metadata?: Record<string, unknown>;
 }

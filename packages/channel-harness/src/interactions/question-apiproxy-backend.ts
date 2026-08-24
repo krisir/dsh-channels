@@ -182,7 +182,7 @@ export class ApiProxyQuestionBackend implements QuestionInteractionBackend {
         return;
       }
       if (!this.sink) return;
-      await this.sink.questionSettledExternally(frame.data.questionRpcId);
+      await this.sink.questionSettledExternally(frame.data.questionRpcId, 'externally-settled');
     }
     // Every other official MuxFrame member (session events, approvals, queue
     // snapshots, …) belongs to other consumers — ignore silently, including

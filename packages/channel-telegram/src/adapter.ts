@@ -119,6 +119,10 @@ export class TelegramAdapter implements ChannelAdapter {
   private receiveLoop?: Promise<void>;
   private receiveAbort?: AbortController;
   private removeContextAbortListener?: () => void;
+  /** One start/refresh lifecycle per chat/topic target, including in-flight starts. */
+  private readonly typingStates = new Map<string, {
+    timer?: ReturnType<typeof setInterval>;
+  }>();
   private connected = false;
   private authState: TelegramAuthState = 'unauthenticated';
   /** getUpdates acknowledgement cursor, shared with the driver across retries. */
@@ -217,6 +221,7 @@ export class TelegramAdapter implements ChannelAdapter {
     this.stopped = true;
     this.started = false;
     this.connected = false;
+    this.clearTypingStates();
     this.receiveAbort?.abort();
     this.receiveAbort = undefined;
     this.removeContextAbortListener?.();
@@ -232,6 +237,57 @@ export class TelegramAdapter implements ChannelAdapter {
       throw new ChannelError('CHANNEL_NOT_STARTED', 'telegram adapter is not started');
     }
     return this.outbound.send(target, message);
+  }
+
+  /** Start Telegram's transient typing indicator and refresh it per chat/topic. */
+  async startTypingForTarget(target: ChannelTarget): Promise<void> {
+    if (!this.started || this.stopped || !this.config.typing.enabled) return;
+    const key = typingKey(target);
+    if (this.typingStates.has(key)) return;
+    const state: { timer?: ReturnType<typeof setInterval> } = {};
+    this.typingStates.set(key, state);
+
+    // Let the lifecycle caller decide how to handle an immediate failure. Do
+    // not create a refresh timer unless Telegram accepted the initial action.
+    try {
+      await this.sendTyping(target);
+      if (!this.started || this.stopped || this.typingStates.get(key) !== state) return;
+      state.timer = setInterval(() => {
+        // Refresh failures are isolated from the timer; the harness owns the
+        // best-effort boundary for the immediate action below.
+        void this.sendTyping(target).catch((error) => {
+          this.ctx?.logger.debug(
+            '[channel-telegram] typing refresh failed',
+            error instanceof Error ? error.message : error,
+          );
+        });
+      }, this.config.typing.refreshMs);
+    } catch (error) {
+      if (this.typingStates.get(key) === state) this.typingStates.delete(key);
+      throw error;
+    }
+  }
+
+  /** Telegram has no explicit stop action; clearing refresh lets it expire. */
+  async stopTypingForTarget(target: ChannelTarget): Promise<void> {
+    const key = typingKey(target);
+    const state = this.typingStates.get(key);
+    if (!state) return;
+    this.typingStates.delete(key);
+    if (state.timer) clearInterval(state.timer);
+  }
+
+  private async sendTyping(target: ChannelTarget): Promise<void> {
+    await this.upstream.sendChatAction(target.conversationId, 'typing', {
+      ...(target.threadId ? { messageThreadId: target.threadId } : {}),
+    });
+  }
+
+  private clearTypingStates(): void {
+    for (const state of this.typingStates.values()) {
+      if (state.timer) clearInterval(state.timer);
+    }
+    this.typingStates.clear();
   }
 
   resolveStreamingMode(target: ChannelTarget): StreamingMode {
@@ -432,4 +488,8 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
     };
     signal?.addEventListener('abort', onAbort, { once: true });
   });
+}
+
+function typingKey(target: ChannelTarget): string {
+  return JSON.stringify([target.conversationId, target.threadId ?? null]);
 }

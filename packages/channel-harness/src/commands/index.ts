@@ -30,6 +30,7 @@ import { createModelsCommand } from './models.js';
 import { createModelCommand } from './model.js';
 import { createVersionCommand } from './version.js';
 import type { ChannelModelSelectionController } from '../model-selection.js';
+import type { ChannelCommandLocale } from './locale.js';
 
 /**
  * Narrow LLM seam handed to model commands (discovery + exact resolution).
@@ -73,6 +74,8 @@ export interface ChannelCommandDependencies {
   listCommands(agent: Agent): readonly CommandDescriptor[];
   /** Resolve one effective command definition (scoped shadow or global). */
   findCommand(agent: Agent, name: string): CommandDefinition | undefined;
+  /** Current explicit Harness Host locale; evaluated for every invocation. */
+  locale(): ChannelCommandLocale;
   /** Harness LLM catalog seam (discovery + exact resolution), bridged lazily. */
   llm: ChannelModelCatalog;
   /**

@@ -1169,7 +1169,9 @@ PDF 解析使用 `unpdf`（PDF.js），DOCX 使用 `mammoth`，XLSX 使用 `xlsx
   未注入这些服务，Cordis 属性访问直接抛 `cannot get property "X" without inject`（官方
   `CommandInvocation` 只有 `{ commandId, agent, rawInput, signal }`，没有 ctx）。要访问服务走
   `deps` 窄能力注入（同 `/new` 的 `deps.startNewSession` 模式）：`startNewSession` / `modelSelection`
-  / `listCommands` / `findCommand` / `llm`，bridge 在构造时从插件 ctx 惰性桥接。示例：
+  / `listCommands` / `findCommand` / `locale` / `llm`，bridge 在构造时从插件 ctx 惰性桥接。
+  `/help` 的 `locale` 通过 `ctx.get('settings')` 读取 Harness `locale.preference`；渠道没有浏览器
+  `navigator` 回退，显式偏好缺失或无效时使用中文。示例：
   `packages/channel-harness/src/commands/help.ts`、`src/commands/model.ts`、`src/bridge.ts` 的
   `commandDeps` 归一化。
 - **插件 ctx（`options.ctx`）属性访问服务合法**：channel-harness 的 `inject` 列表已声明

@@ -48,14 +48,27 @@ export class QuestionAdapter {
   }
 }
 
-export function message(text: string, senderId = 'owner', conversationId = 'chat-1'): MessageReceived {
+export function message(
+  text: string,
+  senderId = 'owner',
+  conversationId = 'chat-1',
+  options: { type?: 'dm' | 'group'; replyTo?: string; threadId?: string } = {},
+): MessageReceived {
   return {
     type: 'message.received',
     channel: 'telegram' as never,
     accountId: 'main' as never,
-    conversation: { id: conversationId as never, type: 'dm' },
+    conversation: {
+      id: conversationId as never,
+      type: options.type ?? 'dm',
+      ...(options.threadId ? { threadId: options.threadId as never } : {}),
+    },
     sender: { id: senderId as never },
-    message: { id: `m-${text}` as never, content: [{ type: 'text', text }] },
+    message: {
+      id: `m-${text}` as never,
+      content: [{ type: 'text', text }],
+      ...(options.replyTo ? { replyTo: options.replyTo as never } : {}),
+    },
   };
 }
 
@@ -127,7 +140,12 @@ export function makeApiProxy() {
 }
 
 /** Wire a presenter on the ApiProxy backend (Web profile path). */
-export function setupPresenter(options: { active?: boolean; timeoutMs?: number } = {}) {
+export function setupPresenter(options: {
+  active?: boolean;
+  timeoutMs?: number;
+  conversationType?: 'dm' | 'group';
+  threadId?: string;
+} = {}) {
   const adapter = new QuestionAdapter();
   const { apiProxy, responses } = makeApiProxy();
   const replyContexts = new ReplyContextStore();
@@ -135,7 +153,7 @@ export function setupPresenter(options: { active?: boolean; timeoutMs?: number }
     replyContexts.register('message-1', {
       sessionId: 'session-1',
       context: {
-        conversationType: 'dm',
+        conversationType: options.conversationType ?? 'dm',
         senderId: 'owner',
         replyToMessageId: 'telegram-message-1',
       },
@@ -148,7 +166,8 @@ export function setupPresenter(options: { active?: boolean; timeoutMs?: number }
           channelId: 'telegram',
           accountId: 'main',
           conversationId: 'chat-1',
-          conversationType: 'dm',
+          conversationType: options.conversationType ?? 'dm',
+          ...(options.threadId ? { threadId: options.threadId } : {}),
           sessionId,
         }
       : undefined,

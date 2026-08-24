@@ -87,10 +87,12 @@ not implemented yet.
 - The ordinary message mapper still needs a complete zod trust-boundary schema;
   the current partial envelope validation and TypeScript casts are an identified
   release blocker, not evidence that arbitrary Telegram updates are supported.
-- Media sends currently need the same `ok` envelope validation used by text and
-  edit methods. Until that is fixed and live-tested, an `ok: false` media response
-  must not be interpreted as verified delivery.
-- Inbound media hydration downloads image and document bytes through `getFile`; audio/video keep their `resourceRef` placeholder in V1.
+- Media sends validate the Bot API `ok` envelope and returned `message_id`; an
+  `ok: false` response is surfaced as a delivery failure. Offline coverage does
+  not replace the required real-bot live gate.
+- Inbound image, file, audio, and video media hydrate bytes through
+  `getFile`/download when declared as byte-capable. Failures retain
+  `resourceRef` plus ingress-failure metadata.
 - Telegram albums (`media_group_id`) are intentionally delivered one update at
   a time. Each image is downloaded, dispatched, retried and acknowledged
   independently; no cross-update buffering or delayed album aggregation is
@@ -98,7 +100,9 @@ not implemented yet.
 - Media captions are preserved as a text part before the image or document, so
   the model receives both the caption and the shared attachment representation.
 - Media outbound accepts trusted `localData` via `multipart/form-data`, a
-  public `url`, or a platform `file_id` (`resourceRef`).
+  public `url`, or a platform `file_id` (`resourceRef`). Multiple supported
+  media parts are sent sequentially; an unsupported part fails the send rather
+  than being silently dropped.
 - Inbound media maps Telegram `file_id` to the contract's `resourceRef` carrier
   (an opaque platform handle), never to `url` — `url` is reserved for real
   `http(s)` URLs.

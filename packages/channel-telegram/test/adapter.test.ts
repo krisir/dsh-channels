@@ -82,6 +82,7 @@ function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
       enabled: true,
       placeholder: '…',
     },
+    typing: { enabled: true, refreshMs: 4000 },
     maxDownloadBytes: 20 * 1024 * 1024,
     ...overrides,
   });
@@ -153,16 +154,19 @@ describe('mapper (fixture-driven)', () => {
     expect(event.message.content).toEqual((fixture.expected as MessageReceived).message.content);
   });
 
-  it('defaults chat types other than group/supergroup to a dm conversation', () => {
-    const event = mapInbound(
-      {
-        update_id: 1,
-        message: { message_id: 2, chat: { id: 7, type: 'channel' }, from: { id: 3 }, text: 'hi' },
-      },
-      { channel: 'telegram' as never, accountId: 'main' as never },
-    );
-    expect(event.conversation.type).toBe('dm');
-    expect(event.conversation.id).toBe('7');
+  it('fails closed for malformed message identities and unsupported chat types', () => {
+    const message = {
+      message_id: 2,
+      chat: { id: 7, type: 'private' },
+      from: { id: 3 },
+      text: 'hi',
+    };
+    const meta = { channel: 'telegram' as never, accountId: 'main' as never };
+
+    expect(() => mapInbound({ update_id: 1, message: { ...message, message_id: '2' } }, meta)).toThrow(/invalid message update/);
+    expect(() => mapInbound({ update_id: 1, message: { ...message, chat: { type: 'private' } } }, meta)).toThrow(/invalid message update/);
+    expect(() => mapInbound({ update_id: 1, message: { ...message, chat: { id: 7, type: 'channel' } } }, meta)).toThrow(/invalid message update/);
+    expect(() => mapInbound({ update_id: 1, message: { ...message, from: {} } }, meta)).toThrow(/invalid message update/);
   });
 
   it('maps forum topics and reply correlation into the channel contract', () => {
@@ -207,6 +211,12 @@ describe('mapper (fixture-driven)', () => {
     expect(event.sender).toEqual(expected.sender);
     expect(event.interactionId).toBe(expected.interactionId);
     expect(event.action).toBe(expected.action);
+  });
+
+  it('maps a Forum callback fixture to its topic thread', async () => {
+    const fixture = await loadFixture('telegram', 'interaction-callback-forum');
+    const event = mapCallbackQuery(fixture.payload, { channel: 'telegram' as never, accountId: 'main' as never });
+    expect(event.conversation).toEqual((fixture.expected as { conversation: unknown }).conversation);
   });
 });
 
@@ -369,7 +379,7 @@ describe('HttpTelegramUpstream (fake transport)', () => {
   it('sendMessage posts the correct path/body; the token never appears in init/body', async () => {
     transport.route(tgPath('sendMessage'), () => ({ ok: true, result: { message_id: 42 } }));
     const result = await upstream().sendText('123', 'hello');
-    expect(result).toMatchObject({ ok: true });
+    expect(result).toMatchObject({ messageId: '42', raw: { ok: true, result: { message_id: 42 } } });
     const call = transport.calls[0];
     expect(call?.path).toBe(tgPath('sendMessage'));
     expect(call?.init?.body).toEqual({ chat_id: '123', text: 'hello' });
@@ -389,7 +399,8 @@ describe('HttpTelegramUpstream (fake transport)', () => {
 
   it('sendMedia posts to the right endpoint with the url and caption', async () => {
     transport.route(tgPath('sendPhoto'), () => ({ ok: true, result: { message_id: 7 } }));
-    await upstream().sendMedia('123', { type: 'image', url: 'https://example.com/pic.png', caption: 'look' });
+    const result = await upstream().sendMedia('123', { type: 'image', url: 'https://example.com/pic.png', caption: 'look' });
+    expect(result).toMatchObject({ messageId: '7', raw: { ok: true, result: { message_id: 7 } } });
     const call = transport.calls[0];
     expect(call?.path).toBe(tgPath('sendPhoto'));
     expect(call?.init?.body).toEqual({
@@ -398,6 +409,50 @@ describe('HttpTelegramUpstream (fake transport)', () => {
       caption: 'look',
     });
     expect(JSON.stringify(call?.init)).not.toContain(TOKEN);
+  });
+
+  it('sendChatAction posts typing to the requested Forum topic', async () => {
+    transport.route(tgPath('sendChatAction'), () => ({ ok: true, result: true }));
+    await upstream().sendChatAction('123', 'typing', { messageThreadId: '9' });
+    expect(transport.calls[0]?.init?.body).toEqual({
+      chat_id: '123',
+      action: 'typing',
+      message_thread_id: 9,
+    });
+  });
+
+  it('sendChatAction rejects a failed Bot API envelope', async () => {
+    transport.route(tgPath('sendChatAction'), () => ({
+      ok: false,
+      error_code: 429,
+      description: 'Too Many Requests',
+      parameters: { retry_after: 7 },
+    }));
+    await expect(upstream().sendChatAction('123', 'typing')).rejects.toMatchObject({
+      name: 'TelegramApiError',
+      errorCode: 429,
+      kind: 'rate-limit',
+    } satisfies Partial<TelegramApiError>);
+  });
+
+  it.each([
+    [403, { ok: false, error_code: 403, description: 'Forbidden: bot was kicked' }, 'permission'],
+    [429, { ok: false, error_code: 429, description: 'Too Many Requests', parameters: { retry_after: 7 } }, 'rate-limit'],
+  ])('rejects sendMedia Bot API ok=false envelopes (%s)', async (status, envelope, kind) => {
+    transport.route(tgPath('sendPhoto'), () => envelope);
+    await expect(upstream().sendMedia('123', { type: 'image', url: 'https://example.com/pic.png' })).rejects.toMatchObject({
+      name: 'TelegramApiError',
+      errorCode: status,
+      kind,
+    } satisfies Partial<TelegramApiError>);
+  });
+
+  it('rejects media responses that omit the emitted message_id', async () => {
+    transport.route(tgPath('sendPhoto'), () => ({ ok: true, result: {} }));
+    await expect(upstream().sendMedia('123', { type: 'image', url: 'https://example.com/pic.png' })).rejects.toMatchObject({
+      code: 'CHANNEL_ERROR',
+      message: expect.stringContaining('sendPhoto returned no message_id'),
+    });
   });
 
   it('editMessageText includes both chat_id and message_id', async () => {
@@ -546,11 +601,11 @@ describe('InboundProcessor dedup', () => {
     service.on(listener);
     await processor.handle({
       update_id: 1,
-      message: { message_id: 1, chat: { id: 1, type: 'private' }, text: '1' },
+      message: { message_id: 1, chat: { id: 1, type: 'private' }, from: { id: 2 }, text: '1' },
     });
     await processor.handle({
       update_id: 2,
-      message: { message_id: 2, chat: { id: 1, type: 'private' }, text: '2' },
+      message: { message_id: 2, chat: { id: 1, type: 'private' }, from: { id: 2 }, text: '2' },
     });
     expect(listener).toHaveBeenCalledTimes(2);
   });
@@ -972,7 +1027,7 @@ describe('TelegramAdapter lifecycle', () => {
           ok: true,
           result: [{
             update_id: 50,
-            message: { message_id: 5, chat: { id: 1, type: 'private' }, text: 'retry me' },
+            message: { message_id: 5, chat: { id: 1, type: 'private' }, from: { id: 2 }, text: 'retry me' },
           }],
         };
       }
@@ -1018,6 +1073,114 @@ describe('TelegramAdapter lifecycle', () => {
     await expect(a.stop()).resolves.toBeUndefined();
   });
 
+  it('starts typing immediately, refreshes per Forum topic, and clears on stop', async () => {
+    vi.useFakeTimers();
+    try {
+      const service = new ChannelService(new Context());
+      const ctx = createTestContext(service);
+      routeAuth();
+      transport.route(tgPath('sendChatAction'), () => ({ ok: true, result: true }));
+      const a = adapter({ token: TOKEN });
+      const target = {
+        channelId: 'telegram' as never,
+        accountId: 'main' as never,
+        conversationId: '123' as never,
+        threadId: '77' as never,
+      };
+      await a.start(ctx);
+
+      await a.startTypingForTarget(target);
+      await a.startTypingForTarget(target);
+      expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(1);
+      expect(transport.calls.find((call) => call.path === tgPath('sendChatAction'))?.init?.body).toEqual({
+        chat_id: '123', action: 'typing', message_thread_id: 77,
+      });
+
+      await vi.advanceTimersByTimeAsync(4000);
+      expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(2);
+      await a.stopTypingForTarget(target);
+      await vi.advanceTimersByTimeAsync(8000);
+      expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(2);
+
+      await a.startTypingForTarget(target);
+      expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(3);
+      await a.stop();
+      await vi.advanceTimersByTimeAsync(8000);
+      expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(3);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not start typing when the feature is disabled', async () => {
+    const service = new ChannelService(new Context());
+    const ctx = createTestContext(service);
+    routeAuth();
+    transport.route(tgPath('sendChatAction'), () => ({ ok: true, result: true }));
+    const a = adapter({ token: TOKEN, typing: { enabled: false, refreshMs: 4000 } });
+    await a.start(ctx);
+    await a.startTypingForTarget(makeChannelTarget());
+    expect(transport.calls.some((call) => call.path === tgPath('sendChatAction'))).toBe(false);
+    await a.stop();
+  });
+
+  it('does not install a typing refresh when the immediate action fails', async () => {
+    vi.useFakeTimers();
+    try {
+      const service = new ChannelService(new Context());
+      const ctx = createTestContext(service);
+      routeAuth();
+      transport.route(tgPath('sendChatAction'), () => ({
+        ok: false,
+        error_code: 403,
+        description: 'Forbidden: bot was kicked',
+      }));
+      const a = adapter({ token: TOKEN });
+      await a.start(ctx);
+
+      await expect(a.startTypingForTarget(makeChannelTarget())).rejects.toMatchObject({
+        name: 'TelegramApiError', kind: 'permission',
+      });
+      await vi.advanceTimersByTimeAsync(8000);
+      expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(1);
+      await a.stop();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not install a typing refresh when stop races the initial action', async () => {
+    vi.useFakeTimers();
+    try {
+      const service = new ChannelService(new Context());
+      const ctx = createTestContext(service);
+      routeAuth();
+      let releaseAction!: () => void;
+      const actionGate = new Promise<void>((resolve) => { releaseAction = resolve; });
+      transport.route(tgPath('sendChatAction'), async () => {
+        await actionGate;
+        return { ok: true, result: true };
+      });
+      const a = adapter({ token: TOKEN });
+      const target = makeChannelTarget();
+      await a.start(ctx);
+
+      const starting = a.startTypingForTarget(target);
+      await vi.waitFor(() => {
+        expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(1);
+      });
+      await a.stopTypingForTarget(target);
+      releaseAction();
+      await starting;
+      await vi.advanceTimersByTimeAsync(8000);
+
+      expect(transport.calls.filter((call) => call.path === tgPath('sendChatAction'))).toHaveLength(1);
+      await a.stop();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('with an invalid token: getMe fails → health down, no receive loop', async () => {
     const service = new ChannelService(new Context());
     const ctx = createTestContext(service);
@@ -1041,7 +1204,7 @@ describe('TelegramAdapter lifecycle', () => {
     const a = adapter({ token: TOKEN, formatting: { mode: 'plain', fallback: 'plain' } });
     await a.start(ctx);
     const result = await a.send(makeChannelTarget(), makeOutboundMessage());
-    expect(result.delivered).toBe(true);
+    expect(result).toMatchObject({ delivered: true, messageId: '9' });
     const call = transport.calls.find((c) => c.path === tgPath('sendMessage'));
     expect(call?.init?.body).toEqual({ chat_id: 'conv-1', text: 'hi there' });
     await a.stop();
@@ -1058,7 +1221,7 @@ describe('TelegramAdapter lifecycle', () => {
       text: 'caption here',
       parts: [{ type: 'image', url: 'https://example.com/pic.png' }],
     });
-    expect(result.delivered).toBe(true);
+    expect(result).toMatchObject({ delivered: true, messageId: '10' });
     const call = transport.calls.find((c) => c.path === tgPath('sendPhoto'));
     expect(call?.init?.body).toEqual({
       chat_id: 'conv-1',
@@ -1112,6 +1275,54 @@ describe('TelegramAdapter lifecycle', () => {
     await a.stop();
   });
 
+  it('sends every supported media part sequentially and binds actions to the final message', async () => {
+    const service = new ChannelService(new Context());
+    const ctx = createTestContext(service);
+    routeAuth();
+    transport.route(tgPath('sendPhoto'), () => ({ ok: true, result: { message_id: 31 } }));
+    transport.route(tgPath('sendDocument'), () => ({ ok: true, result: { message_id: 32 } }));
+    const a = adapter({ token: TOKEN });
+    await a.start(ctx);
+
+    const result = await a.send(makeChannelTarget(), {
+      text: 'two attachments',
+      parts: [
+        { type: 'image', url: 'https://example.com/first.png' },
+        { type: 'file', resourceRef: 'SECOND_FILE_ID' },
+      ],
+      actions: [{ actions: [{ id: 'done', label: 'Done' }] }],
+    });
+
+    expect(result).toMatchObject({ delivered: true, messageId: '32' });
+    const sends = transport.calls.filter((call) => call.path === tgPath('sendPhoto') || call.path === tgPath('sendDocument'));
+    expect(sends).toHaveLength(2);
+    expect(sends[0]?.init?.body).toMatchObject({ caption: 'two attachments' });
+    expect(sends[0]?.init?.body).not.toMatchObject({ reply_markup: expect.anything() });
+    expect(sends[1]?.init?.body).toMatchObject({
+      document: 'SECOND_FILE_ID',
+      reply_markup: { inline_keyboard: [[{ text: 'Done', callback_data: 'done' }]] },
+    });
+    await a.stop();
+  });
+
+  it('fails before delivery when any media part lacks a supported carrier', async () => {
+    const service = new ChannelService(new Context());
+    const ctx = createTestContext(service);
+    routeAuth();
+    transport.route(tgPath('sendPhoto'), () => ({ ok: true, result: { message_id: 33 } }));
+    const a = adapter({ token: TOKEN });
+    await a.start(ctx);
+
+    await expect(a.send(makeChannelTarget(), {
+      parts: [
+        { type: 'image', url: 'https://example.com/first.png' },
+        { type: 'file', dataUri: 'data:text/plain;base64,aGk=' },
+      ],
+    })).rejects.toMatchObject({ code: 'CHANNEL_SEND_FAILED' });
+    expect(transport.calls.some((call) => call.path === tgPath('sendPhoto'))).toBe(false);
+    await a.stop();
+  });
+
   it('fails closed when a media part has no supported outbound carrier', async () => {
     const service = new ChannelService(new Context());
     const ctx = createTestContext(service);
@@ -1126,7 +1337,7 @@ describe('TelegramAdapter lifecycle', () => {
     await a.stop();
   });
 
-  it('maps a failing send to a ChannelError without leaking the token', async () => {
+  it('preserves a structured network send error without leaking the token', async () => {
     const service = new ChannelService(new Context());
     const ctx = createTestContext(service);
     routeAuth();
@@ -1141,10 +1352,36 @@ describe('TelegramAdapter lifecycle', () => {
     } catch (error) {
       caught = error;
     }
-    expect(caught).toMatchObject({ code: 'CHANNEL_SEND_FAILED' });
+    expect(caught).toMatchObject({
+      name: 'TelegramApiError',
+      kind: 'network',
+      code: 'CHANNEL_ERROR',
+    });
     // The token never reaches request init/body or the surfaced error.
     expect(JSON.stringify(transport.calls.map((c) => c.init))).not.toContain(TOKEN);
     expect(String((caught as Error).message)).not.toContain(TOKEN);
+    await a.stop();
+  });
+
+  it('preserves Telegram rate-limit metadata through the adapter send boundary', async () => {
+    const service = new ChannelService(new Context());
+    const ctx = createTestContext(service);
+    routeAuth();
+    transport.route(tgPath('sendMessage'), () => ({
+      ok: false,
+      error_code: 429,
+      description: 'Too Many Requests: retry after 7',
+      parameters: { retry_after: 7 },
+    }));
+    const a = adapter({ token: TOKEN, formatting: { mode: 'plain', fallback: 'plain' } });
+    await a.start(ctx);
+
+    await expect(a.send(makeChannelTarget(), makeOutboundMessage())).rejects.toMatchObject({
+      name: 'TelegramApiError',
+      kind: 'rate-limit',
+      errorCode: 429,
+      parameters: { retryAfter: 7 },
+    });
     await a.stop();
   });
 
@@ -1232,15 +1469,40 @@ describe('TelegramAdapter lifecycle', () => {
     transport.route(tgPath('sendRichMessage'), () => ({ ok: true, result: { message_id: 23 } }));
     const a = adapter({ token: TOKEN, formatting: { mode: 'rich-markdown', fallback: 'plain' } });
     await a.start(ctx);
-    await a.send(makeChannelTarget(), {
+    const result = await a.send(makeChannelTarget(), {
       text: 'choose',
       actions: [{ actions: [{ id: 'b1', label: 'Pick' }] }],
     });
+    expect(result).toMatchObject({ delivered: true, messageId: '23' });
     const call = transport.calls.find((c) => c.path === tgPath('sendRichMessage'));
     expect(call?.init?.body).toMatchObject({
       chat_id: 'conv-1',
       rich_message: { markdown: 'choose' },
       reply_markup: { inline_keyboard: [[{ text: 'Pick', callback_data: 'b1' }]] },
+    });
+    await a.stop();
+  });
+
+  it('puts actions on only the final segmented text message and returns that id', async () => {
+    const service = new ChannelService(new Context());
+    const ctx = createTestContext(service);
+    routeAuth();
+    let messageId = 40;
+    transport.route(tgPath('sendMessage'), () => ({ ok: true, result: { message_id: messageId++ } }));
+    const a = adapter({ token: TOKEN, formatting: { mode: 'plain', fallback: 'plain' } });
+    await a.start(ctx);
+
+    const result = await a.send(makeChannelTarget(), {
+      text: 'x'.repeat(4097),
+      actions: [{ actions: [{ id: 'next', label: 'Next' }] }],
+    });
+
+    expect(result).toMatchObject({ delivered: true, messageId: '41' });
+    const sends = transport.calls.filter((call) => call.path === tgPath('sendMessage'));
+    expect(sends).toHaveLength(2);
+    expect(sends[0]?.init?.body).not.toMatchObject({ reply_markup: expect.anything() });
+    expect(sends[1]?.init?.body).toMatchObject({
+      reply_markup: { inline_keyboard: [[{ text: 'Next', callback_data: 'next' }]] },
     });
     await a.stop();
   });

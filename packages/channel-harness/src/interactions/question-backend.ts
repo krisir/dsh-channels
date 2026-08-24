@@ -65,7 +65,10 @@ export interface QuestionInteractionSink {
    * The question settled WITHOUT the channel — another client answered, or
    * the owning tool call aborted. Removes stale channel controls.
    */
-  questionSettledExternally(key: string): Promise<void>;
+  questionSettledExternally(
+    key: string,
+    state?: 'aborted' | 'externally-settled',
+  ): Promise<void>;
 }
 
 /** A channel-collected answer batch submitted to the Harness question domain. */

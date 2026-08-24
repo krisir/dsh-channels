@@ -73,6 +73,11 @@ export interface TelegramSendOptions {
   messageThreadId?: string;
 }
 
+/** The subset of message options supported by `sendChatAction`. */
+export interface TelegramChatActionOptions {
+  messageThreadId?: string;
+}
+
 /** Parsed sendMessage result (only the fields the reply engine needs). */
 export interface TelegramSentMessage {
   messageId: string;
@@ -122,8 +127,8 @@ export interface TelegramUpstream {
     onPoll?: () => void,
   ): Promise<void>;
 
-  /** Send a text message; resolves with the raw Bot API envelope. */
-  sendText(chatId: string, text: string, options?: TelegramSendOptions): Promise<unknown>;
+  /** Send a text message; resolves with the parsed message id. */
+  sendText(chatId: string, text: string, options?: TelegramSendOptions): Promise<TelegramSentMessage>;
 
   /** Send a formatted text message; resolves with the parsed message id. */
   sendMessage(
@@ -154,7 +159,7 @@ export interface TelegramUpstream {
     message: TelegramInputRichMessage,
     options?: TelegramSendOptions,
     format?: TelegramFormatOptions,
-  ): Promise<unknown>;
+  ): Promise<TelegramSentMessage>;
 
   /**
    * Stream a partial Rich Message over a 30s temporary draft (`draftId`).
@@ -179,6 +184,13 @@ export interface TelegramUpstream {
   /** Best-effort `answerCallbackQuery` acknowledgement (never blocks on agent). */
   answerCallbackQuery(params: { callback_query_id: string }): Promise<void>;
 
+  /** Display a transient typing indicator in a chat or Forum topic. */
+  sendChatAction(
+    chatId: string,
+    action: 'typing',
+    options?: TelegramChatActionOptions,
+  ): Promise<void>;
+
   /** Resolve a Telegram file_id into its file metadata. */
   getFile(fileId: string): Promise<TelegramFileInfo>;
 
@@ -191,7 +203,7 @@ export interface TelegramUpstream {
     media: TelegramMedia,
     options?: TelegramSendOptions,
     format?: TelegramFormatOptions,
-  ): Promise<unknown>;
+  ): Promise<TelegramSentMessage>;
 }
 
 export interface HttpTelegramUpstreamOptions {
@@ -327,8 +339,8 @@ export class HttpTelegramUpstream implements TelegramUpstream {
     }
   }
 
-  async sendText(chatId: string, text: string, options?: TelegramSendOptions): Promise<unknown> {
-    return (await this.sendMessageRaw(chatId, text, options)).data;
+  async sendText(chatId: string, text: string, options?: TelegramSendOptions): Promise<TelegramSentMessage> {
+    return this.sendMessage(chatId, text, options);
   }
 
   async sendMessage(
@@ -338,11 +350,7 @@ export class HttpTelegramUpstream implements TelegramUpstream {
     format?: TelegramFormatOptions,
   ): Promise<TelegramSentMessage> {
     const envelope = await this.sendMessageRaw(chatId, text, options, format);
-    const sent = sentMessageSchema.safeParse(envelope.data.result);
-    if (!sent.success) {
-      throw new ChannelError('CHANNEL_ERROR', 'telegram sendMessage returned no message_id');
-    }
-    return { messageId: String(sent.data.message_id), raw: envelope.data };
+    return this.sentMessage('sendMessage', envelope.data);
   }
 
   /** Send a formatted text message; returns the parsed, ok-checked envelope. */
@@ -399,7 +407,7 @@ export class HttpTelegramUpstream implements TelegramUpstream {
     message: TelegramInputRichMessage,
     options?: TelegramSendOptions,
     format?: TelegramFormatOptions,
-  ): Promise<unknown> {
+  ): Promise<TelegramSentMessage> {
     const raw = await this.post(
       'sendRichMessage',
       this.messageBody(
@@ -413,7 +421,7 @@ export class HttpTelegramUpstream implements TelegramUpstream {
     if (!envelope.data.ok) {
       throw this.apiError('sendRichMessage', envelope.data);
     }
-    return envelope.data.result;
+    return this.sentMessage('sendRichMessage', envelope.data);
   }
 
   async sendRichMessageDraft(
@@ -508,12 +516,12 @@ export class HttpTelegramUpstream implements TelegramUpstream {
     return { data: response.data, mimeType, name };
   }
 
-  sendMedia(
+  async sendMedia(
     chatId: string,
     media: TelegramMedia,
     options?: TelegramSendOptions,
     format?: TelegramFormatOptions,
-  ): Promise<unknown> {
+  ): Promise<TelegramSentMessage> {
     const endpointAndField = {
       image: ['sendPhoto', 'photo'],
       file: ['sendDocument', 'document'],
@@ -534,7 +542,7 @@ export class HttpTelegramUpstream implements TelegramUpstream {
       if (format?.captionEntities !== undefined) form.append('caption_entities', JSON.stringify(format.captionEntities));
       if (format?.replyMarkup !== undefined) form.append('reply_markup', JSON.stringify(format.replyMarkup));
       this.appendSendOptions(form, options);
-      return this.post(endpoint, form);
+      return this.sendMediaRequest(endpoint, form);
     }
     if (!media.url) {
       throw new ChannelError('CHANNEL_UNSUPPORTED', 'telegram media requires localData, url, or resourceRef');
@@ -542,13 +550,13 @@ export class HttpTelegramUpstream implements TelegramUpstream {
     const mediaWithUrl = { ...media, url: media.url };
     switch (media.type) {
       case 'image':
-        return this.post('sendPhoto', this.mediaBody(chatId, mediaWithUrl, 'photo', options, format));
+        return this.sendMediaRequest('sendPhoto', this.mediaBody(chatId, mediaWithUrl, 'photo', options, format));
       case 'file':
-        return this.post('sendDocument', this.mediaBody(chatId, mediaWithUrl, 'document', options, format));
+        return this.sendMediaRequest('sendDocument', this.mediaBody(chatId, mediaWithUrl, 'document', options, format));
       case 'audio':
-        return this.post('sendAudio', this.mediaBody(chatId, mediaWithUrl, 'audio', options, format));
+        return this.sendMediaRequest('sendAudio', this.mediaBody(chatId, mediaWithUrl, 'audio', options, format));
       case 'video':
-        return this.post('sendVideo', this.mediaBody(chatId, mediaWithUrl, 'video', options, format));
+        return this.sendMediaRequest('sendVideo', this.mediaBody(chatId, mediaWithUrl, 'video', options, format));
       default:
         // Exhaustive over TelegramMedia['type']; kept for safety.
         throw new ChannelError(
@@ -569,6 +577,27 @@ export class HttpTelegramUpstream implements TelegramUpstream {
     if (media.caption !== undefined) body.caption = media.caption;
     this.applyFormatToBody(body, format, true);
     return this.messageBody(chatId, body, options);
+  }
+
+  async sendChatAction(
+    chatId: string,
+    action: 'typing',
+    options?: TelegramChatActionOptions,
+  ): Promise<void> {
+    await this.requestOk('sendChatAction', {
+      chat_id: chatId,
+      action,
+      ...(options?.messageThreadId ? { message_thread_id: Number(options.messageThreadId) } : {}),
+    });
+  }
+
+  private async sendMediaRequest(endpoint: string, body: unknown): Promise<TelegramSentMessage> {
+    const raw = await this.post(endpoint, body);
+    const envelope = this.parseEnvelope(endpoint, raw);
+    if (!envelope.data.ok) {
+      throw this.apiError(endpoint, envelope.data);
+    }
+    return this.sentMessage(endpoint, envelope.data);
   }
 
   /** Apply formatting fields to a JSON body (caption vs text variants). */
@@ -647,6 +676,15 @@ export class HttpTelegramUpstream implements TelegramUpstream {
       });
     }
     return envelope;
+  }
+
+  /** Validate every Bot API method that returns a Message through one boundary. */
+  private sentMessage(endpoint: string, envelope: EnvelopeData): TelegramSentMessage {
+    const sent = sentMessageSchema.safeParse(envelope.result);
+    if (!sent.success) {
+      throw new ChannelError('CHANNEL_ERROR', `telegram ${endpoint} returned no message_id`);
+    }
+    return { messageId: String(sent.data.message_id), raw: envelope };
   }
 
   /** Build a structured `TelegramApiError` from an ok=false envelope. */

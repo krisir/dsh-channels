@@ -71,6 +71,7 @@ function channelTestDeps(rootCtx: Context): ChannelCommandDependencies {
     modelSelection: new ChannelModelSelectionController(rootCtx),
     listCommands: () => [],
     findCommand: () => undefined,
+    locale: () => 'zh',
     llm: {
       listProviders: () => [],
       listModels: async () => [],

@@ -64,6 +64,7 @@ function versionDeps(rootCtx: Context, versionInfo?: ChannelCommandDependencies[
     modelSelection: new ChannelModelSelectionController(rootCtx),
     listCommands: () => [],
     findCommand: () => undefined,
+    locale: () => 'zh',
     llm: {
       listProviders: () => [],
       listModels: async () => [],

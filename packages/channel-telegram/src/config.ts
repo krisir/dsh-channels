@@ -38,6 +38,12 @@ export interface TelegramStreamingConfig {
   placeholder: string;
 }
 
+/** Telegram's typing action expires after a few seconds, so it is refreshed. */
+export interface TelegramTypingConfig {
+  enabled: boolean;
+  refreshMs: number;
+}
+
 /**
  * Outbound formatting policy (plan §5.1). The adapter's minimum supported
  * upstream is Bot API 10.2, so `auto` always selects Rich Markdown.
@@ -85,6 +91,7 @@ export interface TelegramConfig {
   reconnect: TelegramReconnectConfig;
   dedup: TelegramDedupConfig;
   streaming: TelegramStreamingConfig;
+  typing: TelegramTypingConfig;
   /** Outbound formatting / rich rendering policy. */
   formatting: TelegramFormattingConfig;
   /** Hard byte cap for one inbound media download (image / document). */
@@ -115,6 +122,10 @@ export const Config: Schema<TelegramConfig> = Schema.object({
   streaming: Schema.object({
     enabled: Schema.boolean().default(true),
     placeholder: Schema.string().default('…'),
+  }),
+  typing: Schema.object({
+    enabled: Schema.boolean().default(true),
+    refreshMs: Schema.natural().min(1000).default(4000),
   }),
   formatting: Schema.object({
     mode: Schema.union([

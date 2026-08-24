@@ -89,6 +89,45 @@ describe('ChannelQuestionPresenter', () => {
     ]);
   });
 
+  it('presents a free-text question with a generic reply prompt', async () => {
+    const { adapter, backend } = setupPresenter();
+    await backend.handleMuxEnvelope(muxEnvelope(requestedFrame([
+      { id: 'location', question: '项目放在哪里？' },
+    ])));
+
+    expect(adapter.sent[0]).toMatchObject({
+      replyPrompt: { kind: 'text' },
+    });
+    expect(adapter.sent[0]?.actions).toBeUndefined();
+  });
+
+  it('uses a separate reply prompt after the custom action and clears old controls', async () => {
+    const { adapter, backend, presenter } = setupPresenter();
+    await backend.handleMuxEnvelope(muxEnvelope(requestedFrame([packageManagerQuestion])));
+
+    await presenter.handleChannelEvent(interaction(actionId(adapter, '其他')));
+
+    expect(adapter.edited).toContainEqual({ actions: [] });
+    expect(adapter.sent.at(-1)).toMatchObject({ replyPrompt: { kind: 'text' } });
+  });
+
+  it('requires group free-text answers to reply to the presented prompt', async () => {
+    const { adapter, backend, presenter, responses } = setupPresenter({ conversationType: 'group' });
+    await backend.handleMuxEnvelope(muxEnvelope(requestedFrame([
+      { id: 'location', question: '项目放在哪里？' },
+    ])));
+    const promptId = '1';
+
+    await expect(presenter.handleChannelEvent(message('unrelated', 'owner', 'chat-1', { type: 'group' })))
+      .resolves.toBe(false);
+    await expect(presenter.handleChannelEvent(message('D:/workspace/demo', 'owner', 'chat-1', {
+      type: 'group',
+      replyTo: promptId,
+    }))).resolves.toBe(true);
+    expect(responses).toHaveLength(1);
+    expect(adapter.sent[0]?.replyPrompt).toBeDefined();
+  });
+
   it('supports multi-select toggles and submits only the latest selected set', async () => {
     const { adapter, backend, presenter, responses } = setupPresenter();
     await backend.handleMuxEnvelope(muxEnvelope(requestedFrame([{
@@ -186,6 +225,30 @@ describe('ChannelQuestionPresenter', () => {
 
     expect(adapter.edited).toContainEqual({ actions: [] });
     await expect(presenter.handleChannelEvent(message('1'))).resolves.toBe(false);
+  });
+
+  it('does not resolve or advance when an external settlement races an in-flight answer', async () => {
+    const { adapter, backend, presenter, responses } = setupPresenter();
+    await backend.handleMuxEnvelope(muxEnvelope(requestedFrame([packageManagerQuestion])));
+    let releaseEdit!: () => void;
+    adapter.editGate = new Promise<void>((resolve) => { releaseEdit = resolve; });
+
+    const channelAnswer = presenter.handleChannelEvent(message('1'));
+    await vi.waitFor(() => expect(adapter.edited.length).toBeGreaterThan(0));
+    const externalSettlement = backend.handleMuxEnvelope(muxEnvelope({
+      type: 'question/resolved',
+      sessionId: 'session-1',
+      questionRpcId: 'rpc-1',
+      outcome: 'answered',
+    }, 'resolution-race'));
+    await Promise.resolve();
+
+    releaseEdit();
+    await Promise.all([channelAnswer, externalSettlement]);
+
+    expect(responses).toHaveLength(0);
+    expect(adapter.sent).toHaveLength(1);
+    await expect(presenter.handleChannelEvent(message('2'))).resolves.toBe(false);
   });
 
   it('cancels timed-out questions and clears their buttons', async () => {

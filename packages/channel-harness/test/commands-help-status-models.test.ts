@@ -247,12 +247,33 @@ describe('/help (spec §44)', () => {
     const { gateway, bridge, adapter } = makeBridge(rootCtx);
     await bridge.handleChannelEvent(makeMessageEvent(textEvent('m1', '/help')));
     const out = lastSent(adapter);
+    expect(out).toContain('**可用指令**');
+    expect(out).toContain('- `/help [command]` - 列出可用指令或查看单个指令用法');
     for (const name of ['/stop', '/new', '/help', '/status', '/models', '/model']) {
       expect(out).toContain(name);
     }
     expect(out).toContain('/compact');
     expect(gateway.createCalls).toHaveLength(1);
     expect(gateway.followups).toEqual([]);
+  });
+
+  it('uses the explicit Harness Host locale preference for English help', async () => {
+    const rootCtx = new Context();
+    new CommandRuntime(rootCtx);
+    rootCtx.provide('settings', {
+      get: (namespace: string) => namespace === 'locale' ? { preference: 'en' } : undefined,
+    });
+    const { bridge, adapter } = makeBridge(rootCtx);
+
+    await bridge.handleChannelEvent(makeMessageEvent(textEvent('m1', '/help')));
+    const out = lastSent(adapter);
+    expect(out).toContain('**Available commands**');
+    expect(out).toContain('- `/help [command]` - List available commands or show usage for one command');
+    expect(out).not.toContain('可用指令');
+
+    await bridge.handleChannelEvent(makeMessageEvent(textEvent('m2', '/help model')));
+    expect(lastSent(adapter)).toContain('**Usage**');
+    expect(lastSent(adapter)).toContain('`/model [<provider> <model> [<reasoningEffort>]]`');
   });
 
   it('reflects dynamic registration and disposal of global commands', async () => {
@@ -280,7 +301,7 @@ describe('/help (spec §44)', () => {
     await bridge.handleChannelEvent(makeMessageEvent(textEvent('m2', '/help model')));
     expect(lastSent(adapter)).toContain('/model');
     await bridge.handleChannelEvent(makeMessageEvent(textEvent('m3', '/help nope')));
-    expect(lastSent(adapter)).toContain('未知指令：/nope');
+    expect(lastSent(adapter)).toContain('未知指令：`/nope`');
   });
 });
 

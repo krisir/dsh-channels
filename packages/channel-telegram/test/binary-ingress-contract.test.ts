@@ -45,6 +45,7 @@ function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
     reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10, maxRetries: 2 },
     dedup: { enabled: false, windowMs: 5000 },
     streaming: { enabled: true, placeholder: '…' },
+    typing: { enabled: true, refreshMs: 4000 },
     maxDownloadBytes: 20 * 1024 * 1024,
     ...overrides,
   });

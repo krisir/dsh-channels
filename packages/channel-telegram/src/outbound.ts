@@ -19,14 +19,21 @@ import type {
   OutboundMessage,
   SendResult,
 } from '@wsz987/channel-core';
-import { ChannelSendError } from '@wsz987/channel-core';
+import { ChannelError, ChannelSendError } from '@wsz987/channel-core';
 import type { TelegramFormattingConfig } from './config.js';
-import type { TelegramMedia, TelegramSendOptions, TelegramUpstream } from './upstream.js';
-import type { TelegramInlineKeyboardButton, TelegramInlineKeyboardMarkup, TelegramInlineKeyboardRow } from './rich-message.js';
+import type { TelegramMedia, TelegramSendOptions, TelegramSentMessage, TelegramUpstream } from './upstream.js';
+import type {
+  TelegramInlineKeyboardButton,
+  TelegramInlineKeyboardMarkup,
+  TelegramInlineKeyboardRow,
+  TelegramReplyMarkup,
+} from './rich-message.js';
 import { sendWithFallback, type RenderPlan } from './render/index.js';
 
 /** Maximum Telegram `callback_data` size (1–64 bytes, plan §11). */
 const CALLBACK_DATA_MAX_BYTES = 64;
+/** Telegram ForceReply input placeholder length (Bot API 10.2). */
+const FORCE_REPLY_PLACEHOLDER_MAX_CHARS = 64;
 
 export interface TelegramOutboundOptions {
   /** Formatting policy controlling how text/captions are rendered. */
@@ -46,28 +53,40 @@ export class OutboundSender {
 
   async send(target: ChannelTarget, message: OutboundMessage): Promise<SendResult> {
     try {
-      const replyMarkup = actionsToReplyMarkup(message.actions);
-      const media = firstMedia(message.parts);
-      if (media) {
-        const response = await this.sendMediaWithFormatting(target, media, message, replyMarkup);
-        return { delivered: true, raw: response };
-      }
-      if (message.parts?.some(isBinaryPart)) {
-        throw new ChannelSendError('telegram media has no supported localData, url, or resourceRef carrier');
+      const replyMarkup = replyMarkupFor(message);
+      const media = collectSendableMedia(message.parts);
+      if (media.length > 0) {
+        let last: TelegramSentMessage | undefined;
+        for (const [index, item] of media.entries()) {
+          // The first attachment carries the textual caption; controls belong
+          // on the last message so SendResult.messageId is the interaction id.
+          last = await this.sendMediaWithFormatting(
+            target,
+            item,
+            index === 0 ? message : { ...message, text: undefined },
+            index === media.length - 1 ? replyMarkup : undefined,
+          );
+        }
+        if (!last) throw new ChannelSendError('telegram media send produced no message');
+        return { delivered: true, messageId: last.messageId, raw: last.raw };
       }
       const text = message.text ?? '';
       if (!text) {
         throw new ChannelSendError('telegram message has no sendable text or media');
       }
       const response = await this.sendTextWithFormatting(target, text, sendOptions(target, message), replyMarkup);
-      return { delivered: true, raw: response };
+      return { delivered: true, messageId: response.messageId, raw: response.raw };
     } catch (error) {
       this.logger.error(
         `[channel-telegram] send failed to '${target.conversationId}'`,
         error instanceof Error ? error.message : error,
       );
+      // Preserve TelegramApiError fields (kind/errorCode/retryAfter) and
+      // adapter-generated ChannelSendError diagnostics for outer policy.
+      if (error instanceof ChannelError) throw error;
       throw new ChannelSendError(
         `telegram send failed: ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error },
       );
     }
   }
@@ -77,36 +96,38 @@ export class OutboundSender {
     target: ChannelTarget,
     source: string,
     options: TelegramSendOptionsExport,
-    replyMarkup?: TelegramInlineKeyboardMarkup,
-  ): Promise<unknown> {
-    const send = async (plan: RenderPlan): Promise<unknown> => {
+    replyMarkup?: TelegramReplyMarkup,
+  ): Promise<TelegramSentMessage> {
+    const send = async (plan: RenderPlan): Promise<TelegramSentMessage> => {
       if (plan.kind === 'rich') {
-        let last: unknown;
-        for (const text of plan.texts) {
+        let last: TelegramSentMessage | undefined;
+        for (const [index, text] of plan.texts.entries()) {
           last = await this.upstream.sendRichMessage(
             target.conversationId,
             { markdown: text },
             options,
-            { ...(replyMarkup ? { replyMarkup } : {}) },
+            { ...(replyMarkup && index === plan.texts.length - 1 ? { replyMarkup } : {}) },
           );
         }
+        if (!last) throw new ChannelSendError('telegram rich send produced no message');
         return last;
       }
-      let last: unknown;
-      for (const chunk of plan.chunks) {
+      let last: TelegramSentMessage | undefined;
+      for (const [index, chunk] of plan.chunks.entries()) {
         last = await this.upstream.sendMessage(
           target.conversationId,
           chunk,
           options,
           {
             ...(plan.parseMode ? { parseMode: plan.parseMode } : {}),
-            ...(replyMarkup ? { replyMarkup } : {}),
+            ...(replyMarkup && index === plan.chunks.length - 1 ? { replyMarkup } : {}),
           },
         );
       }
+      if (!last) throw new ChannelSendError('telegram text send produced no message');
       return last;
     };
-    return sendWithFallback(source, { mode: this.formatting.mode }, send);
+    return sendWithFallback(source, { mode: this.formatting.mode }, send) as Promise<TelegramSentMessage>;
   }
 
   /** Send media with the text rendered as a ≤1024 caption (plain fallback). */
@@ -114,13 +135,13 @@ export class OutboundSender {
     target: ChannelTarget,
     media: TelegramMedia,
     message: OutboundMessage,
-    replyMarkup?: TelegramInlineKeyboardMarkup,
-  ): Promise<unknown> {
+    replyMarkup?: TelegramReplyMarkup,
+  ): Promise<TelegramSentMessage> {
     const sendOptions = {
       replyToMessageId: message.replyTo ?? target.replyToMessageId,
       messageThreadId: target.threadId,
     };
-    const sendWithoutCaption = async (): Promise<unknown> => {
+    const sendWithoutCaption = async (): Promise<TelegramSentMessage> => {
       return this.upstream.sendMedia(
         target.conversationId,
         media,
@@ -217,11 +238,11 @@ export function actionsToReplyMarkup(actions: OutboundActionRow[] | undefined): 
 }
 
 /**
- * First media part with a sendable carrier, if any. Telegram accepts both a
- * public http(s) `url` and a platform `file_id` (`resourceRef`) in the same
- * field, so either carrier resolves to a `TelegramMedia.url` reference.
+ * Convert every binary part to media. An unsupported carrier fails before
+ * delivery begins, so a message can never silently omit a later attachment.
  */
-function firstMedia(parts: MessagePart[] | undefined): TelegramMedia | undefined {
+function collectSendableMedia(parts: MessagePart[] | undefined): TelegramMedia[] {
+  const media: TelegramMedia[] = [];
   for (const part of parts ?? []) {
     switch (part.type) {
       case 'image':
@@ -229,24 +250,50 @@ function firstMedia(parts: MessagePart[] | undefined): TelegramMedia | undefined
       case 'audio':
       case 'video': {
         if (part.localData) {
-          return {
+          media.push({
             type: part.type,
             localData: part.localData,
             mimeType: part.mimeType,
             name: part.name,
-          };
+          });
+          break;
         }
         const ref = part.url ?? part.resourceRef;
-        if (ref) return { type: part.type, url: ref, mimeType: part.mimeType, name: part.name };
-        break;
+        if (ref) {
+          media.push({ type: part.type, url: ref, mimeType: part.mimeType, name: part.name });
+          break;
+        }
+        throw new ChannelSendError(`telegram ${part.type} media has no supported localData, url, or resourceRef carrier`);
       }
     }
   }
-  return undefined;
+  return media;
 }
 
-function isBinaryPart(part: MessagePart): boolean {
-  return part.type === 'image' || part.type === 'file' || part.type === 'audio' || part.type === 'video';
+/**
+ * Telegram does not permit ForceReply and an inline keyboard on the same
+ * message. Treat the generic contract as mutually exclusive so a caller never
+ * accidentally creates an uncorrelatable custom-answer prompt.
+ */
+function replyMarkupFor(message: OutboundMessage): TelegramReplyMarkup | undefined {
+  if (message.replyPrompt) {
+    if (message.actions?.length) {
+      throw new ChannelSendError('telegram replyPrompt cannot be combined with inline actions');
+    }
+    const placeholder = message.replyPrompt.placeholder;
+    if (placeholder && [...placeholder].length > FORCE_REPLY_PLACEHOLDER_MAX_CHARS) {
+      throw new ChannelSendError(
+        `telegram replyPrompt placeholder exceeds ${FORCE_REPLY_PLACEHOLDER_MAX_CHARS}-character limit`,
+      );
+    }
+    return {
+      force_reply: true,
+      ...(placeholder
+        ? { input_field_placeholder: placeholder }
+        : {}),
+    };
+  }
+  return actionsToReplyMarkup(message.actions);
 }
 
 type TelegramSendOptionsExport = TelegramSendOptions;

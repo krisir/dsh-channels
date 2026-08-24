@@ -90,6 +90,7 @@ import type {
 } from './access/resolver.js';
 import type { AccessDecisionReason } from './access/decision.js';
 import type { ChannelQuestionPresenter } from './interactions/question-presenter.js';
+import { commandLocaleFromSettings } from './commands/locale.js';
 
 function trimBrandedId<T extends string>(value: T): T {
   return value.trim() as T;
@@ -126,11 +127,12 @@ export interface ChannelHarnessBridgeOptions {
    */
   commandDeps: Omit<
     ChannelCommandDependencies,
-    'modelSelection' | 'listCommands' | 'findCommand' | 'llm' | 'versionInfo'
+    'modelSelection' | 'listCommands' | 'findCommand' | 'locale' | 'llm' | 'versionInfo'
   > & {
     modelSelection?: ChannelModelSelectionController;
     listCommands?: ChannelCommandDependencies['listCommands'];
     findCommand?: ChannelCommandDependencies['findCommand'];
+    locale?: ChannelCommandDependencies['locale'];
     llm?: ChannelCommandDependencies['llm'];
     versionInfo?: ChannelCommandDependencies['versionInfo'];
 
@@ -217,6 +219,8 @@ export class ChannelHarnessBridge {
       modelSelection: this.modelSelection,
       listCommands: (agent) => this.options.ctx.commands.list(agent),
       findCommand: (agent, name) => this.options.ctx.commands.find(agent, name),
+      locale: options.commandDeps.locale ?? (() =>
+        commandLocaleFromSettings(this.options.ctx.get('settings'))),
       llm: {
         listProviders: () => this.options.ctx.llm.listProviders(),
         listModels: (provider) => this.options.ctx.llm.listModels(provider),

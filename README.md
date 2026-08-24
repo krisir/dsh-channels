@@ -168,6 +168,8 @@ live gate 完成前均不视为生产验证通过。
 | `/models [provider]` | 查看 Harness 当前注册的模型 Provider 及其模型 |
 | `/model [<provider> <model> [<reasoningEffort>]]` | 查看或切换当前会话模型 |
 
+- `/help` 使用 Markdown 排版，并跟随 Harness Web 写入 `$DSH_HOME/settings.yaml`
+  的 `locale.preference`（`zh` / `en`）；未设置时渠道端默认使用中文。
 - 若宿主加载了官方插件（`/compact`、`/goal`、`/plan`、`/feedback` 等），这些命令也会自动出现在渠道里，无需额外升级。
 - **未注册的斜杠指令直接拒绝**（与官方 rc.2 Host 行为一致）：回复一条「未知命令」提示，**不会**作为普通用户输入发给模型。
 

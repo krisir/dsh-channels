@@ -53,7 +53,7 @@ export interface CreateTelegramDefinitionOptions {
 }
 
 /** Allowed non-secret nested sub-config keys merged by saveConfig. */
-const NESTED_KEYS = ['reconnect', 'dedup', 'streaming', 'formatting'] as const;
+const NESTED_KEYS = ['reconnect', 'dedup', 'streaming', 'typing', 'formatting'] as const;
 /** Allowed non-secret top-level scalar keys merged by saveConfig. */
 const SCALAR_KEYS = [
   'accountId',
@@ -70,6 +70,7 @@ function snapshotOf(config: TelegramConfig): TelegramConfig {
     reconnect: { ...config.reconnect },
     dedup: { ...config.dedup },
     streaming: { ...config.streaming },
+    typing: { ...config.typing },
     formatting: { ...config.formatting },
   };
 }
@@ -169,6 +170,7 @@ export function createTelegramDefinition(
     state.reconnect = restored.reconnect;
     state.dedup = restored.dedup;
     state.streaming = restored.streaming;
+    state.typing = restored.typing;
     state.formatting = restored.formatting;
   };
 
