@@ -17,3 +17,6 @@ data/
 
 # Local spike scratch (M0/M1 verification tooling)
 .spike/
+
+# workspace-local npm cache used by CI/local scripts (never commit)
+.npm-cache/
