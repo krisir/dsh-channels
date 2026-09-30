@@ -1,14 +1,14 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
 import { TOPIC_CARD, TOPIC_ROBOT } from 'dingtalk-stream';
-import { ChannelService, ChannelError, mediaCapabilitiesSchema, type MessageReceived } from '@wsz987/channel-core';
+import { ChannelService, ChannelError, mediaCapabilitiesSchema, type MessageReceived, resolveVolatileConfig } from '@krischoichoi/channel-core';
 import {
   runChannelAdapterContract,
   createTestContext,
   loadFixture,
   makeChannelTarget,
   makeOutboundMessage,
-} from '@wsz987/channel-testkit';
+} from '@krischoichoi/channel-testkit';
 import {
   Config,
   DingTalkAdapter,
@@ -51,7 +51,7 @@ class FakeTransport implements HttpTransport {
 }
 
 function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -76,7 +76,7 @@ function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
       mode: 'gateway',
     },
     ...overrides,
-  });
+  })) as unknown as DingTalkConfig;
 }
 
 /** Fake stream client: records lifecycle, dispatches inbound robot messages. */

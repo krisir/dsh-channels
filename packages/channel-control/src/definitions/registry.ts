@@ -5,7 +5,7 @@
  * control plane drives setup/authorization/runtime purely through these
  * definitions (doc §14). Iteration is in registration order.
  */
-import { ChannelDuplicateError, ChannelError } from '@wsz987/channel-core';
+import { ChannelDuplicateError, ChannelError } from '@krischoichoi/channel-core';
 import type { ChannelDefinition } from '../types.js';
 
 export class ChannelDefinitionRegistry {

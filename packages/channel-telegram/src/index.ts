@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-telegram — Telegram Bot API channel adapter for DeepSeek
+ * @krischoichoi/channel-telegram — Telegram Bot API channel adapter for DeepSeek
  * Harness.
  *
  * A fifth official channel built on the same Channel Contract as Weixin / QQ /
@@ -20,11 +20,11 @@
  */
 import { type Context } from '@deepseek-ai/cordis';
 import { credentialRef } from '@deepseek-ai/dsh-credentials';
-import type { SettingsProvider } from '@deepseek-ai/dsh-settings';
-import { mountChannelAdapter } from '@wsz987/channel-core';
-import type { ChannelDefinition } from '@wsz987/channel-control';
-import type { TelegramConfig } from './config.js';
+import type SettingsForms from '@deepseek-ai/dsh-settings';
+import { mountChannelAdapter, resolveVolatileConfig, resolveVolatileValue } from '@krischoichoi/channel-core';
+import type { ChannelDefinition } from '@krischoichoi/channel-control';
 import { Config, TELEGRAM_BOT_TOKEN_REF } from './config.js';
+import type { TelegramConfig, TelegramConfigLive } from './config.js';
 import { TelegramAdapter, type TelegramAdapterDeps } from './adapter.js';
 import { createTelegramDefinition, type TelegramCredentialSeam } from './definition.js';
 
@@ -70,7 +70,7 @@ export {
   type RenderOptions,
   type RenderPlan,
 } from './render/index.js';
-export type { TelegramFormattingConfig } from './config.js';
+export type { TelegramFormattingConfig, TelegramConfigLive } from './config.js';
 export { mapInbound, mapCallbackQuery, isCallbackQueryUpdate, dedupKey, simpleHash, type TelegramInboundMeta } from './mapper.js';
 export {
   HttpTelegramUpstream,
@@ -125,7 +125,19 @@ function migrateLegacyToken(ctx: ContextWithCredentials, config: TelegramConfig)
   delete (config as { token?: string }).token;
 }
 
-export function apply(ctx: Context, config: TelegramConfig, deps: TelegramAdapterDeps = {}): void {
+/**
+ * Entry plugin apply. Accepts both the activation-time live shape (volatile
+ * fields resolve to `Volatile<T>` handles under Harness 0.2.0) and a plain
+ * snapshot (tests / programmatic mounting); plain fields pass through
+ * `resolveVolatileConfig` untouched. The shape is validated by Schemastery at
+ * the Loader boundary via the attached `Config` schema.
+ */
+export function apply(
+  ctx: Context,
+  rawConfig: TelegramConfig | TelegramConfigLive,
+  deps: TelegramAdapterDeps = {},
+): void {
+  const config = resolveVolatileConfig(rawConfig) as TelegramConfig;
   const credentialsCtx = ctx as ContextWithCredentials;
   migrateLegacyToken(credentialsCtx, config);
   const ref = config.tokenRef ?? TELEGRAM_BOT_TOKEN_REF;
@@ -139,19 +151,17 @@ export function apply(ctx: Context, config: TelegramConfig, deps: TelegramAdapte
     // disabled — the plane owns adapter instantiation + headless auto-start,
     // and a disabled definition must stay visible so the Web control plane can
     // re-enable it later (doc §19/§20).
-    const settings = ctx.get('settings') as SettingsProvider | undefined;
-    const scope = settings?.register('channels-telegram', Config, { base: config });
-    const effectiveConfig = scope?.get() ?? config;
+    const settings = ctx.get('settings') as SettingsForms | undefined;
     control.definitions.register(
       createTelegramDefinition({
-        config: effectiveConfig,
+        config,
         deps,
         credentials: {
           resolve: (name) => credentialsCtx.credentials.resolve(credentialRef(name)),
           describe: (name) => credentialsCtx.credentials.describe(credentialRef(name)),
           set: (name, value) => credentialsCtx.credentials.set(credentialRef(name), value),
         },
-        persistEnabled: (enabled) => scope?.update({ enabled }) ?? Promise.resolve(),
+        persistEnabled: (enabled) => settings?.update('channels-telegram', { enabled }) ?? Promise.resolve(),
       }),
     );
     return;
@@ -161,7 +171,7 @@ export function apply(ctx: Context, config: TelegramConfig, deps: TelegramAdapte
   // directory/control surface to re-enable a disabled channel, so the config
   // `enabled` gate still applies (doc §20). Unconfigured token must NOT throw
   // (doc §25) — log a warning and stay idle.
-  if (!config.enabled) return;
+  if (!resolveVolatileValue(config.enabled)) return;
   ctx.effect(async () => {
     const token = deps.token ?? (await credentialsCtx.credentials.resolve(credentialRef(ref)))?.value;
     if (!token) {

@@ -12,7 +12,7 @@
  * identity metadata, and the Access Gate keeps exact-matching the canonical
  * `conversation.id`.
  */
-import type { ChannelEvent, ChannelLogger } from '@wsz987/channel-core';
+import type { ChannelEvent, ChannelLogger } from '@krischoichoi/channel-core';
 import type { PublicConversationIdentity } from '../types.js';
 import type {
   ConversationDirectoryStore,

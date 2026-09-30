@@ -12,8 +12,8 @@
     "tag": false
   },
   "ignore": [
-    "@wsz987/channel-testkit",
-    "@wsz987/channel-compat",
-    "@wsz987/channel-verify"
+    "@krischoichoi/channel-testkit",
+    "@krischoichoi/channel-compat",
+    "@krischoichoi/channel-verify"
   ]
 }

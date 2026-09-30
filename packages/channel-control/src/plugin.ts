@@ -1,5 +1,5 @@
 /**
- * Cordis plugin entry for @wsz987/channel-control (doc §12, §46).
+ * Cordis plugin entry for @krischoichoi/channel-control (doc §12, §46).
  *
  * Instantiates the ChannelControlService, then auto-starts every configured
  * channel (headless support, doc §25/§27). autoStartAll is guarded so a single
@@ -12,7 +12,7 @@
  * delegates to each registered definition's optional `resolveOwnerIdentity`.
  */
 import { type Context } from '@deepseek-ai/cordis';
-import type { ChannelService } from '@wsz987/channel-core';
+import type { ChannelService } from '@krischoichoi/channel-core';
 import { ChannelControlService } from './service.js';
 import type { CredentialSeam } from './credentials/manager.js';
 import { ChannelStorageAccessPolicyStore } from './access/policy-store.js';

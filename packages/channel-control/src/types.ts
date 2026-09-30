@@ -1,5 +1,5 @@
 /**
- * Public type surface of @wsz987/channel-control.
+ * Public type surface of @krischoichoi/channel-control.
  *
  * These types define the stable boundary between the Channel Control Plane
  * and every downstream consumer (channel adapters, the Web control plane in
@@ -14,7 +14,7 @@ import type {
   ChannelAccessPolicy,
   ChannelAdapter,
   ChannelHealth,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 
 /** How a channel begins an authorization flow (doc §15). */
 export type AuthMethod =

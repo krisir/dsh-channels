@@ -10,7 +10,7 @@ import {
   type ChannelEvent,
   type ChannelAdapter,
   type ChannelCapabilities,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { ChannelControlService } from '../src/service.js';
 import { ChannelDefinitionRegistry } from '../src/definitions/registry.js';
 import { CredentialManager, type CredentialSeam } from '../src/credentials/manager.js';

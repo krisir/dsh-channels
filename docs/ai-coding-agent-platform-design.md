@@ -2285,7 +2285,7 @@ Desktop 不发明自己的启动方式：交互 / web / headless / ACP / Python 
 
 - 插件消费用 `dsh.profile.bundles` 列表，不手写 plugins map。
 - bundle 是 npm 包，自带 `dsh.bundle.patch` 指向自己的 `cordis.patch.yml`；patch 行只引用 bundle 自己的 exports。
-- 实例：本仓库 `@wsz987/dsh-channels` bundle + `apps/example/minimal-profile` profile。
+- 实例：本仓库 `@krischoichoi/dsh-channels` bundle + `apps/example/minimal-profile` profile。
 
 ## 55.3 patch 整体替换【rc.2 已核】
 

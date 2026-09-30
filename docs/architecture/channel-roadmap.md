@@ -67,8 +67,8 @@ DeepSeek Harness Agent / Session
 ## 独立 Adapter 安装（未来能力）
 
 当前内置 adapter package 不携带 `dsh.bundle`，因此不能只执行
-`plugin add @wsz987/channel-weixin` 就完成 Harness 配置。正式入口仍是
-`@wsz987/dsh-channels`，按需启停通过 profile patch 完成。
+`plugin add @krischoichoi/channel-weixin` 就完成 Harness 配置。正式入口仍是
+`@krischoichoi/dsh-channels`，按需启停通过 profile patch 完成。
 
 未来若支持独立安装，前提是：
 
@@ -79,7 +79,7 @@ adapter package 自己提供 dsh.bundle
 或者安装一个轻量 bundle：
 
 ```text
-@wsz987/channel-weixin-bundle
+@krischoichoi/channel-weixin-bundle
 ```
 
 是否把“library + bundle”放同一 package，可在实现时按 package DX 决定。

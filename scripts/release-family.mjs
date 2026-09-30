@@ -2,19 +2,19 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 
-export const RELEASE_BUNDLE = '@wsz987/dsh-channels';
+export const RELEASE_BUNDLE = '@krischoichoi/dsh-channels';
 export const RELEASE_REPOSITORY = 'git+https://github.com/wsz987/dsh-channels.git';
 export const RELEASE_PACKAGE_NAMES = [
-  '@wsz987/channel-core',
-  '@wsz987/channel-control',
-  '@wsz987/channel-harness',
-  '@wsz987/channel-files',
-  '@wsz987/channel-web',
-  '@wsz987/channel-weixin',
-  '@wsz987/channel-qq',
-  '@wsz987/channel-dingtalk',
-  '@wsz987/channel-lark',
-  '@wsz987/channel-telegram',
+  '@krischoichoi/channel-core',
+  '@krischoichoi/channel-control',
+  '@krischoichoi/channel-harness',
+  '@krischoichoi/channel-files',
+  '@krischoichoi/channel-web',
+  '@krischoichoi/channel-weixin',
+  '@krischoichoi/channel-qq',
+  '@krischoichoi/channel-dingtalk',
+  '@krischoichoi/channel-lark',
+  '@krischoichoi/channel-telegram',
   RELEASE_BUNDLE,
 ];
 

@@ -14,8 +14,8 @@ import type {
   MessagePart,
   MessageReceived,
   SenderId,
-} from '@wsz987/channel-core';
-import { textParts } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { textParts } from '@krischoichoi/channel-core';
 import type { QQBotInboundMessage } from '@tencent-connect/qqbot-nodejs';
 import type { InboundAttachment } from '@tencent-connect/qqbot-nodejs/protocol';
 import { z } from 'zod';

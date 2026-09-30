@@ -70,7 +70,7 @@ export interface DefineChannelAdapterInput {
 
   /**
    * Optional upstream compatibility manifest (read structurally by
-   * `getAdapterManifest` from `@wsz987/channel-compat`).
+   * `getAdapterManifest` from `@krischoichoi/channel-compat`).
    */
   manifest?: unknown;
 }

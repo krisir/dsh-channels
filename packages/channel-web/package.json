@@ -1,9 +1,9 @@
 {
-  "name": "@wsz987/channel-web",
+  "name": "@krischoichoi/channel-web",
   "version": "0.5.1",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wsz987/dsh-channels.git"
+    "url": "git+https://github.com/krischoichoi/dsh-channels.git"
   },
   "publishConfig": {
     "access": "public"
@@ -45,17 +45,17 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@wsz987/channel-control": "workspace:*",
-    "@wsz987/channel-core": "workspace:*",
+    "@krischoichoi/channel-control": "workspace:*",
+    "@krischoichoi/channel-core": "workspace:*",
     "qrcode": "^1.5.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "^4.0.2",
-    "@deepseek-ai/dsh-client-locale": "0.1.5-rc.2",
-    "@deepseek-ai/dsh-client-ui-settings": "0.1.5-rc.2",
-    "@deepseek-ai/dsh-client-ui-slots": "0.1.5-rc.2",
-    "@deepseek-ai/dsh-client-ui-primitives": "0.1.5-rc.2",
+    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/dsh-client-locale": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-client-ui-settings": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-client-ui-slots": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-client-ui-primitives": "0.2.0-rc.2",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^18.3.1",
     "esbuild": "^0.28.2",
@@ -65,9 +65,9 @@
     "vitest": "^3.2.0"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.2",
-    "@deepseek-ai/dsh-client-locale": "0.1.5-rc.2",
-    "@deepseek-ai/dsh-client-ui-settings": "0.1.5-rc.2"
+    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/dsh-client-locale": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-client-ui-settings": "0.2.0-rc.2"
   },
   "license": "MIT"
 }

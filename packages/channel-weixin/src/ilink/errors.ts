@@ -12,7 +12,7 @@
  * Tokens are NEVER embedded in error messages or logs — every message passes
  * through {@link redactMessage}.
  */
-import { ChannelError, ChannelSendError } from '@wsz987/channel-core';
+import { ChannelError, ChannelSendError } from '@krischoichoi/channel-core';
 import { STALE_TOKEN_ERRCODE } from './constants.js';
 
 /** iLink protocol-level error (server returned non-zero `ret` or `errcode`). */

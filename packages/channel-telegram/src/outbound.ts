@@ -18,8 +18,8 @@ import type {
   OutboundActionRow,
   OutboundMessage,
   SendResult,
-} from '@wsz987/channel-core';
-import { ChannelError, ChannelSendError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError, ChannelSendError } from '@krischoichoi/channel-core';
 import type { TelegramFormattingConfig } from './config.js';
 import type { TelegramMedia, TelegramSendOptions, TelegramSentMessage, TelegramUpstream } from './upstream.js';
 import type {

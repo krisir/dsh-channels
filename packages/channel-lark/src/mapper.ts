@@ -32,8 +32,8 @@ import type {
   SenderId,
   ThreadId,
   VideoPart,
-} from '@wsz987/channel-core';
-import { ChannelError, textParts } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError, textParts } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 
 

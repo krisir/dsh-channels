@@ -7,7 +7,7 @@
  * `role="button"` + `aria-expanded`, Enter/Space keyboard support. We do NOT
  * depend on `ui-workspace` internals nor on `DisclosureRow` (its layout
  * semantics target Reasoning/Tool-call rows); `ChannelRow` is the channel-web
- * business composition, built on official primitives (`IconTriangleRightFill14`,
+ * business composition, built on official primitives (`IconTriangleRightFillMedium`,
  * `StateDot`) + the local `Switch` and `--dsw-*` tokens (plan §31).
  *
  * Exactly one channel is expanded at a time (`openChannelId` in
@@ -20,7 +20,7 @@
  * collapsed row (clicking it must not expand the row).
  */
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { Button, IconTriangleRightFill14, StateDot } from '@deepseek-ai/dsh-client-ui-primitives';
+import { Button, IconTriangleRightFillMedium, StateDot } from '@deepseek-ai/dsh-client-ui-primitives';
 import {
   applySetup,
   fetchSetup,
@@ -52,7 +52,7 @@ if (typeof document !== 'undefined') {
   const existing = document.querySelector(`style[data-plugin-css="${CHANNEL_ROW_CSS_TAG}"]`);
   if (!existing) {
     const tag = document.createElement('style');
-    tag.dataset.plugin = '@wsz987/dsh-channels';
+    tag.dataset.plugin = '@krischoichoi/dsh-channels';
     tag.dataset.pluginCss = CHANNEL_ROW_CSS_TAG;
     tag.textContent =
       '[data-channel-row-toggle]{border-radius:8px}' +
@@ -233,7 +233,7 @@ export function ChannelRow(props: ChannelRowProps) {
             transform: open ? 'rotate(90deg)' : undefined,
           }}
         >
-          <IconTriangleRightFill14 size={14} />
+          <IconTriangleRightFillMedium size={14} />
         </span>
 
         <span

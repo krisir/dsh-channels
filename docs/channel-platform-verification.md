@@ -103,7 +103,7 @@ DeepSeek Harness / Cordis
                               │
                               └─ SDK / OpenAPI / source-port / protocol
 
-@wsz987/dsh-channels = 产品 Bundle，只负责一次性安装/组合，不直接实现平台协议。
+@krischoichoi/dsh-channels = 产品 Bundle，只负责一次性安装/组合，不直接实现平台协议。
 ```
 
 ### 架构红线
@@ -128,11 +128,11 @@ DeepSeek Harness / Cordis
 
 | 渠道 | DSH 包 | 上游策略 | 当前基线 | manifest 状态 | Setup/Auth | 主要能力 |
 |---|---|---|---|---|---|---|
-| Weixin | `@wsz987/channel-weixin` | Tencent iLink `source-port` | upstream fixture `2.4.6`，manifest live pin 待完成 | `experimental` | 无 setup 字段；QR | text/image；buffered |
-| QQ | `@wsz987/channel-qq` | Tencent 官方 SDK | `@tencent-connect/qqbot-nodejs@1.0.4` | `tested`* | AppID + AppSecret | text/image/file/audio/video；C2C native stream；内联键盘 |
-| DingTalk | `@wsz987/channel-dingtalk` | 官方 Stream SDK + OpenAPI | `dingtalk-stream@2.1.5` | `tested`* | ClientID + ClientSecret；device/credentials | text/image/file/audio/cards；edit stream；问答按钮 opt-in |
-| Lark/Feishu | `@wsz987/channel-lark` | 官方 Node SDK | `@larksuiteoapi/node-sdk@1.73.1` | `tested`* | AppID + AppSecret；credentials/hybrid | text/image/file/audio/cards/reactions/threads/interactive actions；edit stream |
-| Telegram | `@wsz987/channel-telegram` | Bot API HTTP 直连 | manifest `Bot API >=10.2` | `experimental` | Bot token | text/image/file/audio/video/threads；Rich Markdown + streaming |
+| Weixin | `@krischoichoi/channel-weixin` | Tencent iLink `source-port` | upstream fixture `2.4.6`，manifest live pin 待完成 | `experimental` | 无 setup 字段；QR | text/image；buffered |
+| QQ | `@krischoichoi/channel-qq` | Tencent 官方 SDK | `@tencent-connect/qqbot-nodejs@1.0.4` | `tested`* | AppID + AppSecret | text/image/file/audio/video；C2C native stream；内联键盘 |
+| DingTalk | `@krischoichoi/channel-dingtalk` | 官方 Stream SDK + OpenAPI | `dingtalk-stream@2.1.5` | `tested`* | ClientID + ClientSecret；device/credentials | text/image/file/audio/cards；edit stream；问答按钮 opt-in |
+| Lark/Feishu | `@krischoichoi/channel-lark` | 官方 Node SDK | `@larksuiteoapi/node-sdk@1.73.1` | `tested`* | AppID + AppSecret；credentials/hybrid | text/image/file/audio/cards/reactions/threads/interactive actions；edit stream |
+| Telegram | `@krischoichoi/channel-telegram` | Bot API HTTP 直连 | manifest `Bot API >=10.2` | `experimental` | Bot token | text/image/file/audio/video/threads；Rich Markdown + streaming |
 
 \* `tested` 当前主要指 contract/fixture/offline SDK tests 已通过；**不等于真实平台权限与账号 live gate 已通过**。
 

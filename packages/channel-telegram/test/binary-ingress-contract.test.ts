@@ -22,8 +22,8 @@
  * `test/media-hydration.test.ts`).
  */
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext, runBinaryIngressContract } from '@wsz987/channel-testkit';
+import { ChannelService, resolveVolatileConfig, type MessageReceived } from '@krischoichoi/channel-core';
+import { createTestContext, runBinaryIngressContract } from '@krischoichoi/channel-testkit';
 import {
   Config,
   InboundProcessor,
@@ -33,7 +33,7 @@ import {
 import type { TelegramConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -47,7 +47,7 @@ function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
     typing: { enabled: true, refreshMs: 4000 },
     maxDownloadBytes: 20 * 1024 * 1024,
     ...overrides,
-  });
+  })) as unknown as TelegramConfig;
 }
 
 /** Deterministic bytes for any Bot API file_id referenced by a fixture. */

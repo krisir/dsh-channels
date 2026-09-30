@@ -2,7 +2,7 @@
  * Secure host boundary for remote binary media plus the
  * protocol-neutral binary hydration helper.
  *
- * `@wsz987/channel-core/media` exports the pure bounded stream reader, the
+ * `@krischoichoi/channel-core/media` exports the pure bounded stream reader, the
  * pure SSRF/URL policy, the `SecureRemoteMediaFetcher` that ties them
  * together over an injectable fetch, the pure MIME hint helpers, and the
  * protocol-agnostic `applyHydrationResult` / `isHydratableBinaryPart`.

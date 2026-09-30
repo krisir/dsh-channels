@@ -41,7 +41,7 @@ import SessionStore, {
   type SessionEvent,
 } from '@deepseek-ai/dsh-session';
 import { MessageId, ToolCallId, type AssistantMessage, type ToolResultMessage, type UserMessage } from '@deepseek-ai/dsh-llm';
-import type { ChannelAdapter, ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelAdapter, ChannelTarget } from '@krischoichoi/channel-core';
 import { ReplyRouter } from '../src/reply-router.ts';
 import { SESSION_BINDING_SCHEMA_VERSION, type SessionBinding } from '../src/session-router.ts';
 import { ReplyContextStore } from '../src/reply-context-store.ts';

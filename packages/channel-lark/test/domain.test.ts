@@ -10,6 +10,8 @@
 import { describe, expect, it } from 'vitest';
 import { Domain } from '@larksuiteoapi/node-sdk';
 import { Config, LARK_APP_SECRET_REF, resolveDomain } from '../src/index.ts';
+import { resolveVolatileConfig } from '@krischoichoi/channel-core';
+import type { LarkConfig } from '../src/config.ts';
 
 describe('lark resolveDomain', () => {
   it("maps 'feishu' to Domain.Feishu", () => {
@@ -27,7 +29,7 @@ describe('lark resolveDomain', () => {
 
 describe('lark config defaults', () => {
   it("defaults upstream.mode to 'sdk', domain to 'feishu' and appSecretRef to the DSH ref", () => {
-    const config = Config({
+    const config = resolveVolatileConfig(Config({
       enabled: true,
       accountId: 'main',
       timeoutMs: 1000,
@@ -35,7 +37,7 @@ describe('lark config defaults', () => {
       dedup: { enabled: true, windowMs: 5000 },
       card: { createOnFirstDelta: true },
       upstream: { appId: 'cli_abc' },
-    });
+    })) as unknown as LarkConfig;
     expect(config.upstream.mode).toBe('sdk');
     expect(config.upstream.domain).toBe('feishu');
     expect(config.upstream.appSecretRef).toBe(LARK_APP_SECRET_REF);
@@ -45,7 +47,7 @@ describe('lark config defaults', () => {
   });
 
   it('keeps a plain appId in config and honours a custom appSecretRef', () => {
-    const config = Config({
+    const config = resolveVolatileConfig(Config({
       enabled: true,
       accountId: 'main',
       timeoutMs: 1000,
@@ -53,13 +55,13 @@ describe('lark config defaults', () => {
       dedup: { enabled: true, windowMs: 5000 },
       card: { createOnFirstDelta: true },
       upstream: { appId: 'cli_abc', appSecretRef: 'CUSTOM_SECRET_REF' },
-    });
+    })) as unknown as LarkConfig;
     expect(config.upstream.appId).toBe('cli_abc');
     expect(config.upstream.appSecretRef).toBe('CUSTOM_SECRET_REF');
   });
 
   it("honours an explicit 'lark' domain", () => {
-    const config = Config({
+    const config = resolveVolatileConfig(Config({
       enabled: true,
       accountId: 'main',
       timeoutMs: 1000,
@@ -67,7 +69,7 @@ describe('lark config defaults', () => {
       dedup: { enabled: true, windowMs: 5000 },
       card: { createOnFirstDelta: true },
       upstream: { domain: 'lark' },
-    });
+    })) as unknown as LarkConfig;
     expect(config.upstream.domain).toBe('lark');
   });
 

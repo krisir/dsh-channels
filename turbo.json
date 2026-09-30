@@ -12,7 +12,7 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
-    "@wsz987/channel-web#test": {
+    "@krischoichoi/channel-web#test": {
       "dependsOn": ["^build", "build"]
     },
     "clean": {

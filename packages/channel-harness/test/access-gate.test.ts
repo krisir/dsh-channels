@@ -13,7 +13,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import type { ChannelAccessPolicy, InteractionReceived, MessageReceived } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy, InteractionReceived, MessageReceived } from '@krischoichoi/channel-core';
 import {
   AgentManager,
   type AgentGateway,

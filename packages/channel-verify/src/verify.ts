@@ -25,15 +25,15 @@ import {
   manifestVerdict,
   validateManifest,
   versionState,
-} from '@wsz987/channel-compat';
-import { resolveFixturesDir, validateFixture } from '@wsz987/channel-testkit/fixture-loader';
+} from '@krischoichoi/channel-compat';
+import { resolveFixturesDir, validateFixture } from '@krischoichoi/channel-testkit/fixture-loader';
 import {
   BINARY_KINDS,
   capabilitiesSchema,
   channelAdapterShapeSchema,
   mediaCapabilitiesSchema,
   type ChannelAdapter,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { z } from 'zod';
 
 export type VerifySeverity = 'ok' | 'warning' | 'fail';
@@ -356,7 +356,26 @@ function isAdapterShape(value: unknown): value is AdapterShape {
  * object (e.g. a `defineChannelAdapter` default export), then try to
  * instantiate exported classes without args, and finally with the module's
  * own `Config` factory (the official adapters require a config).
+ *
+ * Harness 0.2.0 volatile config fields resolve to `Volatile<T>` handles; the
+ * discovery path unwraps top-level handles so constructor probing sees plain
+ * values, mirroring what each plugin's `apply()` does.
  */
+function unwrapVolatileConfig(config: unknown): unknown {
+  if (typeof config !== 'object' || config === null) return config;
+  const resolved: Record<string, unknown> = { ...config };
+  for (const [key, value] of Object.entries(resolved)) {
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      typeof (value as { get?: unknown }).get === 'function'
+    ) {
+      resolved[key] = (value as { get(): unknown }).get();
+    }
+  }
+  return resolved;
+}
+
 function findAdapter(mod: Record<string, unknown>): FoundAdapter | undefined {
   const names = [...Object.keys(mod)];
   if (mod.default !== undefined && !names.includes('default')) names.push('default');
@@ -378,7 +397,9 @@ function findAdapter(mod: Record<string, unknown>): FoundAdapter | undefined {
     }
     if (instances.length === 0 && typeof mod.Config === 'function') {
       try {
-        const config = (mod.Config as (input?: unknown) => unknown)({});
+        const config = unwrapVolatileConfig(
+          (mod.Config as (input?: unknown) => unknown)({}),
+        );
         instances.push(new (value as new (config: unknown) => unknown)(config));
       } catch {
         // not a config-based constructor

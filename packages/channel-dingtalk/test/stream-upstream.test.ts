@@ -10,8 +10,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
 import { TOPIC_CARD, TOPIC_ROBOT } from 'dingtalk-stream';
-import { ChannelService, ChannelError, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext, makeChannelTarget } from '@wsz987/channel-testkit';
+import { ChannelService, ChannelError, type MessageReceived } from '@krischoichoi/channel-core';
+import { createTestContext, makeChannelTarget } from '@krischoichoi/channel-testkit';
 import {
   DingTalkStreamUpstream,
   HttpDingTalkUpstream,

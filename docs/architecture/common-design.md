@@ -417,7 +417,7 @@ export type MessagePart =
 
 > Adapter 对其声明支持且可解析的入站 BinaryPart 应在 emit 前尽最大可能提供 `localData`；是否存在当前 Agent consumer 不得作为跳过 transport hydration 的理由。
 
-transport hydration 由 `@wsz987/channel-core`（media/hydration）的共享协议无关 helper
+transport hydration 由 `@krischoichoi/channel-core`（media/hydration）的共享协议无关 helper
 `applyHydrationResult` 执行；各适配器通过方向化的 `capabilities.media` 声明媒体能力
 ——inbound 逐 kind 为 `'bytes' | 'locator' | 'unsupported'`，outbound 为
 `'bytes' | 'unsupported'`，旧的粗粒度 `image/file/audio/video` 布尔字段保留至少一个
@@ -427,7 +427,7 @@ transport hydration 由 `@wsz987/channel-core`（media/hydration）的共享协�
 二进制元数据分为两个信任等级：
 
 - **MIME hint**：平台字段、HTTP `Content-Type` 或文件名扩展名提供的提示。各适配器
-  使用 `@wsz987/channel-core` 导出的 `normalizeMimeHint` / `mimeHintFromFilename`，不要维护
+  使用 `@krischoichoi/channel-core` 导出的 `normalizeMimeHint` / `mimeHintFromFilename`，不要维护
   渠道私有扩展名表。`application/octet-stream` 等泛型值视为“未知”，继续尝试下一来源。
 - **Verified MIME**：基于实际字节签名得到的结果。通用文件进入 `channel-files` 后由
   magic-signature 嗅探重新验证；扩展名、响应头和平台字段都不能作为解析或安全判断的事实。
@@ -961,13 +961,13 @@ Harness latest-compatible
 
 ---
 
-## DSH Bundle：`@wsz987/dsh-channels`
+## DSH Bundle：`@krischoichoi/dsh-channels`
 
 `packages/channels` 是 Harness 正式 Bundle：
 
 ```json
 {
-  "name": "@wsz987/dsh-channels",
+  "name": "@krischoichoi/dsh-channels",
   "version": "0.5.1",
   "type": "module",
   "exports": {
@@ -1003,42 +1003,42 @@ pnpm 将传递依赖提升到 profile 根目录。根入口同时承载 Web host
 ```yaml
 - insert:
     - id: channels-service
-      name: '@wsz987/dsh-channels/service'
+      name: '@krischoichoi/dsh-channels/service'
 
     # Generic attachment compatibility backend；删除此行则仅保留文本占位符
     - id: channels-files
-      name: '@wsz987/dsh-channels/files'
+      name: '@krischoichoi/dsh-channels/files'
 
     - id: channels-harness
-      name: '@wsz987/dsh-channels/harness'
+      name: '@krischoichoi/dsh-channels/harness'
       inject: [channels, agents, agentDefaultModel, agentPresets, llm, commands]
 
     - id: channels-control
-      name: '@wsz987/dsh-channels/control'
+      name: '@krischoichoi/dsh-channels/control'
       inject: [channels, credentials]
 
     - id: channels-weixin
-      name: '@wsz987/dsh-channels/weixin'
+      name: '@krischoichoi/dsh-channels/weixin'
       inject: [channels, channelControl]
 
     - id: channels-qq
-      name: '@wsz987/dsh-channels/qq'
+      name: '@krischoichoi/dsh-channels/qq'
       inject: [channels, credentials, channelControl]
 
     - id: channels-dingtalk
-      name: '@wsz987/dsh-channels/dingtalk'
+      name: '@krischoichoi/dsh-channels/dingtalk'
       inject: [channels, credentials, channelControl]
 
     - id: channels-lark
-      name: '@wsz987/dsh-channels/lark'
+      name: '@krischoichoi/dsh-channels/lark'
       inject: [channels, credentials, channelControl]
 
     - id: channels-telegram
-      name: '@wsz987/dsh-channels/telegram'
+      name: '@krischoichoi/dsh-channels/telegram'
       inject: [channels, credentials, channelControl]
 
     - id: channels-web
-      name: '@wsz987/dsh-channels'
+      name: '@krischoichoi/dsh-channels'
 ```
 
 `inject` 名称以 Harness 当前 public service 面为准（已在 `channel-harness` 收敛）。
@@ -1152,7 +1152,7 @@ ctx.logger.info(
 Harness `0.1.5-rc.2` 的 `ctx.attachments` 仍然只提供栅格图片的验证、保存和读取
 （`saveImage` / `saveImages`，无通用 `saveFile`），当前 `ContentBlock` 也没有通用
 `FileBlock`；Harness 目前**没有原生 generic-file 面**。因此非图片附件
-（PDF / DOCX / XLSX / 文本 与 audio/video）暂由 `@wsz987/channel-files` 以
+（PDF / DOCX / XLSX / 文本 与 audio/video）暂由 `@krischoichoi/channel-files` 以
 **Generic Attachment compatibility backend** 承接：
 
 ```text

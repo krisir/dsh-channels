@@ -69,7 +69,7 @@ const FETCH_TIMEOUT_MS = 15000;
 // Single source of truth for the tested DeepSeek Harness baseline.
 // Upgrade flow: Renovate → typecheck → contract → fixtures → update this
 // value together with every workspace dsh-* pin (AGENTS.md red line 6).
-const HARNESS_TESTED_VERSION = '0.1.5-rc.2';
+const HARNESS_TESTED_VERSION = '0.2.0-rc.2';
 const HARNESS_PKG_PREFIX = '@deepseek-ai/dsh-';
 
 /* ------------------------------------------------------------------ */

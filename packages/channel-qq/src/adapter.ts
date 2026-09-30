@@ -25,8 +25,8 @@ import type {
   ReplyHandle,
   SendResult,
   StreamingMode,
-} from '@wsz987/channel-core';
-import { ChannelError, SecureRemoteMediaFetcher } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError, SecureRemoteMediaFetcher } from '@krischoichoi/channel-core';
 import type { QQBotInboundMessage } from '@tencent-connect/qqbot-nodejs';
 import type { QQConfig } from './config.js';
 import { InboundProcessor } from './inbound.js';

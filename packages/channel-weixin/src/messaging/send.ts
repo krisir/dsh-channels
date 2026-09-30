@@ -26,9 +26,9 @@ import type {
   ImagePart,
   FilePart,
   VideoPart,
-} from '@wsz987/channel-core';
-import { collectText } from '@wsz987/channel-core';
-import { ChannelError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { collectText } from '@krischoichoi/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import type { ILinkClient } from '../ilink/client.js';
 import type { ContextTokenStore } from '../storage/context-token.js';
 import {

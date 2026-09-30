@@ -17,8 +17,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { loadFixture } from '@wsz987/channel-testkit';
-import type { MessageReceived } from '@wsz987/channel-core';
+import { loadFixture } from '@krischoichoi/channel-testkit';
+import type { MessageReceived } from '@krischoichoi/channel-core';
 import {
   AgentManager,
   type AgentGateway,

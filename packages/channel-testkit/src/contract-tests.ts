@@ -17,7 +17,7 @@
  * - health (when implemented)
  * - optional dedup behavior (opt-in via `options.expectedDedup`)
  *
- * The suite only imports `@wsz987/channel-core` and cordis — never channel-harness.
+ * The suite only imports `@krischoichoi/channel-core` and cordis — never channel-harness.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
@@ -26,7 +26,7 @@ import {
   MemorySecretStore,
   MemoryStorage,
   isChannelError,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type {
   ChannelAdapter,
   ChannelAdapterContext,
@@ -37,7 +37,7 @@ import type {
   ChannelTarget,
   MessageReceived,
   OutboundMessage,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 
 export interface ChannelAdapterContractOptions {
   /**

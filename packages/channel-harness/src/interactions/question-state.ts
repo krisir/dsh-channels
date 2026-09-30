@@ -18,7 +18,7 @@ import type {
   AskUserQuestionAnswerItem,
   AskUserQuestionItem,
 } from '@deepseek-ai/dsh-user-questions/types';
-import type { ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
 
 /**
  * How a question batch is presented on a channel conversation:

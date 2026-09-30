@@ -4,7 +4,7 @@
  * (trim + exact dedupe of allowFrom).
  */
 import { describe, expect, it } from 'vitest';
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
 import type { ChannelAccessDescriptor } from '../../src/types.js';
 import { validateAccessPolicy } from '../../src/access/validation.js';
 

@@ -30,8 +30,8 @@ import type {
   ReplyHandle,
   SendResult,
   StreamingMode,
-} from '@wsz987/channel-core';
-import { ChannelError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import type { TelegramConfig, TelegramFormattingConfig } from './config.js';
 import { FetchTransport, type HttpTransport } from './transport.js';
 import {

@@ -27,7 +27,7 @@ import CommandRuntime from '@deepseek-ai/dsh-commands';
 import { createScope } from '@deepseek-ai/dsh-scope';
 import SessionStore, { SessionId } from '@deepseek-ai/dsh-session';
 import type { Agent } from '@deepseek-ai/dsh-agent';
-import type { MessageReceived } from '@wsz987/channel-core';
+import type { MessageReceived } from '@krischoichoi/channel-core';
 import {
   AgentManager,
   type AgentGateway,

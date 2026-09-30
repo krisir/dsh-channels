@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-core — access-policy contract tests.
+ * @krischoichoi/channel-core — access-policy contract tests.
  */
 import { describe, expect, it } from 'vitest';
 import {

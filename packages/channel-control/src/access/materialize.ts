@@ -9,7 +9,7 @@
  * - allowlist/custom: update ownerId only; leave allowFrom/groups untouched so a
  *   re-scan / re-claim never silently rewrites a *complex* user-defined policy.
  */
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
 
 /** Keep the persisted policy aligned with its user-facing preset. */
 export function materializeAccessPolicy(policy: ChannelAccessPolicy): ChannelAccessPolicy {

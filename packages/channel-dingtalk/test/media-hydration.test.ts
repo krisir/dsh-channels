@@ -11,8 +11,8 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { BodyTooLargeError, ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+import { BodyTooLargeError, ChannelService, type MessageReceived } from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import { InboundProcessor, type MediaResolverLike, type RemoteMediaFetchLike } from '../src/index.ts';
 
 /** A fake secure fetcher that records calls and returns one bounded result. */

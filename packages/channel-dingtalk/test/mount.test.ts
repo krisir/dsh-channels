@@ -8,12 +8,12 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type ChannelAdapterContext } from '@wsz987/channel-core';
+import { ChannelService, type ChannelAdapterContext, resolveVolatileConfig } from '@krischoichoi/channel-core';
 import { Config, DingTalkAdapter, apply } from '../src/index.ts';
 import type { DingTalkConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -24,7 +24,7 @@ function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
     card: { createOnFirstDelta: true },
     upstream: { mode: 'gateway' },
     ...overrides,
-  });
+  })) as unknown as DingTalkConfig;
 }
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));

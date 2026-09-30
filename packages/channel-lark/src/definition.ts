@@ -29,9 +29,9 @@ import type {
   ChannelDefinition,
   ChannelSetupDescriptor,
   ConfiguredState,
-} from '@wsz987/channel-control';
-import { ControlError } from '@wsz987/channel-control';
-import { ChannelError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-control';
+import { ControlError } from '@krischoichoi/channel-control';
+import { ChannelError, resolveVolatileConfig } from '@krischoichoi/channel-core';
 import type { LarkConfig } from './config.js';
 import { LARK_APP_SECRET_REF } from './config.js';
 import { LarkAdapter, type LarkAdapterDeps } from './adapter.js';
@@ -70,11 +70,14 @@ const UPSTREAM_KEYS = ['appId', 'domain'] as const;
 
 /** Deep-copy a LarkConfig into an independent mutable snapshot. */
 function snapshotOf(config: LarkConfig): LarkConfig {
-  const copy: LarkConfig = { ...config };
-  copy.reconnect = { ...config.reconnect };
-  copy.dedup = { ...config.dedup };
-  copy.card = { ...config.card };
-  copy.upstream = { ...config.upstream };
+  // Harness 0.2.0: volatile fields arrive as `Volatile<T>` handles; unwrap
+  // them once so the snapshot (and everything reading it) sees plain values.
+  const plain = resolveVolatileConfig(config);
+  const copy: LarkConfig = { ...plain };
+  copy.reconnect = { ...plain.reconnect };
+  copy.dedup = { ...plain.dedup };
+  copy.card = { ...plain.card };
+  copy.upstream = { ...plain.upstream };
   return copy;
 }
 

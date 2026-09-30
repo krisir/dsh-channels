@@ -7,7 +7,7 @@
  */
 import type { HttpTransport } from '../transport.js';
 import type { WeixinConfig } from '../config.js';
-import type { SecureRemoteMediaFetcher } from '@wsz987/channel-core';
+import type { SecureRemoteMediaFetcher } from '@krischoichoi/channel-core';
 import { TencentWeixinUpstream, type WeixinUpstreamOptions } from './tencent-upstream.js';
 import type { WeixinUpstream } from './port.js';
 

@@ -22,7 +22,7 @@ import { createScope, scopeTarget } from '@deepseek-ai/dsh-scope';
 import { SessionId } from '@deepseek-ai/dsh-session';
 import { AttachmentId, type ImageAttachmentRef } from '@deepseek-ai/dsh-attachment';
 import type { Agent } from '@deepseek-ai/dsh-agent';
-import type { ChannelTarget, MessageReceived } from '@wsz987/channel-core';
+import type { ChannelTarget, MessageReceived } from '@krischoichoi/channel-core';
 import {
   AgentManager,
   type AgentGateway,

@@ -8,7 +8,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { toHarnessUserMessage, partsToText } from '../src/message-converter.ts';
-import type { MessageReceived } from '@wsz987/channel-core';
+import type { MessageReceived } from '@krischoichoi/channel-core';
 import type { ChannelFileDescriptor } from '../src/file-provider.ts';
 
 function fileEvent(): MessageReceived {

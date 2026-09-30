@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { OutboundSender } from '../src/index.ts';
 import type { LarkUpstream, LarkFileRef } from '../src/index.ts';
-import type { ChannelTarget, OutboundMessage } from '@wsz987/channel-core';
+import type { ChannelTarget, OutboundMessage } from '@krischoichoi/channel-core';
 
 const target: ChannelTarget = { conversationId: 'oc_456' };
 

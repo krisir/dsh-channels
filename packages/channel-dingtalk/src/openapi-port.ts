@@ -25,7 +25,7 @@
  * No second DingTalk SDK is introduced. The port never
  * hand-writes a Stream websocket protocol — that is dingtalk-stream's job.
  */
-import type { ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
 
 /**
  * Capability flags the harness outbox reads to decide whether proactive sends
@@ -138,7 +138,7 @@ export interface DingTalkOpenApiPort {
     target: ChannelTarget;
     templateId: string;
     text: string;
-    actions: import('@wsz987/channel-core').OutboundActionRow[];
+    actions: import('@krischoichoi/channel-core').OutboundActionRow[];
     textParam: string;
     actionsParam: string;
   }): Promise<{ messageId?: string; outTrackId: string; raw?: unknown }>;
@@ -146,7 +146,7 @@ export interface DingTalkOpenApiPort {
   updateInteractiveCard(input: {
     outTrackId: string;
     text: string;
-    actions: import('@wsz987/channel-core').OutboundActionRow[];
+    actions: import('@krischoichoi/channel-core').OutboundActionRow[];
     textParam: string;
     actionsParam: string;
   }): Promise<unknown>;

@@ -10,8 +10,8 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FakeChannelAdapter } from '@wsz987/channel-testkit';
-import type { ChannelHealth } from '@wsz987/channel-core';
+import { FakeChannelAdapter } from '@krischoichoi/channel-testkit';
+import type { ChannelHealth } from '@krischoichoi/channel-core';
 import {
   diagnose,
   formatDoctor,
@@ -29,6 +29,7 @@ import { WeixinAdapter } from '../../channel-weixin/src/adapter.ts';
 import { Config as WeixinConfig } from '../../channel-weixin/src/config.ts';
 import { DingTalkAdapter } from '../../channel-dingtalk/src/adapter.ts';
 import { Config as DingTalkConfig } from '../../channel-dingtalk/src/config.ts';
+import { resolveVolatileConfig } from '@krischoichoi/channel-core';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 
@@ -365,7 +366,7 @@ describe('integration: real adapters expose a readable manifest', () => {
 
   it('DingTalkAdapter carries a structurally readable tested manifest', () => {
     const adapter = new DingTalkAdapter(
-      DingTalkConfig({
+      resolveVolatileConfig(DingTalkConfig({
         enabled: true,
         accountId: 'main',
         baseUrl: 'http://fake',
@@ -374,7 +375,7 @@ describe('integration: real adapters expose a readable manifest', () => {
         reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10, maxRetries: 2 },
         dedup: { enabled: true, windowMs: 5000 },
         card: { createOnFirstDelta: true },
-      }),
+      }) as never),
     );
     expect(adapter.manifest).toBeDefined();
     const manifest = getAdapterManifest(adapter);

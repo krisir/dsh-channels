@@ -31,33 +31,33 @@ function entry(name, version, dependencies = {}, extra = {}) {
 
 test('release packages are public and dependency ordered', () => {
   assert.deepEqual(RELEASE_PACKAGE_NAMES, [
-    '@wsz987/channel-core',
-    '@wsz987/channel-control',
-    '@wsz987/channel-harness',
-    '@wsz987/channel-files',
-    '@wsz987/channel-web',
-    '@wsz987/channel-weixin',
-    '@wsz987/channel-qq',
-    '@wsz987/channel-dingtalk',
-    '@wsz987/channel-lark',
-    '@wsz987/channel-telegram',
-    '@wsz987/dsh-channels',
+    '@krischoichoi/channel-core',
+    '@krischoichoi/channel-control',
+    '@krischoichoi/channel-harness',
+    '@krischoichoi/channel-files',
+    '@krischoichoi/channel-web',
+    '@krischoichoi/channel-weixin',
+    '@krischoichoi/channel-qq',
+    '@krischoichoi/channel-dingtalk',
+    '@krischoichoi/channel-lark',
+    '@krischoichoi/channel-telegram',
+    '@krischoichoi/dsh-channels',
   ]);
   const entries = [
     ...RELEASE_PACKAGE_NAMES.map((name) => {
       if (name === RELEASE_BUNDLE) {
         return entry(name, '0.9.0', {
-          '@wsz987/channel-telegram': 'workspace:*',
-          '@wsz987/channel-weixin': 'workspace:*',
+          '@krischoichoi/channel-telegram': 'workspace:*',
+          '@krischoichoi/channel-weixin': 'workspace:*',
         });
       }
-      if (name === '@wsz987/channel-weixin') {
-        return entry(name, '0.8.1', { '@wsz987/channel-core': 'workspace:*' });
+      if (name === '@krischoichoi/channel-weixin') {
+        return entry(name, '0.8.1', { '@krischoichoi/channel-core': 'workspace:*' });
       }
-      if (name === '@wsz987/channel-telegram') {
+      if (name === '@krischoichoi/channel-telegram') {
         return entry(name, '0.1.0', {
-          '@wsz987/channel-control': 'workspace:*',
-          '@wsz987/channel-core': 'workspace:*',
+          '@krischoichoi/channel-control': 'workspace:*',
+          '@krischoichoi/channel-core': 'workspace:*',
         });
       }
       return entry(name, '0.1.0');
@@ -65,13 +65,13 @@ test('release packages are public and dependency ordered', () => {
   ];
   const packages = releasePackages(entries);
   assert.equal(packages.length, RELEASE_PACKAGE_NAMES.length);
-  assert.equal(packages.some(({ name }) => name === '@wsz987/channel-telegram'), true);
+  assert.equal(packages.some(({ name }) => name === '@krischoichoi/channel-telegram'), true);
   assert.ok(
-    packages.findIndex(({ name }) => name === '@wsz987/channel-telegram')
+    packages.findIndex(({ name }) => name === '@krischoichoi/channel-telegram')
       < packages.findIndex(({ name }) => name === RELEASE_BUNDLE),
   );
   assert.ok(
-    packages.findIndex(({ name }) => name === '@wsz987/channel-weixin')
+    packages.findIndex(({ name }) => name === '@krischoichoi/channel-weixin')
       < packages.findIndex(({ name }) => name === RELEASE_BUNDLE),
   );
   assert.equal(bundleVersion(validateWorkspaceManifests(entries)), '0.9.0');
@@ -88,19 +88,19 @@ test('release allowlist rejects an omitted workspace dependency', () => {
     entry(
       name,
       name === RELEASE_BUNDLE ? '0.9.0' : '0.1.0',
-      name === RELEASE_BUNDLE ? { '@wsz987/channel-testkit': 'workspace:*' } : {},
+      name === RELEASE_BUNDLE ? { '@krischoichoi/channel-testkit': 'workspace:*' } : {},
     ),
   );
-  entries.push(entry('@wsz987/channel-testkit', '0.1.0'));
+  entries.push(entry('@krischoichoi/channel-testkit', '0.1.0'));
   assert.throws(() => releasePackages(entries), /depends on non-release workspace package/);
 });
 
 test('Changesets ignores development and governance packages', () => {
   const config = JSON.parse(readFileSync(new URL('../.changeset/config.json', import.meta.url), 'utf8'));
   assert.deepEqual(config.ignore, [
-    '@wsz987/channel-testkit',
-    '@wsz987/channel-compat',
-    '@wsz987/channel-verify',
+    '@krischoichoi/channel-testkit',
+    '@krischoichoi/channel-compat',
+    '@krischoichoi/channel-verify',
   ]);
   // Private workspace apps must never be versioned or tagged: without this,
   // `changeset version` bumps apps/fake-channel and writes it a CHANGELOG that
@@ -122,7 +122,7 @@ test('workspace verification rejects invalid public metadata', () => {
 });
 
 test('packed manifests reject workspace ranges and wrong versions', () => {
-  const expected = { name: '@wsz987/core', version: '0.3.0' };
+  const expected = { name: '@krischoichoi/core', version: '0.3.0' };
   const valid = {
     ...expected,
     repository: { url: RELEASE_REPOSITORY },

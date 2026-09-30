@@ -49,7 +49,7 @@ import {
   type UserQuestionService,
 } from '@deepseek-ai/dsh-user-questions';
 import type { AskUserQuestionRequestEvent } from '@deepseek-ai/dsh-user-questions/types';
-import type { ChannelLogger } from '@wsz987/channel-core';
+import type { ChannelLogger } from '@krischoichoi/channel-core';
 import type {
   QuestionInteractionBackend,
   QuestionInteractionCancellation,

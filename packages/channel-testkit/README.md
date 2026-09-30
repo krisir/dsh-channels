@@ -1,4 +1,4 @@
-# @wsz987/channel-testkit
+# @krischoichoi/channel-testkit
 
 Contract tests, fakes, fixture loader and E2E helpers for DeepSeek Harness
 channel adapters.
@@ -10,7 +10,7 @@ internals.
 ## Install
 
 ```bash
-pnpm add -D @wsz987/channel-testkit
+pnpm add -D @krischoichoi/channel-testkit
 ```
 
 ## What's inside
@@ -24,14 +24,14 @@ pnpm add -D @wsz987/channel-testkit
 | `resolveFixturesDir` / `validateFixture` / `FixtureCase` | Load and validate `fixtures/<channel>/*.json` cases |
 | E2E helpers | Adapter lifecycle harnesses |
 
-The testkit depends only on `@wsz987/channel-core` and cordis. It never imports
+The testkit depends only on `@krischoichoi/channel-core` and cordis. It never imports
 `channel-harness` or Harness internals.
 
 ## Usage
 
 ```ts
 import { describe } from 'vitest';
-import { runChannelAdapterContract } from '@wsz987/channel-testkit';
+import { runChannelAdapterContract } from '@krischoichoi/channel-testkit';
 import { MyAdapter } from '../src/adapter.js';
 
 describe('MyAdapter contract', () => {
@@ -44,7 +44,7 @@ describe('MyAdapter contract', () => {
 Fixture loading:
 
 ```ts
-import { resolveFixturesDir, validateFixture } from '@wsz987/channel-testkit/fixture-loader';
+import { resolveFixturesDir, validateFixture } from '@krischoichoi/channel-testkit/fixture-loader';
 
 const fixture = JSON.parse(readFileSync(join(resolveFixturesDir(), 'telegram', 'text.json'), 'utf8'));
 validateFixture(fixture);
@@ -53,9 +53,9 @@ validateFixture(fixture);
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-testkit build
-pnpm --filter @wsz987/channel-testkit typecheck
-pnpm --filter @wsz987/channel-testkit test
+pnpm --filter @krischoichoi/channel-testkit build
+pnpm --filter @krischoichoi/channel-testkit typecheck
+pnpm --filter @krischoichoi/channel-testkit test
 ```
 
 ## Related

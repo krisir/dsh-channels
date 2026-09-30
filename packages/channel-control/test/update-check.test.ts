@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Context } from '@deepseek-ai/cordis';
-import { MemoryStorage, type ChannelStorage } from '@wsz987/channel-core';
+import { MemoryStorage, type ChannelStorage } from '@krischoichoi/channel-core';
 import {
   BUNDLE_PACKAGE,
   BUNDLE_VERSION,
@@ -177,7 +177,7 @@ describe('evaluateBundleUpdate', () => {
     const info = evaluateBundleUpdate('0.4.2', { latest: '0.4.3' });
     expect(info).toMatchObject({ version: '0.4.3', tag: 'latest', crossLine: false });
     expect(info!.commands).toEqual([
-      'npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels',
+      'npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels',
     ]);
   });
 
@@ -186,7 +186,7 @@ describe('evaluateBundleUpdate', () => {
     expect(info).toMatchObject({ version: '0.5.0', tag: 'latest', crossLine: true });
     expect(info!.commands).toEqual([
       'npm i -g @deepseek-ai/dsh@latest',
-      'npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest',
+      'npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest',
     ]);
   });
 
@@ -311,8 +311,8 @@ describe('BundleUpdateChecker', () => {
     await h.checker.trigger();
     const urls = h.fetchMock.mock.calls.map(([input]) => String(input)).sort();
     expect(urls).toEqual([
-      'https://registry.npmjs.org/@wsz987/dsh-channels/latest',
-      'https://registry.npmjs.org/@wsz987/dsh-channels/next',
+      'https://registry.npmjs.org/@krischoichoi/dsh-channels/latest',
+      'https://registry.npmjs.org/@krischoichoi/dsh-channels/next',
     ]);
   });
 

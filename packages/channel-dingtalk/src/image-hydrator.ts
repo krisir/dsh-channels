@@ -22,7 +22,7 @@
  * uses for voice/video).
  *
  * This module performs NO platform-protocol implementation. It only calls the
- * shared secure host boundary (`@wsz987/channel-core` `SecureRemoteMediaFetcher`)
+ * shared secure host boundary (`@krischoichoi/channel-core` `SecureRemoteMediaFetcher`)
  * — it never re-implements DingTalk download logic.
  *
  * Failure handling: a download failure never blocks text
@@ -39,14 +39,14 @@
  * the `DingTalkOpenApiPort.resolveMedia(...)` milestone (§32A). We never
  * invent an HTTP downloader for a mediaId.
  */
-import type { AudioPart, FilePart, MessagePart, VideoPart } from '@wsz987/channel-core';
+import type { AudioPart, FilePart, MessagePart, VideoPart } from '@krischoichoi/channel-core';
 import {
   applyHydrationResult,
   SecureRemoteMediaFetcher,
   toIngressFailureCode,
   type BinaryIngressFailureCode,
   type FetchBoundedResult,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { MediaResolverLike, ResolvedMedia } from './openapi-port.js';
 
 /** Default hard byte cap for a downloaded image (20 MiB). */

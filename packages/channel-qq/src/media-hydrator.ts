@@ -5,7 +5,7 @@
  * generic-file, audio (`voice_wav_url` ?? `url`) and video parts.
  * This module is the single place that turns a genuine `http(s)` URL into
  * trusted bytes, using the shared `SecureRemoteMediaFetcher` from
- * `@wsz987/channel-core` as the DSH host's generic security boundary. It
+ * `@krischoichoi/channel-core` as the DSH host's generic security boundary. It
  * never implements QQ upload / token / gateway protocol —
  * those belong to `qqbot-nodejs`.
  *
@@ -44,8 +44,8 @@ import {
   applyHydrationResult,
   isHydratableBinaryPart,
   mimeHintFromFilename,
-} from '@wsz987/channel-core';
-import type { MessagePart } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import type { MessagePart } from '@krischoichoi/channel-core';
 
 /** True when `value` is an absolute `http` / `https` URL. */
 function isHttpUrl(value: string): boolean {

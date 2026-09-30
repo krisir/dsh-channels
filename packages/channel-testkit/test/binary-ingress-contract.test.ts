@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ChannelAdapter, ChannelCapabilities, MessagePart, MessageReceived } from '@wsz987/channel-core';
+import type { ChannelAdapter, ChannelCapabilities, MessagePart, MessageReceived } from '@krischoichoi/channel-core';
 import {
   evaluateBinaryIngressCase,
   extractDeliveredParts,

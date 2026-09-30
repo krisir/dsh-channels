@@ -15,7 +15,7 @@ import type {
   ConversationId,
   InteractionReceived,
   SenderId,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import type { QQInboundMeta } from './mapper.js';
 

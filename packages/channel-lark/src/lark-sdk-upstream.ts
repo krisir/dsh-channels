@@ -24,7 +24,7 @@
  * client and drive a real `EventDispatcher` with v1 event envelopes.
  */
 import { EventDispatcher, LoggerLevel, normalizeCardAction } from '@larksuiteoapi/node-sdk';
-import { ChannelError } from '@wsz987/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import type {
   LarkFileRef,
@@ -318,14 +318,14 @@ export class LarkSdkUpstream implements LarkUpstream {
     return this.options.outbound.sendFile(to, file);
   }
 
-  sendInteractive(to: string, text: string, actions: import('@wsz987/channel-core').OutboundActionRow[]): Promise<unknown> {
+  sendInteractive(to: string, text: string, actions: import('@krischoichoi/channel-core').OutboundActionRow[]): Promise<unknown> {
     return this.options.outbound.sendInteractive(to, text, actions);
   }
 
   updateInteractive(
     cardId: string,
     text: string,
-    actions: import('@wsz987/channel-core').OutboundActionRow[],
+    actions: import('@krischoichoi/channel-core').OutboundActionRow[],
   ): Promise<unknown> {
     return this.options.outbound.updateInteractive(cardId, text, actions);
   }

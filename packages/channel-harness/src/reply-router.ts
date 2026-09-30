@@ -48,7 +48,7 @@ import type {
   ChannelLogger,
   ChannelTarget,
   ReplyHandle,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { ReplyConfig } from './config.js';
 import type { SessionBinding } from './session-router.js';
 import type { ChannelReplyContext, ReplyContextStore } from './reply-context-store.js';

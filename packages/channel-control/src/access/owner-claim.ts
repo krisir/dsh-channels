@@ -29,8 +29,8 @@
  *
  * The challenge code is in-memory only, never persisted and NEVER logged.
  */
-import type { ChannelEvent, ChannelAccessPolicy } from '@wsz987/channel-core';
-import { collectText, isReservedClaimCommand, parseOwnerClaimCommand } from '@wsz987/channel-core';
+import type { ChannelEvent, ChannelAccessPolicy } from '@krischoichoi/channel-core';
+import { collectText, isReservedClaimCommand, parseOwnerClaimCommand } from '@krischoichoi/channel-core';
 import { randomBytes } from 'node:crypto';
 import { ChannelDefinitionRegistry } from '../definitions/registry.js';
 import { ControlError } from '../errors.js';

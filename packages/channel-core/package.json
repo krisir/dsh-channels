@@ -1,9 +1,9 @@
 {
-  "name": "@wsz987/channel-core",
+  "name": "@krischoichoi/channel-core",
   "version": "0.5.1",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wsz987/dsh-channels.git"
+    "url": "git+https://github.com/krischoichoi/dsh-channels.git"
   },
   "publishConfig": {
     "access": "public"
@@ -33,9 +33,9 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@deepseek-ai/cordis": "^4.0.2",
-    "@deepseek-ai/dsh-home-paths": "0.1.5-rc.2",
-    "@deepseek-ai/schemastery": "^3.18.2",
+    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/dsh-home-paths": "0.2.0-rc.2",
+    "@deepseek-ai/schemastery": "~3.18.4",
     "mime-types": "3.0.2",
     "zod": "^4.4.3"
   },

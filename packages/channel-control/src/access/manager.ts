@@ -14,7 +14,7 @@
 import type {
   ChannelLogger,
   ChannelAccessPolicy,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { ChannelDefinitionRegistry } from '../definitions/registry.js';
 import { ControlError } from '../errors.js';
 import type {

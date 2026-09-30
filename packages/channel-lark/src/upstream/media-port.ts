@@ -42,7 +42,7 @@ import {
   ChannelError,
   RemoteMediaAbortedError,
   concatenate,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 
 /** Official per-resource limit, also enforced locally while reading. */
 export const LARK_MESSAGE_RESOURCE_MAX_BYTES = 100 * 1024 * 1024;

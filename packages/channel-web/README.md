@@ -1,4 +1,4 @@
-# @wsz987/channel-web
+# @krischoichoi/channel-web
 
 DeepSeek Harness Web client for the Channels dashboard: **Settings → 渠道**.
 
@@ -9,16 +9,16 @@ Harness Web UI.
 
 ## Install
 
-The Web dashboard is part of the `@wsz987/dsh-channels` bundle:
+The Web dashboard is part of the `@krischoichoi/dsh-channels` bundle:
 
 ```bash
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 ```
 
 To install it standalone:
 
 ```bash
-pnpm add @wsz987/channel-web
+pnpm add @krischoichoi/channel-web
 ```
 
 ## What it does
@@ -43,7 +43,7 @@ profile still boots.
 ## Client build
 
 The package declares a `dsh.client` block so the Harness Web runtime loads the
-client surface from `@wsz987/channel-web/client`.
+client surface from `@krischoichoi/channel-web/client`.
 
 Against the Harness `0.1.5-rc.2` client module graph the contract is:
 
@@ -69,9 +69,9 @@ Against the Harness `0.1.5-rc.2` client module graph the contract is:
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-web build
-pnpm --filter @wsz987/channel-web typecheck
-pnpm --filter @wsz987/channel-web test
+pnpm --filter @krischoichoi/channel-web build
+pnpm --filter @krischoichoi/channel-web typecheck
+pnpm --filter @krischoichoi/channel-web test
 ```
 
 ## Related

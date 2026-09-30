@@ -2,7 +2,7 @@ import {
   ControlError,
   type AuthProviderSession,
   type PublicAuthStatus,
-} from '@wsz987/channel-control';
+} from '@krischoichoi/channel-control';
 import { z } from 'zod';
 
 const deviceAuthorizationResponseSchema = z

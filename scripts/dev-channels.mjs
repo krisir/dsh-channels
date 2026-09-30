@@ -2,7 +2,7 @@
 /**
  * dev-channels.mjs — local-dev channel installer for a dsh profile.
  *
- * Links the @wsz987/dsh-channels bundle from this workspace into a DeepSeek
+ * Links the @krischoichoi/dsh-channels bundle from this workspace into a DeepSeek
  * Harness profile, so the channels can be developed without publishing
  * anything to npm. The profile receives exactly the same single direct bundle
  * dependency as a registry install.
@@ -41,19 +41,19 @@ const INFRASTRUCTURE_ROWS = new Set([
 ]);
 /** Direct profile dependencies written by the pre-bundle-owned installer. */
 const LEGACY_IMPLEMENTATION_PACKAGES = [
-  '@wsz987/channel-core',
-  '@wsz987/channel-files',
-  '@wsz987/channel-harness',
-  '@wsz987/channel-control',
-  '@wsz987/channel-weixin',
-  '@wsz987/channel-qq',
-  '@wsz987/channel-dingtalk',
-  '@wsz987/channel-lark',
-  '@wsz987/channel-telegram',
-  '@wsz987/channel-web',
+  '@krischoichoi/channel-core',
+  '@krischoichoi/channel-files',
+  '@krischoichoi/channel-harness',
+  '@krischoichoi/channel-control',
+  '@krischoichoi/channel-weixin',
+  '@krischoichoi/channel-qq',
+  '@krischoichoi/channel-dingtalk',
+  '@krischoichoi/channel-lark',
+  '@krischoichoi/channel-telegram',
+  '@krischoichoi/channel-web',
 ];
 const RUNTIME_PACKAGE_DIRS = LEGACY_IMPLEMENTATION_PACKAGES.map(
-  (name) => `./packages/${name.replace('@wsz987/', '')}`,
+  (name) => `./packages/${name.replace('@krischoichoi/', '')}`,
 );
 /** Extra short-name aliases; the canonical names come from the bundle patch. */
 const ALIASES = { wx: 'weixin', feishu: 'lark' };
@@ -149,7 +149,7 @@ function managedDependencies(profileDir) {
   if (!existsSync(manifestPath)) return null;
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
   const owned = new Set(LEGACY_IMPLEMENTATION_PACKAGES);
-  owned.add('@wsz987/dsh-channels');
+  owned.add('@krischoichoi/dsh-channels');
   return Object.keys(manifest.dependencies ?? {}).filter((name) => owned.has(name));
 }
 
@@ -200,7 +200,7 @@ function clean(profile) {
     console.log(`dev-channels: profile ${profile} has no dependencies managed by this bundle — nothing to remove`);
   } else {
     console.log(`dev-channels: removing from profile ${profile}: ${linked.join(', ')}`);
-    const bundleName = '@wsz987/dsh-channels';
+    const bundleName = '@krischoichoi/dsh-channels';
     const hasBundle = linked.includes(bundleName);
     if (hasBundle) {
       const result = spawnSync(dsh[0], [...dsh.slice(1), 'plugin', '--profile', profile, 'remove', bundleName], {
@@ -223,14 +223,14 @@ function clean(profile) {
   }
   const patched = resetPatch(profileDir);
   if (patched) console.log(`dev-channels: reset ${join(profileDir, 'cordis.patch.yml')} to the user layer`);
-  console.log(`dev-channels: cleaned ${profile} — reinstall with \`${dsh.join(' ')} plugin --profile ${profile} add -w @wsz987/dsh-channels@latest\``);
+  console.log(`dev-channels: cleaned ${profile} — reinstall with \`${dsh.join(' ')} plugin --profile ${profile} add -w @krischoichoi/dsh-channels@latest\``);
 }
 
 function run(args) {
   const help = () => {
     const channels = discoverChannels(parseBundleRows());
     const names = [...channels.keys()].sort();
-    console.log(`dev-channels — install the @wsz987/dsh-channels bundle from this workspace into a dsh profile
+    console.log(`dev-channels — install the @krischoichoi/dsh-channels bundle from this workspace into a dsh profile
 
 usage: pnpm channels [options] [channel...]
 

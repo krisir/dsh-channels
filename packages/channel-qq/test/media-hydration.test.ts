@@ -15,25 +15,25 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, SecureRemoteMediaFetcher, mediaCapabilitiesSchema } from '@wsz987/channel-core';
+import { ChannelService, SecureRemoteMediaFetcher, mediaCapabilitiesSchema, resolveVolatileConfig } from '@krischoichoi/channel-core';
 import {
   BodyTooLargeError,
   RemoteMediaError,
   UnsafeHostError,
-} from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+} from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import type { QQBotInboundMessage } from '@tencent-connect/qqbot-nodejs';
 import { InboundProcessor } from '../src/inbound.ts';
 import { hydrateMediaParts } from '../src/media-hydrator.ts';
 import { mapInbound } from '../src/mapper.ts';
 import { QQAdapter, FakeQQSdkClient } from '../src/index.ts';
 import { Config } from '../src/config.ts';
-import type { AudioPart, FilePart, ImagePart, MessagePart, VideoPart } from '@wsz987/channel-core';
+import type { AudioPart, FilePart, ImagePart, MessagePart, VideoPart } from '@krischoichoi/channel-core';
 
 const meta = { channel: 'qq' as never, accountId: 'main' as never };
 
 function makeConfig() {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     appId: 'APP_ID',
@@ -42,7 +42,7 @@ function makeConfig() {
     streaming: { enabled: true, throttleMs: 500 },
     dedup: { enabled: true, windowMs: 5000 },
     startupTimeoutMs: 15000,
-  });
+  })) as unknown as QQConfig;
 }
 
 function inbound(overrides: Partial<QQBotInboundMessage> = {}): QQBotInboundMessage {

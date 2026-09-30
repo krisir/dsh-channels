@@ -18,7 +18,7 @@ maturity model.
 ## 1. Overview: the no-modification guarantee
 
 A channel adapter is an independent package that implements the stable
-`ChannelAdapter` contract from `@wsz987/channel-core`. Adding a new channel
+`ChannelAdapter` contract from `@krischoichoi/channel-core`. Adding a new channel
 never requires changes to:
 
 ```text
@@ -76,7 +76,7 @@ import {
   defineChannelAdapter,
   type ChannelAdapter,
   type ChannelCapabilities,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 
 export default defineChannelAdapter({
   id: 'telegram',
@@ -195,7 +195,7 @@ platform URL / opaque handle
 - Preserve downloaded bytes in `localData`. For files also provide the best
   available `name` and actual downloaded `size`.
 - Treat platform MIME, HTTP `Content-Type`, and filename extensions as hints.
-  Use `normalizeMimeHint` and `mimeHintFromFilename` from `@wsz987/channel-core`
+  Use `normalizeMimeHint` and `mimeHintFromFilename` from `@krischoichoi/channel-core`
   instead of a channel-specific extension table. These helpers do not verify
   bytes; `channel-files` re-verifies stored content with magic signatures.
 - Preserve media captions as `TextPart` content in message order. Do not rely
@@ -290,7 +290,7 @@ defineChannelAdapter({
 
 ## 5. Contract tests
 
-`@wsz987/channel-testkit` ships `runChannelAdapterContract(adapter, options)`,
+`@krischoichoi/channel-testkit` ships `runChannelAdapterContract(adapter, options)`,
 which registers a vitest suite verifying the stable contract:
 
 - register/unregister through `ChannelService`
@@ -306,7 +306,7 @@ which registers a vitest suite verifying the stable contract:
 Call it once per adapter in your test file:
 
 ```ts
-import { runChannelAdapterContract } from '@wsz987/channel-testkit';
+import { runChannelAdapterContract } from '@krischoichoi/channel-testkit';
 
 runChannelAdapterContract(new TelegramAdapter(makeConfig(), { transport }));
 ```
@@ -347,7 +347,7 @@ are caught without a live platform:
 
 Fixture format: `name`, `channel` (optional in-file, but when present must match
 the directory name), `upstreamVersion`, `payload` and `expected`. Load them in
-tests with `loadFixture(channel, name)` from `@wsz987/channel-testkit`; the
+tests with `loadFixture(channel, name)` from `@krischoichoi/channel-testkit`; the
 verifier validates them with `validateFixture`.
 
 ## 7. The compatibility manifest
@@ -393,7 +393,7 @@ suite and fixtures pass against a real upstream version.
 
 ## 8. Verification with `pnpm verify`
 
-The `@wsz987/channel-verify` package is the in-repo form of
+The `@krischoichoi/channel-verify` package is the in-repo form of
 `dsh channels verify ./my-adapter`. It runs offline, so it works in CI:
 
 ```bash
@@ -462,7 +462,7 @@ inserts the adapter into a DeepSeek Harness profile (mirror the official
 ```yaml
 - insert:
     - id: channels-telegram
-      name: '@wsz987/channel-telegram'
+      name: '@krischoichoi/channel-telegram'
       inject:
         - channels
 ```

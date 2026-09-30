@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
-import type { ChannelEvent, MessageReceived } from '@wsz987/channel-core';
+import { ChannelService } from '@krischoichoi/channel-core';
+import type { ChannelEvent, MessageReceived } from '@krischoichoi/channel-core';
 import {
   FakeChannelAdapter,
   FakeReplyHandle,

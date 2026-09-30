@@ -99,7 +99,7 @@ describe('GET /dsh-channels/api/v2/update-check (host route)', () => {
         crossLine: true,
         commands: [
           'npm i -g @deepseek-ai/dsh@latest',
-          'npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest',
+          'npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest',
         ],
       },
       checkedAt: 1_700_000_000_000,
@@ -114,7 +114,7 @@ describe('GET /dsh-channels/api/v2/update-check (host route)', () => {
         crossLine: true,
         commands: [
           'npm i -g @deepseek-ai/dsh@latest',
-          'npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest',
+          'npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest',
         ],
       },
       checkedAt: 1_700_000_000_000,
@@ -147,7 +147,7 @@ describe('fetchUpdateCheck (client)', () => {
             version: '0.4.3',
             tag: 'latest',
             crossLine: false,
-            commands: ['npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels'],
+            commands: ['npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels'],
           },
           checkedAt: 1,
         }),
@@ -186,7 +186,7 @@ describe('BundleUpdateNotice (pure display component)', () => {
     crossLine: true,
     commands: [
       'npm i -g @deepseek-ai/dsh@latest',
-      'npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest',
+      'npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest',
     ],
   };
 
@@ -200,7 +200,7 @@ describe('BundleUpdateNotice (pure display component)', () => {
     expect(text).toContain('新版本 0.5.0 可用（latest）');
     expect(text).toContain('跨版本线升级');
     expect(text).toContain('npm i -g @deepseek-ai/dsh@latest');
-    expect(text).toContain('npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest');
+    expect(text).toContain('npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest');
   });
 
   it('omits the cross-line hint for a same-line update', () => {

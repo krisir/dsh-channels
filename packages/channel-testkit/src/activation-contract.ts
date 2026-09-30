@@ -18,7 +18,7 @@
  * produces. Failures surface as normal vitest failures.
  */
 import { describe, expect, it } from 'vitest';
-import type { MessageReceived } from '@wsz987/channel-core';
+import type { MessageReceived } from '@krischoichoi/channel-core';
 
 /** Input to `runActivationContract`. */
 export interface ActivationContractInput {

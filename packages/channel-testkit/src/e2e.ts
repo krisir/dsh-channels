@@ -12,14 +12,14 @@
  * channel-harness integration tests.
  */
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
+import { ChannelService } from '@krischoichoi/channel-core';
 import type {
   ChannelAdapterContext,
   ChannelEvent,
   ChannelTarget,
   MessageReceived,
   OutboundMessage,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { FakeChannelAdapter } from './fake-adapter.js';
 import { FakeHarness } from './fake-harness.js';
 import { createTestContext } from './contract-tests.js';

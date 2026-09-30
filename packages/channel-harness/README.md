@@ -1,24 +1,24 @@
-# @wsz987/channel-harness
+# @krischoichoi/channel-harness
 
 Thin Harness-native bridge between channel adapters and DeepSeek Harness
 agents/sessions.
 
 This package is the **only** package allowed to import Harness public APIs. It
-turns `ChannelEvent`s emitted by `@wsz987/channel-core` adapters into Harness
+turns `ChannelEvent`s emitted by `@krischoichoi/channel-core` adapters into Harness
 sessions, routes them to the right agent, and streams assistant output back to
 the channel reply pipeline.
 
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-harness
+pnpm add @krischoichoi/channel-harness
 ```
 
 As a Cordis plugin:
 
 ```yaml
 - id: channels-harness
-  name: '@wsz987/channel-harness'
+  name: '@krischoichoi/channel-harness'
   inject:
     - channels
     - agents
@@ -60,7 +60,7 @@ run a first-turn model preparation RPC.
 
 ```yaml
 - id: channels-harness
-  name: '@wsz987/channel-harness'
+  name: '@krischoichoi/channel-harness'
   inject: [channels, agents, agentDefaultModel, agentPresets, llm, commands]
   config:
     agent:
@@ -95,9 +95,9 @@ Routing priority when `routing.mode` is not `global`:
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-harness build
-pnpm --filter @wsz987/channel-harness typecheck
-pnpm --filter @wsz987/channel-harness test
+pnpm --filter @krischoichoi/channel-harness build
+pnpm --filter @krischoichoi/channel-harness typecheck
+pnpm --filter @krischoichoi/channel-harness test
 ```
 
 ## Related

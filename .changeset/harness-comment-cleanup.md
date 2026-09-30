@@ -1,5 +1,5 @@
 ---
-'@wsz987/channel-harness': patch
+'@krischoichoi/channel-harness': patch
 ---
 
 清理残留的旧描述（仅注释，无 API 变化）。

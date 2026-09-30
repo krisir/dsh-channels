@@ -21,8 +21,8 @@ import type {
   OutboundActionRow,
   OutboundMessage,
   SendResult,
-} from '@wsz987/channel-core';
-import { ChannelSendError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelSendError } from '@krischoichoi/channel-core';
 import { toTextPayload } from './mapper.js';
 import type { DingTalkUpstream } from './upstream.js';
 import type {

@@ -32,8 +32,8 @@ import type {
   OutboundMessage,
   ReplyHandle,
   SendResult,
-} from '@wsz987/channel-core';
-import { ChannelError, SecureRemoteMediaFetcher } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError, SecureRemoteMediaFetcher } from '@krischoichoi/channel-core';
 import type { RemoteMediaFetchLike } from './image-hydrator.js';
 import { DWClient } from 'dingtalk-stream';
 import type { DingTalkConfig } from './config.js';

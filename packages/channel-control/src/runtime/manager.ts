@@ -18,7 +18,7 @@
  * logged, never allowed to crash plugin activation.
  */
 import type { Context } from '@deepseek-ai/cordis';
-import type { ChannelAdapter, ChannelHealth } from '@wsz987/channel-core';
+import type { ChannelAdapter, ChannelHealth } from '@krischoichoi/channel-core';
 import { ChannelDefinitionRegistry } from '../definitions/registry.js';
 import type { CredentialSeam } from '../credentials/manager.js';
 import type { ChannelRuntimeStatus } from '../types.js';

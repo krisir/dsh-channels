@@ -6,15 +6,15 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type ChannelEvent } from '@wsz987/channel-core';
-import type { InteractionReceived } from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+import { ChannelService, type ChannelEvent, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import type { InteractionReceived } from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import { Config, QQAdapter } from '../src/index.ts';
 import { FakeQQSdkClient, type QQInteractionLike } from '../src/sdk-client.ts';
 import type { QQConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     appId: 'APP_ID',
@@ -24,7 +24,7 @@ function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
     dedup: { enabled: true, windowMs: 5000 },
     startupTimeoutMs: 15000,
     ...overrides,
-  });
+  })) as unknown as QQConfig;
 }
 
 /** C2C button press — conversation = user_openid, sender = user_openid. */

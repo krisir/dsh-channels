@@ -6,8 +6,8 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+import { ChannelService, type MessageReceived } from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import { ImageHydrator, InboundProcessor } from '../src/index.ts';
 import type { LarkMediaPort, LarkResourceType } from '../src/index.ts';
 

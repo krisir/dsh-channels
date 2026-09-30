@@ -18,7 +18,7 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Context } from '@deepseek-ai/cordis';
 import type { SessionId } from '@deepseek-ai/dsh-session';
-import type { ChannelLogger } from '@wsz987/channel-core';
+import type { ChannelLogger } from '@krischoichoi/channel-core';
 import type { WorkspaceConfig } from './config.js';
 import { channelWorkspaceTitle, safeSegment, stableSafeAccountKey } from './channel-label.js';
 import { resolveDshHome } from './dsh-home.js';

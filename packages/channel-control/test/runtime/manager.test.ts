@@ -10,7 +10,7 @@ import {
   type ChannelAdapterContext,
   type ChannelCapabilities,
   type ChannelHealth,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { ChannelDefinitionRegistry } from '../../src/definitions/registry.js';
 import { ChannelRuntimeManager } from '../../src/runtime/manager.js';
 import type { CredentialSeam } from '../../src/credentials/manager.js';

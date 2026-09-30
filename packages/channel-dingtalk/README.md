@@ -1,4 +1,4 @@
-# @wsz987/channel-dingtalk
+# @krischoichoi/channel-dingtalk
 
 DingTalk / 钉钉 channel adapter for DeepSeek Harness.
 
@@ -12,13 +12,13 @@ drivers:
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-dingtalk
+pnpm add @krischoichoi/channel-dingtalk
 ```
 
 Or install the whole bundle:
 
 ```bash
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 ```
 
 ## Configuration
@@ -27,7 +27,7 @@ SDK mode:
 
 ```yaml
 - id: channels-dingtalk
-  name: '@wsz987/channel-dingtalk'
+  name: '@krischoichoi/channel-dingtalk'
   inject: [channels, credentials, channelControl]
   config:
     enabled: true
@@ -52,7 +52,7 @@ Gateway mode (legacy, self-hosted HTTP gateway):
 
 ```yaml
 - id: channels-dingtalk
-  name: '@wsz987/channel-dingtalk'
+  name: '@krischoichoi/channel-dingtalk'
   inject: [channels, credentials, channelControl]
   config:
     enabled: true
@@ -124,9 +124,9 @@ unverified here and is the first item to check in that gate.
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-dingtalk build
-pnpm --filter @wsz987/channel-dingtalk typecheck
-pnpm --filter @wsz987/channel-dingtalk test
+pnpm --filter @krischoichoi/channel-dingtalk build
+pnpm --filter @krischoichoi/channel-dingtalk typecheck
+pnpm --filter @krischoichoi/channel-dingtalk test
 ```
 
 ## Related

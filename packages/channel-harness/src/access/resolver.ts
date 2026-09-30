@@ -4,7 +4,7 @@
  * Failure-closed resolution over the shared ChannelStorage. The Harness DOES
  * NOT depend on channel-control: it reads the shared versioned policy KV via
  * `accessPolicyStorageKey` and validates it with
- * the shared `channelAccessPolicySchema` (both live in @wsz987/channel-core).
+ * the shared `channelAccessPolicySchema` (both live in @krischoichoi/channel-core).
  *
  * Reading rules (§15):
  *   - missing JSON     -> `missing`
@@ -15,8 +15,8 @@
  * saves and permission revocations take effect immediately with no invalidation
  * machinery and no stale-ACL window.
  */
-import type { ChannelAccessPolicy, ChannelStorage } from '@wsz987/channel-core';
-import { accessPolicyStorageKey, channelAccessPolicySchema } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy, ChannelStorage } from '@krischoichoi/channel-core';
+import { accessPolicyStorageKey, channelAccessPolicySchema } from '@krischoichoi/channel-core';
 
 export type ResolvedAccessPolicy =
   | { state: 'present'; policy: ChannelAccessPolicy }

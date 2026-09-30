@@ -1,4 +1,4 @@
-# @wsz987/channel-weixin
+# @krischoichoi/channel-weixin
 
 Weixin / 微信 channel adapter for DeepSeek Harness.
 
@@ -13,13 +13,13 @@ protocol directly rather than consuming an official host-neutral npm package.
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-weixin
+pnpm add @krischoichoi/channel-weixin
 ```
 
 Or install the whole bundle:
 
 ```bash
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 ```
 
 ## Configuration
@@ -30,7 +30,7 @@ adapter, not through YAML.
 
 ```yaml
 - id: channels-weixin
-  name: '@wsz987/dsh-channels/weixin'
+  name: '@krischoichoi/dsh-channels/weixin'
   inject: [channels, channelControl]
   config:
     enabled: true
@@ -50,9 +50,9 @@ adapter, not through YAML.
 The row above is the one shipped by the bundle patch
 (`packages/channels/cordis.patch.yml`). Two details are easy to get wrong:
 
-- `name` addresses the **bundle** subpath (`@wsz987/dsh-channels/weixin`), because
+- `name` addresses the **bundle** subpath (`@krischoichoi/dsh-channels/weixin`), because
   the bundle re-exports every plugin from one direct profile dependency. The
-  adapter package `@wsz987/channel-weixin` has no `./weixin` subpath of its own.
+  adapter package `@krischoichoi/channel-weixin` has no `./weixin` subpath of its own.
 - The plugin module itself declares `inject = ['channels']`; the row adds
   `channelControl`. The loader merges the row's `inject` into the plugin's own,
   so the two are additive rather than required to be identical.
@@ -85,10 +85,10 @@ Login is QR-based: the control plane exposes the QR in Harness Web
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-weixin build
-pnpm --filter @wsz987/channel-weixin typecheck
-pnpm --filter @wsz987/channel-weixin test
-pnpm --filter @wsz987/channel-weixin test:live   # live verification (requires real Weixin)
+pnpm --filter @krischoichoi/channel-weixin build
+pnpm --filter @krischoichoi/channel-weixin typecheck
+pnpm --filter @krischoichoi/channel-weixin test
+pnpm --filter @krischoichoi/channel-weixin test:live   # live verification (requires real Weixin)
 ```
 
 ## Related

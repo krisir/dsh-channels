@@ -23,7 +23,7 @@ import type {
   MessageReceived,
   SenderId,
   ConversationId,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { ILinkMessage, ILinkMessageItem, WeixinInboundMeta } from '../ilink/types.js';
 import { stableHash } from './dedup.js';
 import { formatQuotedContext } from './quote.js';

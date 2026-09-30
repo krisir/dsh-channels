@@ -8,18 +8,18 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, ChannelError } from '@wsz987/channel-core';
-import type { ChannelTarget } from '@wsz987/channel-core';
+import { ChannelService, ChannelError, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
 import {
   runChannelAdapterContract,
   createTestContext,
-} from '@wsz987/channel-testkit';
+} from '@krischoichoi/channel-testkit';
 import { Config, QQAdapter, apply, inject } from '../src/index.ts';
 import { FakeQQSdkClient } from '../src/sdk-client.ts';
 import type { QQConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     appId: 'APP_ID',
@@ -29,7 +29,7 @@ function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
     dedup: { enabled: true, windowMs: 5000 },
     startupTimeoutMs: 15000,
     ...overrides,
-  });
+  })) as unknown as QQConfig;
 }
 
 function dmReplyTarget(): ChannelTarget {

@@ -12,7 +12,7 @@
  * free-form detail text: [toPublicStatus] derives a structured AuthPhase and
  * prompt entirely inside this host definition (doc §16).
  */
-import type { ChannelAdapter, AuthChallenge, AuthStatePoll } from '@wsz987/channel-core';
+import { type ChannelAdapter, type AuthChallenge, type AuthStatePoll, resolveVolatileConfig } from '@krischoichoi/channel-core';
 import type {
   AuthInput,
   AuthProviderSession,
@@ -20,8 +20,8 @@ import type {
   PublicAuthPrompt,
   PublicAuthStatus,
   PublicQrPayload,
-} from '@wsz987/channel-control';
-import { ControlError } from '@wsz987/channel-control';
+} from '@krischoichoi/channel-control';
+import { ControlError } from '@krischoichoi/channel-control';
 import type { WeixinConfig } from './config.js';
 import { WeixinAdapter, type WeixinAdapterDeps } from './adapter.js';
 
@@ -112,13 +112,12 @@ const DEFAULT_EXPIRES_MS = 3 * 60_000;
 export function createWeixinDefinition(options: WeixinDefinitionOptions): ChannelDefinition {
   const { config, deps, getAdapter } = options;
 
-  // In the control-plane wiring `config` is the (frozen) settings-scope object
-  // (`settings.register(...).get()`), so `config.enabled` is READ-ONLY — an
-  // in-process write throws "Cannot assign to read only property 'enabled'"
-  // and breaks disabling the channel. Keep the live flag in a local mutable
+  // Under Harness 0.2.0 volatile fields (enabled) arrive as `Volatile<T>`
+  // handles; unwrap them once so the definition sees plain values. Writes must
+  // NOT go through the config object — keep the live flag in a local mutable
   // snapshot (mirrors qq/telegram's `snapshot.enabled`) and let
-  // persistEnabled() persist the intent through the settings scope.
-  const state: { enabled: boolean } = { enabled: config.enabled };
+  // persistEnabled() persist the intent through the settings forms.
+  const state: { enabled: boolean } = { enabled: resolveVolatileConfig(config).enabled };
 
   const requireAdapter = () => getAdapter();
 

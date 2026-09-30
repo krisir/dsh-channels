@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-web — client-safe DTO types shared across the host API and
+ * @krischoichoi/channel-web — client-safe DTO types shared across the host API and
  * the Web client ("protocol").
  *
  * These are deliberately plain, serialisable wire types. They never carry

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { Context } from '@deepseek-ai/cordis';
 import type { AgentSetup } from '@deepseek-ai/dsh-agent';
 import { SessionId } from '@deepseek-ai/dsh-session';
-import type { ChannelLogger } from '@wsz987/channel-core';
+import type { ChannelLogger } from '@krischoichoi/channel-core';
 import type { AgentManager, AgentRef } from './agent-manager.js';
 import type { AgentRouteSpec } from './agent-router.js';
 import type { SessionBindingStore } from './binding-store.js';

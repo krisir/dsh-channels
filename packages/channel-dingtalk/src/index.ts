@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-dingtalk — DingTalk channel adapter for DeepSeek Harness.
+ * @krischoichoi/channel-dingtalk — DingTalk channel adapter for DeepSeek Harness.
  *
  * Maps the DingTalk platform to the stable Channel Contract. Two upstream
  * drivers implement `DingTalkUpstream` behind `config.upstream.mode`:
@@ -18,10 +18,10 @@
  */
 import { type Context } from '@deepseek-ai/cordis';
 import { credentialRef } from '@deepseek-ai/dsh-credentials';
-import type { SettingsProvider } from '@deepseek-ai/dsh-settings';
-import { mountChannelAdapter } from '@wsz987/channel-core';
-import type { DingTalkConfig } from './config.js';
+import type SettingsForms from '@deepseek-ai/dsh-settings';
+import { mountChannelAdapter, resolveVolatileConfig, resolveVolatileValue } from '@krischoichoi/channel-core';
 import { Config, DINGTALK_CLIENT_SECRET_REF } from './config.js';
+import type { DingTalkConfig, DingTalkConfigLive, DingTalkUpstreamConfig } from './config.js';
 import { DingTalkAdapter, type DingTalkAdapterDeps } from './adapter.js';
 import { createDingTalkDefinition } from './definition.js';
 
@@ -29,6 +29,7 @@ export const name = 'channel-dingtalk';
 export const inject: string[] = ['channels', 'credentials'];
 
 export { Config, DINGTALK_CLIENT_SECRET_REF };
+export type { DingTalkConfig, DingTalkConfigLive } from './config.js';
 export { createDingTalkDefinition } from './definition.js';
 export {
   beginDingTalkDeviceAuth,
@@ -117,7 +118,19 @@ type ChannelControlLike = {
   runtime?: { restart(channelId: string, accountId?: string): Promise<void> };
 };
 
-export function apply(ctx: Context, config: DingTalkConfig, deps: DingTalkAdapterDeps = {}): void {
+/**
+ * Entry plugin apply. Accepts both the activation-time live shape (volatile
+ * fields resolve to `Volatile<T>` handles under Harness 0.2.0) and a plain
+ * snapshot (tests / programmatic mounting); plain fields pass through
+ * `resolveVolatileConfig` untouched. The shape is validated by Schemastery at
+ * the Loader boundary via the attached `Config` schema.
+ */
+export function apply(
+  ctx: Context,
+  rawConfig: DingTalkConfig | DingTalkConfigLive,
+  deps: DingTalkAdapterDeps = {},
+): void {
+  const config = resolveVolatileConfig(rawConfig) as DingTalkConfig;
   // --- One-time legacy plaintext -> credential-reference migration (§52 Task 4).
   // The value is written to the credentials seam exactly once, then the
   // plaintext is deleted from the in-memory config. Never double-written.
@@ -125,8 +138,17 @@ export function apply(ctx: Context, config: DingTalkConfig, deps: DingTalkAdapte
   const ref = config.upstream.clientSecretRef ?? DINGTALK_CLIENT_SECRET_REF;
   if (typeof legacySecret === 'string' && legacySecret.length > 0) {
     void ctx.credentials.set(credentialRef(ref), legacySecret);
-    // Mutate the config so the plaintext is never read or written again.
-    delete (config.upstream as { clientSecret?: string }).clientSecret;
+    // Strip the plaintext from BOTH the unwrapped snapshot and the caller's
+    // raw config so it is never read or written again. Schemastery 3.18
+    // freezes parsed sub-objects, so swap in a fresh shallow copy; the raw
+    // config top level may be frozen too (host-provided), hence the guard.
+    const stripped = { ...config.upstream, clientSecret: undefined } as DingTalkUpstreamConfig;
+    config.upstream = stripped;
+    try {
+      (rawConfig as DingTalkConfig).upstream = stripped;
+    } catch {
+      // Frozen live config: the swap above already sanitized our snapshot.
+    }
     ctx.logger('channel-dingtalk').info('migrated legacy dingtalk clientSecret to credentials');
   }
 
@@ -135,20 +157,18 @@ export function apply(ctx: Context, config: DingTalkConfig, deps: DingTalkAdapte
     // The control plane owns lifecycle: register EVEN when disabled so the Web
     // control plane can re-enable the channel later (doc §19/§20); runtime
     // auto-starts.
-    const settings = ctx.get('settings') as SettingsProvider | undefined;
-    const scope = settings?.register('channels-dingtalk', Config, { base: config });
-    const effectiveConfig = scope?.get() ?? config;
+    const settings = ctx.get('settings') as SettingsForms | undefined;
     control.definitions.register(
       createDingTalkDefinition({
-        config: effectiveConfig,
+        config,
         deps,
         credentials: ctx.credentials,
-        persistSetup: (patch) => scope?.update(patch) ?? Promise.resolve(),
-        persistEnabled: (enabled) => scope?.update({ enabled }) ?? Promise.resolve(),
+        persistSetup: (patch) => settings?.update('channels-dingtalk', patch) ?? Promise.resolve(),
+        persistEnabled: (enabled) => settings?.update('channels-dingtalk', { enabled }) ?? Promise.resolve(),
         onAuthCompleted: control.runtime
           ? async () => {
               try {
-                await control.runtime!.restart('dingtalk', effectiveConfig.accountId);
+                await control.runtime!.restart('dingtalk', config.accountId);
               } catch (error) {
                 // Provider authorization is complete even if adapter startup
                 // needs attention; keep the public auth session terminal and
@@ -168,7 +188,7 @@ export function apply(ctx: Context, config: DingTalkConfig, deps: DingTalkAdapte
   // --- Legacy standalone mount (channel-control absent). No directory/control
   // surface exists to re-enable a disabled channel, so the config `enabled`
   // gate still applies (doc §20).
-  if (!config.enabled) return;
+  if (!resolveVolatileValue(config.enabled)) return;
   const credentialsCtx = ctx as Context & { credentials: (typeof ctx.credentials) };
   ctx.effect(async () => {
     // SDK mode requires a resolved credential; gateway mode owns its own.

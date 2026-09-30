@@ -13,7 +13,7 @@ import {
   BodyTooLargeError,
   ChannelError,
   RemoteMediaAbortedError,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import {
   LarkOpenApiMediaPort,
   type LarkMediaClient,

@@ -13,8 +13,8 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, mediaCapabilitiesSchema, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+import { ChannelService, mediaCapabilitiesSchema, resolveVolatileConfig, type MessageReceived } from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import {
   Config,
   LarkAdapter,
@@ -437,7 +437,7 @@ describe('capabilities.media', () => {
 });
 
 function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     timeoutMs: 1000,
@@ -446,5 +446,5 @@ function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
     card: { createOnFirstDelta: true, typingIndicator: false },
     upstream: { appId: 'cli_test' },
     ...overrides,
-  });
+  })) as unknown as LarkConfig;
 }

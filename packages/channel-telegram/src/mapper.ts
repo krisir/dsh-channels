@@ -26,9 +26,9 @@ import type {
   MessagePart,
   MessageReceived,
   SenderId,
-} from '@wsz987/channel-core';
-import type { InteractionReceived } from '@wsz987/channel-core';
-import { textParts } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import type { InteractionReceived } from '@krischoichoi/channel-core';
+import { textParts } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 
 export interface TelegramInboundMeta {

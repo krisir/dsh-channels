@@ -25,8 +25,8 @@
  *   over invented fixtures).
  */
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext, runBinaryIngressContract } from '@wsz987/channel-testkit';
+import { ChannelService, resolveVolatileConfig, type MessageReceived } from '@krischoichoi/channel-core';
+import { createTestContext, runBinaryIngressContract } from '@krischoichoi/channel-testkit';
 import {
   Config,
   InboundProcessor,
@@ -37,7 +37,7 @@ import {
 import type { LarkConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     timeoutMs: 1000,
@@ -46,7 +46,7 @@ function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
     card: { createOnFirstDelta: true, typingIndicator: false },
     upstream: { appId: 'cli_binary' },
     ...overrides,
-  });
+  })) as unknown as LarkConfig;
 }
 
 const meta = { channel: 'lark' as never, accountId: 'main' as never };

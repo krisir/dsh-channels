@@ -64,7 +64,7 @@ function parsePatch(source: string): PatchItem[] {
   return items;
 }
 
-/** Split '@wsz987/pkg/sub' into the package name and the exports subpath. */
+/** Split '@krischoichoi/pkg/sub' into the package name and the exports subpath. */
 function splitSpecifier(specifier: string): { packageName: string; subpath: string } {
   const parts = specifier.split('/');
   const packageName = parts.slice(0, 2).join('/');
@@ -88,26 +88,26 @@ const BUNDLE_CLIENT_URL = new URL('../lib/client.js', import.meta.url);
 
 // Expected bundle result — the exact plugins cordis.patch.yml inserts.
 const EXPECTED_ITEMS: PatchItem[] = [
-  { id: 'channels-service', name: '@wsz987/dsh-channels/service' },
-  { id: 'channels-files', name: '@wsz987/dsh-channels/files' },
+  { id: 'channels-service', name: '@krischoichoi/dsh-channels/service' },
+  { id: 'channels-files', name: '@krischoichoi/dsh-channels/files' },
   // channel-harness injects the command-plane capabilities. `apiProxy` is
   // deliberately absent: questions compose on the official
   // `user-questions/request` waterfall, where listener ORDER is a contract, so
   // the bridge prepends its answerer (declined presentations delegate to the
   // next answerer via `next()`).
-  { id: 'channels-harness', name: '@wsz987/dsh-channels/harness', inject: ['channels', 'agents', 'agentDefaultModel', 'agentPresets', 'llm', 'commands'] },
+  { id: 'channels-harness', name: '@krischoichoi/dsh-channels/harness', inject: ['channels', 'agents', 'agentDefaultModel', 'agentPresets', 'llm', 'commands'] },
   // channel-control is the universal control plane: it must load before the
   // channel plugins so ctx.channelControl exists when they register definitions.
-  { id: 'channels-control', name: '@wsz987/dsh-channels/control', inject: ['channels', 'credentials'] },
-  { id: 'channels-weixin', name: '@wsz987/dsh-channels/weixin', inject: ['channels', 'channelControl'] },
-  { id: 'channels-qq', name: '@wsz987/dsh-channels/qq', inject: ['channels', 'credentials', 'channelControl'] },
-  { id: 'channels-dingtalk', name: '@wsz987/dsh-channels/dingtalk', inject: ['channels', 'credentials', 'channelControl'] },
-  { id: 'channels-lark', name: '@wsz987/dsh-channels/lark', inject: ['channels', 'credentials', 'channelControl'] },
-    { id: 'channels-telegram', name: '@wsz987/dsh-channels/telegram', inject: ['channels', 'credentials', 'channelControl'] },
+  { id: 'channels-control', name: '@krischoichoi/dsh-channels/control', inject: ['channels', 'credentials'] },
+  { id: 'channels-weixin', name: '@krischoichoi/dsh-channels/weixin', inject: ['channels', 'channelControl'] },
+  { id: 'channels-qq', name: '@krischoichoi/dsh-channels/qq', inject: ['channels', 'credentials', 'channelControl'] },
+  { id: 'channels-dingtalk', name: '@krischoichoi/dsh-channels/dingtalk', inject: ['channels', 'credentials', 'channelControl'] },
+  { id: 'channels-lark', name: '@krischoichoi/dsh-channels/lark', inject: ['channels', 'credentials', 'channelControl'] },
+    { id: 'channels-telegram', name: '@krischoichoi/dsh-channels/telegram', inject: ['channels', 'credentials', 'channelControl'] },
   // The Web client plugin has no module-level `inject` export on its host
   // entry (only `name` + `apply`); the client half declares inject and the
   // settings.section slot, which is not part of the host patch shape.
-  { id: 'channels-web', name: '@wsz987/dsh-channels' },
+  { id: 'channels-web', name: '@krischoichoi/dsh-channels' },
 ];
 
 const EXPECTED_MODULE_NAMES = new Map([
@@ -137,7 +137,7 @@ describe('DSH bundle patch (cordis.patch.yml)', () => {
     'resolves plugin %s through the exports map and exports a Cordis plugin shape',
     async (id, specifier) => {
       // Dynamic import() enforces Node ESM exports resolution: a specifier not
-      // covered by the package.json exports map (e.g. @wsz987/channel-core/plugin
+      // covered by the package.json exports map (e.g. @krischoichoi/channel-core/plugin
       // before the subpath export was added) fails here.
       const mod: Record<string, unknown> = await import(specifier);
 
@@ -164,7 +164,7 @@ describe('DSH bundle patch (cordis.patch.yml)', () => {
         name?: string;
         exports?: Record<string, unknown>;
       };
-      expect(packageName).toBe('@wsz987/dsh-channels');
+      expect(packageName).toBe('@krischoichoi/dsh-channels');
       expect(pkgJson.name).toBe(packageName);
       expect(
         pkgJson.exports?.[subpath],
@@ -174,7 +174,7 @@ describe('DSH bundle patch (cordis.patch.yml)', () => {
   });
 
   it('references no transitive implementation package from the profile patch', () => {
-    expect(items.every((item) => item.name.startsWith('@wsz987/dsh-channels'))).toBe(true);
+    expect(items.every((item) => item.name.startsWith('@krischoichoi/dsh-channels'))).toBe(true);
   });
 });
 
@@ -200,16 +200,16 @@ describe('bundle-owned Web client face', () => {
 
   it('registers the client under the bundle package id', () => {
     const client = readFileSync(fileURLToPath(BUNDLE_CLIENT_URL), 'utf8');
-    expect(client).toContain('id: "@wsz987/dsh-channels"');
-    expect(client).not.toContain('id: "@wsz987/channel-web"');
+    expect(client).toContain('id: "@krischoichoi/dsh-channels"');
+    expect(client).not.toContain('id: "@krischoichoi/channel-web"');
   });
 });
 
 describe('every channel adapter can be disabled through its config', () => {
   it.each(['weixin', 'qq', 'dingtalk', 'lark', 'telegram'] as const)(
-    '@wsz987/channel-%s Config exposes an `enabled` boolean',
+    '@krischoichoi/channel-%s Config exposes an `enabled` boolean',
     async (channel) => {
-      const mod: Record<string, unknown> = await import(`@wsz987/channel-${channel}`);
+      const mod: Record<string, unknown> = await import(`@krischoichoi/channel-${channel}`);
       const config = mod.Config as {
         type?: string;
         dict?: Record<string, { type?: string } | undefined>;
@@ -264,9 +264,9 @@ describe('optional generic-file package boundary', () => {
       // copy cannot register with the host registry that executes the tool.
       expect(manifest.dependencies).not.toHaveProperty('@deepseek-ai/dsh-tools');
       // Tested compatibility band: exact pin (no wide prerelease range).
-      expect(manifest.peerDependencies?.['@deepseek-ai/dsh-tools']).toBe('0.1.5-rc.2');
+      expect(manifest.peerDependencies?.['@deepseek-ai/dsh-tools']).toBe('0.2.0-rc.2');
       expect(manifest.peerDependenciesMeta?.['@deepseek-ai/dsh-tools']?.optional).toBe(true);
-      expect(manifest.devDependencies?.['@deepseek-ai/dsh-tools']).toBe('0.1.5-rc.2');
+      expect(manifest.devDependencies?.['@deepseek-ai/dsh-tools']).toBe('0.2.0-rc.2');
     }
   });
 
@@ -280,7 +280,7 @@ describe('optional generic-file package boundary', () => {
     const harness = JSON.parse(readFileSync(packageJsonPath('channel-harness'), 'utf8')) as {
       dependencies?: Record<string, string>;
     };
-    expect(harness.dependencies).not.toHaveProperty('@wsz987/channel-files');
+    expect(harness.dependencies).not.toHaveProperty('@krischoichoi/channel-files');
     expect(harness.dependencies).not.toHaveProperty('unpdf');
     expect(harness.dependencies).not.toHaveProperty('mammoth');
     expect(harness.dependencies).not.toHaveProperty('xlsx');
@@ -306,7 +306,7 @@ describe('local development installer', () => {
     expect(installer).not.toContain("spawnSync('pnpm', ['add', '-w'");
     expect(installer).toContain('removeLegacyImplementationDependencies(profileDir)');
     expect(installer).toContain('owned.has(name)');
-    expect(installer).not.toContain("name.startsWith('@wsz987/')");
+    expect(installer).not.toContain("name.startsWith('@krischoichoi/')");
     expect(installer).toContain("'plugin', '--profile', profile, 'remove', bundleName");
     expect(installer).toContain("spawnSync('pnpm', ['remove', '-w', ...implementations]");
   });

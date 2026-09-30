@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { resolveFixturesDir } from '@wsz987/channel-testkit';
+import { resolveFixturesDir } from '@krischoichoi/channel-testkit';
 import { z } from 'zod';
 import { buildSendMediaPayload } from '../src/media/send-media.js';
 import {

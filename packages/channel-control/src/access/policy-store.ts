@@ -19,7 +19,7 @@ import {
   channelAccessPolicySchema,
   type ChannelAccessPolicy,
   type ChannelStorage,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 
 /** Durable access-policy store abstraction used by the control plane. */
 export interface ChannelAccessPolicyStore {

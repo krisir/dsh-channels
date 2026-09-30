@@ -14,8 +14,8 @@ import type {
   ChannelAccessPolicy,
   DirectMessagePolicy,
   GroupAccessRule,
-} from '@wsz987/channel-core';
-import { accessPolicyStorageKey, MemoryStorage } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { accessPolicyStorageKey, MemoryStorage } from '@krischoichoi/channel-core';
 import { InboundAccessController } from '../src/access/controller.ts';
 import { StoredChannelAccessPolicyResolver } from '../src/access/resolver.ts';
 

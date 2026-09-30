@@ -8,13 +8,13 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, MemoryStorage, ChannelError } from '@wsz987/channel-core';
-import type { ChannelAdapterContext, ChannelTarget } from '@wsz987/channel-core';
+import { ChannelService, MemoryStorage, ChannelError, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import type { ChannelAdapterContext, ChannelTarget } from '@krischoichoi/channel-core';
 import {
   runChannelAdapterContract,
   createTestContext,
   makeOutboundMessage,
-} from '@wsz987/channel-testkit';
+} from '@krischoichoi/channel-testkit';
 import {
   Config,
   WeixinAdapter,
@@ -40,7 +40,7 @@ import {
   type HttpTransport,
 } from '../src/index.js';
 import type { WeixinConfig } from '../src/config.js';
-import { loadFixture } from '@wsz987/channel-testkit';
+import { loadFixture } from '@krischoichoi/channel-testkit';
 
 /* ------------------------------------------------------------------ */
 /* Fake transport routed by URL path                                   */
@@ -91,14 +91,14 @@ function pathOf(url: string): string {
 }
 
 function makeConfig(overrides: Partial<WeixinConfig> = {}): WeixinConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     ilink: { baseUrl: 'https://fake.ilink.test', cdnBaseUrl: 'https://fake.cdn.test', botAgent: 'DeepSeekHarness/0.8.1' },
     network: { timeoutMs: 1000, longPollTimeoutMs: 1000 },
     reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10 },
     ...overrides,
-  } as unknown as WeixinConfig);
+  } as unknown as WeixinConfig)) as unknown as WeixinConfig;
 }
 
 function target(conversationId: string): ChannelTarget {
@@ -300,7 +300,7 @@ describe('WeixinQrAuth', () => {
 
 describe('AccountCredentialStore', () => {
   it('saves and loads a credential; token in secrets, meta in storage', async () => {
-    const secrets = new (await import('@wsz987/channel-core')).MemorySecretStore();
+    const secrets = new (await import('@krischoichoi/channel-core')).MemorySecretStore();
     const storage = new MemoryStorage();
     const store = new AccountCredentialStore({ secrets, storage, accountId: 'main', now: () => 1700000000000 });
     await store.save({ token: 'tok', ilinkBotId: 'bot-1', userId: 'u1', baseUrl: 'https://x' });
@@ -312,7 +312,7 @@ describe('AccountCredentialStore', () => {
   });
 
   it('returns undefined when corrupt meta', async () => {
-    const secrets = new (await import('@wsz987/channel-core')).MemorySecretStore();
+    const secrets = new (await import('@krischoichoi/channel-core')).MemorySecretStore();
     const storage = new MemoryStorage();
     const store = new AccountCredentialStore({ secrets, storage, accountId: 'main', now: () => 1700000000000 });
     await store.save({ token: 't', ilinkBotId: 'b', baseUrl: 'https://x' });
@@ -321,7 +321,7 @@ describe('AccountCredentialStore', () => {
   });
 
   it('rejects structured metadata with a non-https base URL', async () => {
-    const secrets = new (await import('@wsz987/channel-core')).MemorySecretStore();
+    const secrets = new (await import('@krischoichoi/channel-core')).MemorySecretStore();
     const storage = new MemoryStorage();
     await secrets.set('weixin:token:main', 't');
     await storage.set('weixin:credential:main', JSON.stringify({
@@ -332,7 +332,7 @@ describe('AccountCredentialStore', () => {
   });
 
   it('validates credential metadata before writing the token', async () => {
-    const secrets = new (await import('@wsz987/channel-core')).MemorySecretStore();
+    const secrets = new (await import('@krischoichoi/channel-core')).MemorySecretStore();
     const storage = new MemoryStorage();
     const store = new AccountCredentialStore({ secrets, storage, accountId: 'main' });
     await expect(store.save({ token: 't', ilinkBotId: 'b', baseUrl: 'http://attacker.example' }))

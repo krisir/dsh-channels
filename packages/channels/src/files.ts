@@ -1,1 +1,1 @@
-export * from '@wsz987/channel-files';
+export * from '@krischoichoi/channel-files';

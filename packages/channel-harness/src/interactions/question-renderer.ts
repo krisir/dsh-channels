@@ -23,7 +23,7 @@
  * (`needsTextReply`), never a usability precondition.
  */
 import type { AskUserQuestionItem } from '@deepseek-ai/dsh-user-questions/types';
-import type { OutboundActionRow, OutboundMessage } from '@wsz987/channel-core';
+import type { OutboundActionRow, OutboundMessage } from '@krischoichoi/channel-core';
 import type {
   PendingChannelQuestion,
   PendingQuestionAction,

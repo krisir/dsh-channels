@@ -35,9 +35,12 @@ import type {
 import type { Context } from '@deepseek-ai/cordis';
 import type { Agent, AgentHandle, AgentOptions, AgentSetup, ModelSelection } from '@deepseek-ai/dsh-agent';
 import type { AgentDefaultModelConfig } from '@deepseek-ai/dsh-agent-default-model';
-import { agentPresetProjectionDefinition, type AgentPresets } from '@deepseek-ai/dsh-agent-presets';
+import {
+  agentPresetProjectionDefinition,
+  type AgentPresetRegistry as AgentPresets,
+} from '@deepseek-ai/dsh-agent-preset-registry';
 import type { UserMessage } from '@deepseek-ai/dsh-llm';
-import type { ChannelLogger } from '@wsz987/channel-core';
+import type { ChannelLogger } from '@krischoichoi/channel-core';
 import type { AgentRouteSpec } from './agent-router.js';
 import type { SessionBinding } from './session-router.js';
 

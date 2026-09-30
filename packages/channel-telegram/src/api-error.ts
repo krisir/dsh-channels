@@ -14,7 +14,7 @@
  * reply engine) can decide retry / fallback / fail without rebuilding the
  * classification from raw numbers.
  */
-import { ChannelError } from '@wsz987/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 
 /**
  * Machine-readable Telegram error class used to drive fallback/retry policy.

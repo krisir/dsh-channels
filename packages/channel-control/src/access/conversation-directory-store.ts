@@ -10,7 +10,7 @@
  * Records are keyed per `channelId + accountId` (plan §24/§25), so identities
  * observed under account A can never leak into account B.
  */
-import type { ChannelStorage } from '@wsz987/channel-core';
+import type { ChannelStorage } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 
 /** One observed conversation identity (plan §6). */

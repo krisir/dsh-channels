@@ -27,8 +27,8 @@ import type {
   ChannelAdapterContext,
   MessagePart,
   MessageReceived,
-} from '@wsz987/channel-core';
-import type { InteractionReceived } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import type { InteractionReceived } from '@krischoichoi/channel-core';
 import { hydrateTelegramParts, type TelegramFileResolver } from './media-hydrator.js';
 import {
   dedupKey,

@@ -17,7 +17,7 @@
  * 4. Return the reference fields the sendmessage item embeds.
  */
 import { createHash, randomBytes } from 'node:crypto';
-import { ChannelError } from '@wsz987/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import { aes128Encrypt } from './encrypt.js';
 import type { ILinkGetUploadUrlResponse } from '../ilink/types.js';
 import { getUploadUrlResponseSchema, responseEnvelopeSchema } from '../ilink/schema.js';

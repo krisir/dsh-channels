@@ -1,9 +1,9 @@
 {
-  "name": "@wsz987/channel-verify",
+  "name": "@krischoichoi/channel-verify",
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wsz987/dsh-channels.git"
+    "url": "git+https://github.com/krischoichoi/dsh-channels.git"
   },
   "publishConfig": {
     "access": "public"
@@ -33,9 +33,9 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@wsz987/channel-core": "workspace:*",
-    "@wsz987/channel-testkit": "workspace:*",
-    "@wsz987/channel-compat": "workspace:*",
+    "@krischoichoi/channel-core": "workspace:*",
+    "@krischoichoi/channel-testkit": "workspace:*",
+    "@krischoichoi/channel-compat": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

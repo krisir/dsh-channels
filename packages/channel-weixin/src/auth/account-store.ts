@@ -11,7 +11,7 @@
  * logged, never embedded in emitted events or exception messages, and never
  * rounded-trip through config dumps.
  */
-import type { SecretStore } from '@wsz987/channel-core';
+import type { SecretStore } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 
 export interface WeixinAccountCredential {
@@ -29,7 +29,7 @@ export interface WeixinAccountCredential {
 
 export interface AccountCredentialStoreOptions {
   secrets: SecretStore;
-  storage: import('@wsz987/channel-core').ChannelStorage;
+  storage: import('@krischoichoi/channel-core').ChannelStorage;
   /** Local DSH account alias; defaults to `main`. */
   accountId?: string;
   /** Injectable clock (tests). */
@@ -51,7 +51,7 @@ const credentialMetadataSchema = z.object({
 /** Helper: one JSON field of the credential metadata. */
 export class AccountCredentialStore {
   private readonly secrets: SecretStore;
-  private readonly storage: import('@wsz987/channel-core').ChannelStorage;
+  private readonly storage: import('@krischoichoi/channel-core').ChannelStorage;
   private readonly accountId: string;
   private readonly now: () => number;
 

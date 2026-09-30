@@ -1,4 +1,4 @@
-# @wsz987/channel-control
+# @krischoichoi/channel-control
 
 Universal Channel Control Plane for DeepSeek Harness Channels.
 
@@ -10,14 +10,14 @@ through per-channel conditional code.
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-control
+pnpm add @krischoichoi/channel-control
 ```
 
 As a Cordis plugin:
 
 ```yaml
 - id: channels-control
-  name: '@wsz987/channel-control/plugin'
+  name: '@krischoichoi/channel-control/plugin'
   inject:
     - channels
     - credentials
@@ -52,9 +52,9 @@ ctx.channelControl.pollAuth(sessionId);
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-control build
-pnpm --filter @wsz987/channel-control typecheck
-pnpm --filter @wsz987/channel-control test
+pnpm --filter @krischoichoi/channel-control build
+pnpm --filter @krischoichoi/channel-control typecheck
+pnpm --filter @krischoichoi/channel-control test
 ```
 
 ## Related

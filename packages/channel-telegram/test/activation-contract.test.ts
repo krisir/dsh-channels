@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { runActivationContract } from '@wsz987/channel-testkit';
+import { runActivationContract } from '@krischoichoi/channel-testkit';
 import mentionedFixture from '../../../fixtures/telegram/inbound-group-mentioned.json' with { type: 'json' };
 import unmentionedFixture from '../../../fixtures/telegram/inbound-group-unmentioned.json' with { type: 'json' };
 import { mapInbound, type TelegramInboundMeta } from '../src/index.ts';

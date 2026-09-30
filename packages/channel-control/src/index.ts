@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-control — universal Channel Control Plane.
+ * @krischoichoi/channel-control — universal Channel Control Plane.
  *
  * Exports the control-plane types (doc §14–§18), the sub-managers
  * (definition registry, credential manager, auth session manager, runtime

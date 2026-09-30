@@ -1,1 +1,1 @@
-export * from '@wsz987/channel-core/plugin';
+export * from '@krischoichoi/channel-core/plugin';

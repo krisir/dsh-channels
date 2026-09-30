@@ -1,7 +1,7 @@
-# Example profile patch — @wsz987/dsh-channels bundle, QQ-only override.
+# Example profile patch — @krischoichoi/dsh-channels bundle, QQ-only override.
 #
 # This is the *user* profile patch (cordis.patch.yml) that overrides the rows
-# inserted by the @wsz987/dsh-channels bundle. A Harness patch REPLACES the whole
+# inserted by the @krischoichoi/dsh-channels bundle. A Harness patch REPLACES the whole
 # target config — it is NOT a deep merge — so each `config:` block below must
 # carry the complete config for that plugin, not just the key you want to
 # change.
@@ -13,23 +13,23 @@
 #     in `ctx.credentials` and is never written here.
 
 - id: channels-weixin
-  name: '@wsz987/dsh-channels/weixin'
+  name: '@krischoichoi/dsh-channels/weixin'
   disabled: true
 
 - id: channels-dingtalk
-  name: '@wsz987/dsh-channels/dingtalk'
+  name: '@krischoichoi/dsh-channels/dingtalk'
   disabled: true
 
 - id: channels-lark
-  name: '@wsz987/dsh-channels/lark'
+  name: '@krischoichoi/dsh-channels/lark'
   disabled: true
 
 - id: channels-telegram
-  name: '@wsz987/dsh-channels/telegram'
+  name: '@krischoichoi/dsh-channels/telegram'
   disabled: true
 
 - id: channels-qq
-  name: '@wsz987/dsh-channels/qq'
+  name: '@krischoichoi/dsh-channels/qq'
   inject:
     - channels
     - credentials

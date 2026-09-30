@@ -1,16 +1,16 @@
-# @wsz987/channel-telegram
+# @krischoichoi/channel-telegram
 
 Telegram Bot API channel adapter for DeepSeek Harness.
 
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-telegram
+pnpm add @krischoichoi/channel-telegram
 ```
 
 ## Bundled community channel
 
-This package is part of the community-maintained `@wsz987/dsh-channels` bundle.
+This package is part of the community-maintained `@krischoichoi/dsh-channels` bundle.
 It is not an official DeepSeek Harness or Telegram package.
 It implements the same Channel Contract as weixin / qq / dingtalk / lark,
 with no changes to channel-core, channel-harness or the other adapters.
@@ -114,9 +114,9 @@ not implemented yet.
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-telegram build
-pnpm --filter @wsz987/channel-telegram typecheck
-pnpm --filter @wsz987/channel-telegram test
+pnpm --filter @krischoichoi/channel-telegram build
+pnpm --filter @krischoichoi/channel-telegram typecheck
+pnpm --filter @krischoichoi/channel-telegram test
 ```
 
 ## Related

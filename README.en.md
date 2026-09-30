@@ -8,10 +8,10 @@ Multi-channel integration with unified configuration — chat with your Agent on
 
 Send and receive images and files, with PDF, DOCX, XLSX and text content readable by the Agent
 
-[![CI](https://github.com/wsz987/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/wsz987/dsh-channels/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/%40wsz987%2Fdsh-channels)](https://www.npmjs.com/package/@wsz987/dsh-channels)
-[![npm downloads](https://img.shields.io/npm/dm/%40wsz987%2Fdsh-channels)](https://www.npmjs.com/package/@wsz987/dsh-channels)
-[![GitHub stars](https://img.shields.io/github/stars/wsz987/dsh-channels?style=flat)](https://github.com/wsz987/dsh-channels/stargazers)
+[![CI](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
+[![npm downloads](https://img.shields.io/npm/dm/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
+[![GitHub stars](https://img.shields.io/github/stars/krischoichoi/dsh-channels?style=flat)](https://github.com/krischoichoi/dsh-channels/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22.19-brightgreen.svg)](package.json)
 
@@ -58,7 +58,7 @@ Once installed, configure and authorize channels via QR code in the Harness Web 
 ## Before you start
 
 - Confirm that `npx @deepseek-ai/dsh` runs and a normal Harness Web session can chat.
-- Requires DeepSeek Harness `0.1.5-rc.2` and Node `22.19+` (see the [compatibility matrix](docs/compatibility-matrix.md)).
+- Requires DeepSeek Harness `0.2.0-rc.2` and Node `22.19+` (see the [compatibility matrix](docs/compatibility-matrix.md)).
 - Channel sessions normally use `Workspace Write`; enable `Full access` only when the task must access files outside the Workspace and you trust it.
 - The project is evolving quickly; back up your data before upgrading.
 
@@ -66,7 +66,7 @@ Once installed, configure and authorize channels via QR code in the Harness Web 
 
 ```bash
 # Install the stable bundle
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 
 # Verify the bundle was merged into the profile
 npx @deepseek-ai/dsh --profile web --dump-config
@@ -86,13 +86,13 @@ Keep the `-w` flag when installing, updating and uninstalling. The bundle must m
 npm i -g @deepseek-ai/dsh@next
 
 # Update the bundle within the current release line
-npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels
+npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels
 
 # Crossing a release line: re-add it instead
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 
 # Uninstall
-npx @deepseek-ai/dsh plugin --profile web remove -w @wsz987/dsh-channels
+npx @deepseek-ai/dsh plugin --profile web remove -w @krischoichoi/dsh-channels
 ```
 
 > See the [compatibility matrix](docs/compatibility-matrix.md) for the Harness version each bundle release needs.
@@ -158,7 +158,7 @@ By default each channel / account pair is isolated automatically — no configur
 
 ```yaml
 - id: channels-harness
-  name: '@wsz987/dsh-channels/harness'
+  name: '@krischoichoi/dsh-channels/harness'
   inject: [channels, agents, agentDefaultModel, agentPresets, llm, commands]
   config:
     workspace:
@@ -174,7 +174,7 @@ By default each channel / account pair is isolated automatically — no configur
 ## Running from source
 
 ```bash
-git clone https://github.com/wsz987/dsh-channels.git
+git clone https://github.com/krischoichoi/dsh-channels.git
 cd dsh-channels
 pnpm install
 pnpm build
@@ -217,7 +217,7 @@ Follows the layering convention of mainstream open-source projects (Koishi / Wec
 
 | Directory | Responsibility |
 | --- | --- |
-| `packages/channels` | Public bundle `@wsz987/dsh-channels` (aggregated patch) |
+| `packages/channels` | Public bundle `@krischoichoi/dsh-channels` (aggregated patch) |
 | `packages/channel-core` | **Channel Contract**: types + `ctx.channels` Service + `defineChannelAdapter` |
 | `packages/channel-harness` | Channel ↔ Harness bridge; keeps only the optional `ChannelAttachmentProvider` port (`ChannelFileProvider` kept as a deprecated alias) |
 | `packages/channel-files` | Generic attachment compatibility backend: session-scoped storage, legacy extraction, `read_channel_attachment` compatibility tool |
@@ -231,7 +231,7 @@ Follows the layering convention of mainstream open-source projects (Koishi / Wec
 An adapter only implements the `ChannelAdapter` contract; core handles registration / mounting / receipt / health checks automatically:
 
 ```ts
-import { defineChannelAdapter } from '@wsz987/channel-core';
+import { defineChannelAdapter } from '@krischoichoi/channel-core';
 
 export default defineChannelAdapter({
   id: 'my-channel',

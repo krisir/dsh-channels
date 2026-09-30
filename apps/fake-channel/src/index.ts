@@ -6,6 +6,6 @@
  * (ChannelEvent → SessionBinding → AgentRouter → reply pipeline) can run
  * without any real platform or Harness runtime.
  */
-import { ChannelService } from '@wsz987/channel-core';
+import { ChannelService } from '@krischoichoi/channel-core';
 
 export { ChannelService };

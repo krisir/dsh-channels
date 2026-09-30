@@ -300,7 +300,7 @@ $env:DSH_WEIXIN_LIVE_IMAGE_PATH = 'C:\weixin-live\wx-image-246.jpg'
 $env:DSH_WEIXIN_LIVE_FILE_PATH = 'C:\weixin-live\wx-live-246.txt'
 $env:DSH_WEIXIN_LIVE_VIDEO_PATH = 'C:\weixin-live\wx-video-246.mp4'
 $env:DSH_WEIXIN_REQUIRE_MEDIA = '1'
-pnpm --filter @wsz987/channel-weixin test:live
+pnpm --filter @krischoichoi/channel-weixin test:live
 ```
 
 运行期间，发送 `E2E-2`、`E2E-3` 和 `E2E-4` 分别要求的精确文本。`E2E-5` 会报告传输是否 delivered；维护者仍必须在微信中确认三个结果分别渲染为图片、可下载文件和可播放视频。

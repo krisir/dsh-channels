@@ -16,8 +16,8 @@ import {
   RemoteMediaError,
   UnsafeHostError,
   type MessageReceived,
-} from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+} from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import { InboundProcessor } from '../src/index.ts';
 import type { MediaResolverLike, RemoteMediaFetchLike } from '../src/index.ts';
 

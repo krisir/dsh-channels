@@ -1,7 +1,7 @@
 /**
  * Control-plane error hierarchy with stable machine-readable codes.
  *
- * Channel-level errors reuse [ChannelError] from @wsz987/channel-core (e.g.
+ * Channel-level errors reuse [ChannelError] from @krischoichoi/channel-core (e.g.
  * duplicate definition ids). The control plane additionally defines codes for
  * its own security/session concerns (auth not supported, unknown/cancelled/
  * expired sessions, rejected secret fields) that are NOT part of the core's

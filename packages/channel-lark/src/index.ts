@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-lark — Lark / Feishu channel adapter for DeepSeek Harness.
+ * @krischoichoi/channel-lark — Lark / Feishu channel adapter for DeepSeek Harness.
  *
  * Maps the Lark platform to the stable Channel Contract. The upstream is the
  * OFFICIAL `@larksuiteoapi/node-sdk` only:
@@ -28,10 +28,10 @@
  */
 import { type Context } from '@deepseek-ai/cordis';
 import { credentialRef } from '@deepseek-ai/dsh-credentials';
-import type { SettingsProvider } from '@deepseek-ai/dsh-settings';
-import { mountChannelAdapter } from '@wsz987/channel-core';
-import type { ChannelDefinition } from '@wsz987/channel-control';
-import type { LarkConfig } from './config.js';
+import type SettingsForms from '@deepseek-ai/dsh-settings';
+import { mountChannelAdapter, resolveVolatileConfig, resolveVolatileValue } from '@krischoichoi/channel-core';
+import type { ChannelDefinition } from '@krischoichoi/channel-control';
+import type { LarkConfig, LarkConfigLive } from './config.js';
 import { Config, LARK_APP_SECRET_REF } from './config.js';
 import { LarkAdapter, type LarkAdapterDeps } from './adapter.js';
 import { createLarkDefinition } from './definition.js';
@@ -123,8 +123,21 @@ export {
   type LarkTextPayload,
 } from './mapper.js';
 export { manifest, type LarkManifest } from './manifest.js';
+export type { LarkConfigLive } from './config.js';
 
-export function apply(ctx: Context, config: LarkConfig, deps: LarkAdapterDeps = {}): void {
+/**
+ * Entry plugin apply. Accepts both the activation-time live shape (volatile
+ * fields resolve to `Volatile<T>` handles under Harness 0.2.0) and a plain
+ * snapshot (tests / programmatic mounting); plain fields pass through
+ * `resolveVolatileConfig` untouched. The shape is validated by Schemastery at
+ * the Loader boundary via the attached `Config` schema.
+ */
+export function apply(
+  ctx: Context,
+  rawConfig: LarkConfig | LarkConfigLive,
+  deps: LarkAdapterDeps = {},
+): void {
+  const config = resolveVolatileConfig(rawConfig) as LarkConfig;
   // Adapt the CredentialProvider to the structural seam expected by the
   // definition (credentialRef branding is applied here, once).
   const seam = {
@@ -142,15 +155,14 @@ export function apply(ctx: Context, config: LarkConfig, deps: LarkAdapterDeps = 
     // plane owns adapter instantiation + headless auto-start, and a disabled
     // definition must stay visible so the Web control plane can re-enable it
     // later.
-    const settings = ctx.get('settings') as SettingsProvider | undefined;
-    const scope = settings?.register('channels-lark', Config, { base: config });
+    const settings = ctx.get('settings') as SettingsForms | undefined;
     control.definitions.register(
       createLarkDefinition({
-        config: scope?.get() ?? config,
+        config,
         deps,
         credentials: seam,
-        persistSetup: (patch) => scope?.update(patch) ?? Promise.resolve(),
-        persistEnabled: (enabled) => scope?.update({ enabled }) ?? Promise.resolve(),
+        persistSetup: (patch) => settings?.update('channels-lark', patch) ?? Promise.resolve(),
+        persistEnabled: (enabled) => settings?.update('channels-lark', { enabled }) ?? Promise.resolve(),
       }),
     );
     return;
@@ -160,7 +172,7 @@ export function apply(ctx: Context, config: LarkConfig, deps: LarkAdapterDeps = 
   // unconfigured adapter must NOT throw — log a warning and stay idle. In this
   // mode there is no directory/control surface, so the config `enabled` gate
   // still applies.
-  if (!config.enabled) return;
+  if (!resolveVolatileValue(config.enabled)) return;
 
   ctx.effect(async () => {
     const appId = config.upstream.appId;

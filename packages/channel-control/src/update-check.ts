@@ -1,12 +1,12 @@
 /**
  * Bundle update check — prompt-only npm dist-tag check for
- * `@wsz987/dsh-channels` (the bundle users install).
+ * `@krischoichoi/dsh-channels` (the bundle users install).
  *
  * The official Harness has no plugin update mechanism (`dsh plugin` is a pnpm
  * passthrough; `dsh-host-plugin-inventory` is a read-only loader projection),
  * so this control-plane module adds a lightweight runtime hint:
  *
- * - Checks `https://registry.npmjs.org/@wsz987/dsh-channels/{latest,next}`
+ * - Checks `https://registry.npmjs.org/@krischoichoi/dsh-channels/{latest,next}`
  *   (single-tag manifests, far lighter than a full packument), 15s timeout,
  *   offline/timeout/validation failures are swallowed into a debug log — a
  *   check failure must NEVER produce a user-facing error.
@@ -30,11 +30,11 @@
  * anything outside its own cache key.
  */
 import pkg from '../package.json' with { type: 'json' };
-import type { ChannelStorage } from '@wsz987/channel-core';
+import type { ChannelStorage } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 
 /** The bundle package users install (checked on the npm registry). */
-export const BUNDLE_PACKAGE = '@wsz987/dsh-channels';
+export const BUNDLE_PACKAGE = '@krischoichoi/dsh-channels';
 
 /** npm registry base. External endpoint; responses are untrusted input. */
 const REGISTRY_BASE = 'https://registry.npmjs.org';
@@ -56,7 +56,7 @@ const CACHE_FORMAT = 1;
  * package (the bundle + its ten dependencies, see docs/release.md) moves in
  * lockstep — each changeset lists the whole family and every package.json
  * carries the same version — so this package's own version IS the installed
- * `@wsz987/dsh-channels` version. Keep the family lockstep when bumping;
+ * `@krischoichoi/dsh-channels` version. Keep the family lockstep when bumping;
  * `test/update-check.test.ts` asserts this package's version equals the
  * bundle's.
  */
@@ -76,7 +76,7 @@ export interface BundleUpdateInfo {
 
 /** Sanitized, read-only DTO served to channel-web and the /version command. */
 export interface BundleUpdateStatus {
-  /** Installed @wsz987/dsh-channels version (workspace lockstep version). */
+  /** Installed @krischoichoi/dsh-channels version (workspace lockstep version). */
   currentVersion: string;
   /** Present only when a strictly newer version was found per the tag rules. */
   update?: BundleUpdateInfo;
@@ -218,13 +218,13 @@ const storedSnapshotSchema = z
 
 /** Same-line upgrade: `plugin update` already refreshes within the range. */
 const SAME_LINE_COMMANDS = [
-  'npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels',
+  'npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels',
 ];
 
 /** Cross-line upgrade: Harness CLI FIRST, then re-add the bundle (order matters). */
 const CROSS_LINE_COMMANDS = [
   'npm i -g @deepseek-ai/dsh@latest',
-  'npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest',
+  'npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest',
 ];
 
 /**

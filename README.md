@@ -8,10 +8,10 @@
 
 支持图片与文件收发，Agent 可直接读取 PDF、DOCX、XLSX 和文本内容
 
-[![CI](https://github.com/wsz987/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/wsz987/dsh-channels/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/%40wsz987%2Fdsh-channels)](https://www.npmjs.com/package/@wsz987/dsh-channels)
-[![npm downloads](https://img.shields.io/npm/dm/%40wsz987%2Fdsh-channels)](https://www.npmjs.com/package/@wsz987/dsh-channels)
-[![GitHub stars](https://img.shields.io/github/stars/wsz987/dsh-channels?style=flat)](https://github.com/wsz987/dsh-channels/stargazers)
+[![CI](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
+[![npm downloads](https://img.shields.io/npm/dm/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
+[![GitHub stars](https://img.shields.io/github/stars/krischoichoi/dsh-channels?style=flat)](https://github.com/krischoichoi/dsh-channels/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22.19-brightgreen.svg)](package.json)
 
@@ -56,7 +56,7 @@
 ## 使用前须知
 
 - 确认 `npx @deepseek-ai/dsh` 可运行，且 Harness Web 普通会话可正常对话。
-- 需要 DeepSeek Harness `0.1.5-rc.2` 与 Node `22.19+`（版本对照见[兼容矩阵](docs/compatibility-matrix.md)）。
+- 需要 DeepSeek Harness `0.2.0-rc.2` 与 Node `22.19+`（版本对照见[兼容矩阵](docs/compatibility-matrix.md)）。
 - 渠道会话通常使用 `Workspace Write`；仅在确需访问 Workspace 外文件且信任当前任务时启用 `Full access`。
 - 项目仍在快速迭代，升级前请备份数据。
 
@@ -64,7 +64,7 @@
 
 ```bash
 # 安装稳定版 bundle
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 
 # 检查 bundle 是否合并到 profile
 npx @deepseek-ai/dsh --profile web --dump-config
@@ -84,13 +84,13 @@ npx @deepseek-ai/dsh web
 npm i -g @deepseek-ai/dsh@next
 
 # 同一版本线内更新插件
-npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels
+npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels
 
 # 跨版本线升级：用 add 重装
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 
 # 卸载
-npx @deepseek-ai/dsh plugin --profile web remove -w @wsz987/dsh-channels
+npx @deepseek-ai/dsh plugin --profile web remove -w @krischoichoi/dsh-channels
 ```
 
 > 各版本要求的 Harness 见[兼容矩阵](docs/compatibility-matrix.md)。
@@ -156,7 +156,7 @@ npx @deepseek-ai/dsh plugin --profile web remove -w @wsz987/dsh-channels
 
 ```yaml
 - id: channels-harness
-  name: '@wsz987/dsh-channels/harness'
+  name: '@krischoichoi/dsh-channels/harness'
   inject: [channels, agents, agentDefaultModel, agentPresets, llm, commands]
   config:
     workspace:
@@ -172,7 +172,7 @@ npx @deepseek-ai/dsh plugin --profile web remove -w @wsz987/dsh-channels
 ## 从源码运行
 
 ```bash
-git clone https://github.com/wsz987/dsh-channels.git
+git clone https://github.com/krischoichoi/dsh-channels.git
 cd dsh-channels
 pnpm install
 pnpm build
@@ -215,7 +215,7 @@ pnpm ci:check
 
 | 目录 | 职责 |
 | --- | --- |
-| `packages/channels` | 对外 bundle `@wsz987/dsh-channels`（聚合 patch） |
+| `packages/channels` | 对外 bundle `@krischoichoi/dsh-channels`（聚合 patch） |
 | `packages/channel-core` | **Channel Contract**：类型 + `ctx.channels` Service + `defineChannelAdapter` |
 | `packages/channel-harness` | 渠道 ↔ Harness 桥；只保留可选 `ChannelAttachmentProvider` 端口（旧名 `ChannelFileProvider` 为兼容别名） |
 | `packages/channel-files` | Generic Attachment compatibility backend：会话隔离存储、legacy 兼容解析、`read_channel_attachment` 兼容工具 |
@@ -229,7 +229,7 @@ pnpm ci:check
 适配器只需实现 `ChannelAdapter` 契约，核心自动完成注册 / 挂载 / 回执 / 健康检查：
 
 ```ts
-import { defineChannelAdapter } from '@wsz987/channel-core';
+import { defineChannelAdapter } from '@krischoichoi/channel-core';
 
 export default defineChannelAdapter({
   id: 'my-channel',

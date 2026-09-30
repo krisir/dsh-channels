@@ -23,7 +23,7 @@ import type {
   MessagePart,
   OutboundMessage,
   SendResult,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { SessionBindingStore } from '../binding-store.js';
 import type { ResolvedChannelAttachment } from '../file-provider.js';
 import type { ChannelOutboundRequest } from './types.js';

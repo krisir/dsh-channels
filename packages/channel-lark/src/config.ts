@@ -17,6 +17,7 @@
  *   removed from the schema and defaults.
  */
 import Schema from '@deepseek-ai/schemastery';
+import type { Volatile } from '@deepseek-ai/cordis';
 
 /** Default credential reference name for the Lark AppSecret (web + config default). */
 export const LARK_APP_SECRET_REF = 'DSH_CHANNEL_LARK_MAIN_APP_SECRET';
@@ -86,24 +87,53 @@ export interface LarkConfig {
   upstream: LarkUpstreamConfig;
 }
 
-export const Config: Schema<LarkConfig> = Schema.object({
-  enabled: Schema.boolean().default(true),
-  accountId: Schema.string().default('main'),
+/**
+ * Activation-time config shape (Harness 0.2.0): every volatile field resolves
+ * to a `Volatile<T>` live handle instead of a plain value. `apply()` unwraps
+ * these once via `resolveVolatileConfig` into a plain `LarkConfig`.
+ *
+ * Volatile = the fields the control plane's saveConfig may write at runtime
+ * (accountId, reconnect/dedup/card, upstream.appId/upstream.domain, enabled).
+ * `timeoutMs` and `upstream.appSecretRef`/`upstream.mode` are not runtime-
+ * writable and stay plain.
+ */
+export interface LarkConfigLive {
+  enabled: Volatile<boolean>;
+  accountId: Volatile<string>;
+  timeoutMs: number;
+  reconnect: Volatile<LarkReconnectConfig>;
+  dedup: Volatile<LarkDedupConfig>;
+  card: Volatile<LarkCardConfig>;
+  upstream: Volatile<LarkUpstreamConfig>;
+}
+
+// The runtime schema is genuine Schemastery (validation happens at the Loader
+// boundary); the annotation records the activation-time output shape. The cast
+// is required because Schemastery's inferred ObjectT models per-field optionality
+// more precisely than the hand-written `LarkConfigLive` alias.
+export const Config = Schema.object({
+  // Harness 0.2.0 settings model: fields the control plane / settings page may
+  // write at runtime are declared `.volatile()` — they surface on the
+  // auto-generated settings form, `ctx.settings.update(entryId, patch)` accepts
+  // exactly these paths, and at activation they resolve to `Volatile<T>`
+  // handles (unwrapped by `resolveVolatileConfig` in definition.ts / apply()).
+  enabled: Schema.boolean().default(true).volatile(),
+  accountId: Schema.string().default('main').volatile(),
   timeoutMs: Schema.natural().default(30000),
   reconnect: Schema.object({
     enabled: Schema.boolean().default(true),
     baseDelayMs: Schema.natural().default(1000),
     maxDelayMs: Schema.natural().default(30000),
     maxRetries: Schema.natural().default(10),
-  }),
+  }).default({}).volatile(),
   dedup: Schema.object({
     enabled: Schema.boolean().default(true),
     windowMs: Schema.natural().default(5000),
-  }),
+  }).default({}).volatile(),
   card: Schema.object({
     createOnFirstDelta: Schema.boolean().default(true),
     typingIndicator: Schema.boolean().default(true),
-  }),
+  }).default({}).volatile(),
   upstream: Schema.object({
     // Fixed literal — `mode: 'gateway'` fails validation (fail closed).
     mode: Schema.union(['sdk']).default('sdk'),
@@ -113,5 +143,5 @@ export const Config: Schema<LarkConfig> = Schema.object({
     appSecretRef: Schema.string().default(LARK_APP_SECRET_REF),
     // 'feishu' | 'lark' | custom base domain (resolved to the SDK Domain).
     domain: Schema.string().default('feishu'),
-  }),
-});
+  }).default({}).volatile(),
+}) as unknown as Schema<LarkConfigLive>;

@@ -1,4 +1,4 @@
-# @wsz987/channel-qq
+# @krischoichoi/channel-qq
 
 QQ Bot channel adapter for DeepSeek Harness.
 
@@ -10,20 +10,20 @@ image hydration and DSH lifecycle handling.
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-qq
+pnpm add @krischoichoi/channel-qq
 ```
 
 Or install the whole bundle:
 
 ```bash
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 ```
 
 ## Configuration
 
 ```yaml
 - id: channels-qq
-  name: '@wsz987/channel-qq'
+  name: '@krischoichoi/channel-qq'
   inject: [channels, credentials, channelControl]
   config:
     enabled: true
@@ -78,9 +78,9 @@ entitlement and cannot be proven from local configuration alone.
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-qq build
-pnpm --filter @wsz987/channel-qq typecheck
-pnpm --filter @wsz987/channel-qq test
+pnpm --filter @krischoichoi/channel-qq build
+pnpm --filter @krischoichoi/channel-qq typecheck
+pnpm --filter @krischoichoi/channel-qq test
 ```
 
 ## Related

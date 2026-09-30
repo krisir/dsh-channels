@@ -38,7 +38,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { BINARY_KINDS } from '@wsz987/channel-core';
+import { BINARY_KINDS } from '@krischoichoi/channel-core';
 import type {
   BinaryIngressFailureCode,
   BinaryKind,
@@ -46,7 +46,7 @@ import type {
   ChannelCapabilities,
   MessagePart,
   MessageReceived,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { loadFixture } from './fixture-loader.js';
 import type { FixtureCase } from './fixture-loader.js';
 

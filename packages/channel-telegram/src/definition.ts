@@ -25,9 +25,10 @@ import type {
   ChannelDefinition,
   ChannelSetupDescriptor,
   ConfiguredState,
-} from '@wsz987/channel-control';
-import { ControlError } from '@wsz987/channel-control';
+} from '@krischoichoi/channel-control';
+import { ControlError } from '@krischoichoi/channel-control';
 import type { TelegramConfig } from './config.js';
+import { resolveVolatileConfig } from '@krischoichoi/channel-core';
 import { Config, TELEGRAM_BOT_TOKEN_REF } from './config.js';
 import { TelegramAdapter, type TelegramAdapterDeps } from './adapter.js';
 
@@ -65,13 +66,16 @@ const SCALAR_KEYS = [
 
 /** Deep-copy a TelegramConfig into an independent mutable snapshot. */
 function snapshotOf(config: TelegramConfig): TelegramConfig {
+  // Harness 0.2.0: volatile fields arrive as `Volatile<T>` handles; unwrap
+  // them once so the snapshot (and everything reading it) sees plain values.
+  const plain = resolveVolatileConfig(config);
   return {
-    ...config,
-    reconnect: { ...config.reconnect },
-    dedup: { ...config.dedup },
-    streaming: { ...config.streaming },
-    typing: { ...config.typing },
-    formatting: { ...config.formatting },
+    ...plain,
+    reconnect: { ...plain.reconnect },
+    dedup: { ...plain.dedup },
+    streaming: { ...plain.streaming },
+    typing: { ...plain.typing },
+    formatting: { ...plain.formatting },
   };
 }
 
@@ -165,7 +169,7 @@ export function createTelegramDefinition(
 
   const restoreConfig = async (saved: unknown): Promise<void> => {
     // Schemastery validates and normalizes the persisted control-plane value.
-    const restored = snapshotOf(Config(saved as TelegramConfig));
+    const restored = snapshotOf(Config(saved as never) as unknown as TelegramConfig);
     Object.assign(state, restored);
     state.reconnect = restored.reconnect;
     state.dedup = restored.dedup;

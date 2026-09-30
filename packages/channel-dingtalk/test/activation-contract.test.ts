@@ -1,4 +1,4 @@
-import { runActivationContract } from '@wsz987/channel-testkit';
+import { runActivationContract } from '@krischoichoi/channel-testkit';
 import { mapInbound } from '../src/mapper.ts';
 
 const meta = { channel: 'dingtalk' as never, accountId: 'main' as never };

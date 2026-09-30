@@ -1,4 +1,4 @@
-# @wsz987/channel-compat
+# @krischoichoi/channel-compat
 
 Upstream compatibility manifests, version policy and `channels doctor` for
 DeepSeek Harness Channels.
@@ -10,7 +10,7 @@ special-cases a platform.
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-compat
+pnpm add @krischoichoi/channel-compat
 ```
 
 ## What's inside
@@ -26,7 +26,7 @@ pnpm add @wsz987/channel-compat
 ## Usage
 
 ```ts
-import { getAdapterManifest, versionState } from '@wsz987/channel-compat';
+import { getAdapterManifest, versionState } from '@krischoichoi/channel-compat';
 
 const manifest = getAdapterManifest(adapter);
 if (manifest) {
@@ -46,9 +46,9 @@ pnpm check:manifests        # manifest governance
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-compat build
-pnpm --filter @wsz987/channel-compat typecheck
-pnpm --filter @wsz987/channel-compat test
+pnpm --filter @krischoichoi/channel-compat build
+pnpm --filter @krischoichoi/channel-compat typecheck
+pnpm --filter @krischoichoi/channel-compat test
 ```
 
 ## Related

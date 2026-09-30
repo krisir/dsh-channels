@@ -4,8 +4,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
-import { createTestContext, makeChannelTarget, makeOutboundMessage } from '@wsz987/channel-testkit';
+import { ChannelService, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import { createTestContext, makeChannelTarget, makeOutboundMessage } from '@krischoichoi/channel-testkit';
 import {
   Config,
   DingTalkAdapter,
@@ -16,7 +16,7 @@ import {
 import type { DingTalkUpstream } from '../src/index.ts';
 import type { DingTalkStreamClient, DingTalkStreamMessage } from '../src/index.ts';
 import type { DingTalkConfig } from '../src/config.ts';
-import type { ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
 
 /** Minimal fake reply upstream (sessionWebhook path). */
 class FakeReplyUpstream implements DingTalkUpstream {
@@ -69,7 +69,7 @@ function targetWith(raw: Record<string, unknown>): ChannelTarget {
 }
 
 function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -80,7 +80,7 @@ function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
     card: { createOnFirstDelta: true },
     upstream: { mode: 'gateway' },
     ...overrides,
-  });
+  })) as unknown as DingTalkConfig;
 }
 
 class FakeStreamClient implements DingTalkStreamClient {

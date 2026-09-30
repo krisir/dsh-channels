@@ -20,8 +20,8 @@ import type {
   OutboundActionRow,
   OutboundMessage,
   SendResult,
-} from '@wsz987/channel-core';
-import { ChannelSendError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelSendError } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import type {
   QQInlineKeyboardLike,

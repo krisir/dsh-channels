@@ -9,10 +9,10 @@
  * `test/media-hydration.test.ts`.
  */
 import { describe, expect, it, vi } from 'vitest';
-import type { SecureRemoteMediaFetcher } from '@wsz987/channel-core';
+import type { SecureRemoteMediaFetcher } from '@krischoichoi/channel-core';
 import { hydrateImageParts, type ImageHydratorOptions } from '../src/image-hydrator.ts';
 import { hydrateMediaParts, type MediaHydratorOptions } from '../src/media-hydrator.ts';
-import type { MessagePart } from '@wsz987/channel-core';
+import type { MessagePart } from '@krischoichoi/channel-core';
 
 describe('image-hydrator compat shim', () => {
   it('aliases the renamed media hydrator (same function object)', () => {

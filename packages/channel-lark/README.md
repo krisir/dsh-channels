@@ -1,4 +1,4 @@
-# @wsz987/channel-lark
+# @krischoichoi/channel-lark
 
 Lark / Feishu / 飞书 channel adapter for DeepSeek Harness.
 
@@ -18,20 +18,20 @@ use **Card JSON 2.0** only (buttons are direct `body.elements` with
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-lark
+pnpm add @krischoichoi/channel-lark
 ```
 
 Or install the whole bundle:
 
 ```bash
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 ```
 
 ## Configuration
 
 ```yaml
 - id: channels-lark
-  name: '@wsz987/channel-lark'
+  name: '@krischoichoi/channel-lark'
   inject: [channels, credentials, channelControl]
   config:
     enabled: true
@@ -99,9 +99,9 @@ handle rolls over into a fresh card (`chunkIds` records every sent card).
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-lark build
-pnpm --filter @wsz987/channel-lark typecheck
-pnpm --filter @wsz987/channel-lark test
+pnpm --filter @krischoichoi/channel-lark build
+pnpm --filter @krischoichoi/channel-lark typecheck
+pnpm --filter @krischoichoi/channel-lark test
 ```
 
 ## Related

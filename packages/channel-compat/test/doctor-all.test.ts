@@ -21,6 +21,7 @@ import { WeixinAdapter } from '../../channel-weixin/src/adapter.ts';
 import { Config as WeixinConfig } from '../../channel-weixin/src/config.ts';
 import { DingTalkAdapter } from '../../channel-dingtalk/src/adapter.ts';
 import { Config as DingTalkConfig } from '../../channel-dingtalk/src/config.ts';
+import { resolveVolatileConfig } from '@krischoichoi/channel-core';
 import { QQAdapter } from '../../channel-qq/src/adapter.ts';
 import { Config as QQConfig } from '../../channel-qq/src/config.ts';
 import { LarkAdapter } from '../../channel-lark/src/adapter.ts';
@@ -53,7 +54,7 @@ const qq = new QQAdapter(
 );
 
 const dingtalk = new DingTalkAdapter(
-  DingTalkConfig({
+  resolveVolatileConfig(DingTalkConfig({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -62,7 +63,7 @@ const dingtalk = new DingTalkAdapter(
     reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10, maxRetries: 2 },
     dedup: { enabled: true, windowMs: 5000 },
     card: { createOnFirstDelta: true },
-  }),
+  }) as never),
 );
 
 const lark = new LarkAdapter(

@@ -8,8 +8,8 @@ const webLib = join(root, '..', 'channel-web', 'lib');
 
 const source = await readFile(join(webLib, 'client.js'), 'utf8');
 const client = source.replace(
-  'id: "@wsz987/channel-web"',
-  'id: "@wsz987/dsh-channels"',
+  'id: "@krischoichoi/channel-web"',
+  'id: "@krischoichoi/dsh-channels"',
 );
 
 if (client === source) {

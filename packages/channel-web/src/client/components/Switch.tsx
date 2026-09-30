@@ -19,7 +19,7 @@ if (typeof document !== 'undefined') {
   const existing = document.querySelector(`style[data-plugin-css="${SWITCH_CSS_TAG}"]`);
   if (!existing) {
     const tag = document.createElement('style');
-    tag.dataset.plugin = '@wsz987/dsh-channels';
+    tag.dataset.plugin = '@krischoichoi/dsh-channels';
     tag.dataset.pluginCss = SWITCH_CSS_TAG;
     tag.textContent =
       '[data-channel-switch]:focus-visible{outline:1px solid var(--dsw-alias-state-business-primary);outline-offset:1px}';

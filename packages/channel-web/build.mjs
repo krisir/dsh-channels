@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Build script for @wsz987/channel-web.
+ * Build script for @krischoichoi/channel-web.
  *
  * Produces:
  *   lib/client.js      Harness Web client bundle (esbuild CJS, wrapped in
@@ -112,10 +112,10 @@ async function buildClient() {
   // Same wrapper shape as the official dynamic client artifacts
   // (tsdown output of e.g. @deepseek-ai/dsh-client-ui-settings-general).
   // NOTE: packages/channels/build.mjs rewrites the `id:` line below when it
-  // rebrands this artifact for the @wsz987/dsh-channels bundle.
+  // rebrands this artifact for the @krischoichoi/dsh-channels bundle.
   const wrapped = [
     'window.__ModuleLoader__.load({',
-    '  id: "@wsz987/channel-web",',
+    '  id: "@krischoichoi/channel-web",',
     '  factory: (require) => {',
     '    var module = { exports: {} };',
     '    var exports = module.exports;',

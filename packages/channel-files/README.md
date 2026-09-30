@@ -1,4 +1,4 @@
-# @wsz987/channel-files
+# @krischoichoi/channel-files
 
 **Generic Attachment Compatibility Backend** for DeepSeek Harness Channels.
 
@@ -16,10 +16,10 @@ here — those belong to Harness skills, plugins or MCP.
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-files
+pnpm add @krischoichoi/channel-files
 ```
 
-It is included in the `@wsz987/dsh-channels` bundle by default. To disable the
+It is included in the `@krischoichoi/dsh-channels` bundle by default. To disable the
 extension, remove the `channels-files` plugin from the bundle patch; Harness
 native images and plain text messages keep working.
 
@@ -35,7 +35,7 @@ native images and plain text messages keep working.
 ## How it works
 
 `ChannelFileService` implements the `ChannelAttachmentProvider` port from
-`@wsz987/channel-harness` (the former `ChannelFileProvider` name is kept as a
+`@krischoichoi/channel-harness` (the former `ChannelFileProvider` name is kept as a
 deprecated alias):
 
 ```ts
@@ -64,9 +64,9 @@ or deleted on upgrade.
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-files build
-pnpm --filter @wsz987/channel-files typecheck
-pnpm --filter @wsz987/channel-files test
+pnpm --filter @krischoichoi/channel-files build
+pnpm --filter @krischoichoi/channel-files typecheck
+pnpm --filter @krischoichoi/channel-files test
 ```
 
 ## Related

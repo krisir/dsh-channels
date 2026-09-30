@@ -10,21 +10,21 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
-import type { ChannelAdapter, AuthChallenge, AuthStatePoll } from '@wsz987/channel-core';
-import type { ChannelDefinition, AuthProviderSession } from '@wsz987/channel-control';
+import { ChannelService, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import type { ChannelAdapter, AuthChallenge, AuthStatePoll } from '@krischoichoi/channel-core';
+import type { ChannelDefinition, AuthProviderSession } from '@krischoichoi/channel-control';
 import { apply as weixinApply, Config as WeixinConfigSchema, createWeixinDefinition } from '../src/index.js';
 import type { WeixinConfig } from '../src/config.js';
 
 function makeConfig(overrides: Partial<WeixinConfig> = {}): WeixinConfig {
-  return WeixinConfigSchema({
+  return resolveVolatileConfig(WeixinConfigSchema({
     enabled: true,
     accountId: 'main',
     ilink: { baseUrl: 'https://fake.ilink.test', cdnBaseUrl: 'https://fake.cdn.test', botAgent: 'DeepSeekHarness/0.8.1' },
     network: { timeoutMs: 1000, longPollTimeoutMs: 1000 },
     reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10 },
     ...overrides,
-  } as unknown as WeixinConfig);
+  } as unknown as WeixinConfig)) as unknown as WeixinConfig;
 }
 
 /** A scripted fake adapter exposing the three auth hooks (no transport). */

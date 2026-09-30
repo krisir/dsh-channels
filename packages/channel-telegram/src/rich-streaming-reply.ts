@@ -21,7 +21,7 @@
  * config `reply.updateIntervalMs`. Operations are serialized so concurrent
  * router flushes cannot interleave.
  */
-import type { ChannelTarget, OutboundMessage, ReplyHandle } from '@wsz987/channel-core';
+import type { ChannelTarget, OutboundMessage, ReplyHandle } from '@krischoichoi/channel-core';
 import type { TelegramUpstream } from './upstream.js';
 import { TelegramApiError } from './api-error.js';
 import { RICH_MESSAGE_MAX_UTF8 } from './rich-message.js';

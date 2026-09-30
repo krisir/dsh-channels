@@ -1,9 +1,9 @@
 {
-  "name": "@wsz987/dsh-channels",
+  "name": "@krischoichoi/dsh-channels",
   "version": "0.5.1",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wsz987/dsh-channels.git"
+    "url": "git+https://github.com/krischoichoi/dsh-channels.git"
   },
   "publishConfig": {
     "access": "public"
@@ -82,17 +82,17 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@wsz987/channel-core": "workspace:*",
-    "@wsz987/channel-dingtalk": "workspace:*",
-    "@wsz987/channel-files": "workspace:*",
-    "@wsz987/channel-harness": "workspace:*",
-    "@wsz987/channel-lark": "workspace:*",
-    "@wsz987/channel-telegram": "workspace:*",
-    "@wsz987/channel-qq": "workspace:*",
-    "@wsz987/channel-weixin": "workspace:*",
-    "@deepseek-ai/cordis": "^4.0.2",
-    "@wsz987/channel-web": "workspace:*",
-    "@wsz987/channel-control": "workspace:*"
+    "@krischoichoi/channel-core": "workspace:*",
+    "@krischoichoi/channel-dingtalk": "workspace:*",
+    "@krischoichoi/channel-files": "workspace:*",
+    "@krischoichoi/channel-harness": "workspace:*",
+    "@krischoichoi/channel-lark": "workspace:*",
+    "@krischoichoi/channel-telegram": "workspace:*",
+    "@krischoichoi/channel-qq": "workspace:*",
+    "@krischoichoi/channel-weixin": "workspace:*",
+    "@deepseek-ai/cordis": "^4.0.4",
+    "@krischoichoi/channel-web": "workspace:*",
+    "@krischoichoi/channel-control": "workspace:*"
   },
   "devDependencies": {
     "rimraf": "^6.0.0"

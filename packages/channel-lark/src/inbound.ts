@@ -5,7 +5,7 @@
  * button presses) route to `interaction.received` (Task 12.3). Both paths
  * share the same dedup window so webhook retries cannot double-deliver.
  */
-import type { ChannelAdapterContext, MessagePart, MessageReceived, InteractionReceived } from '@wsz987/channel-core';
+import type { ChannelAdapterContext, MessagePart, MessageReceived, InteractionReceived } from '@krischoichoi/channel-core';
 
 /** Compact per-part summary for inbound message logs (debug diagnostics). */
 function summarizeParts(parts: readonly MessagePart[]): unknown[] {

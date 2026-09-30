@@ -104,7 +104,7 @@ Harness breaking change
 最终用户：
 
 ```bash
-npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest
 ```
 
 一次安装首批社区维护的内置渠道。`dsh-channels` 不是 DeepSeek Harness 或各消息平台的
@@ -113,28 +113,28 @@ npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest
 内部仍拆分：
 
 ```text
-@wsz987/channel-core
-@wsz987/channel-harness
-@wsz987/channel-control     # 通用控制面
-@wsz987/channel-files       # Generic Attachment compatibility backend（跨渠道附件存储 / Session ACL / 兼容提取）
-@wsz987/channel-web         # Web 设置面板
-@wsz987/channel-testkit
-@wsz987/channel-compat
-@wsz987/channel-verify
+@krischoichoi/channel-core
+@krischoichoi/channel-harness
+@krischoichoi/channel-control     # 通用控制面
+@krischoichoi/channel-files       # Generic Attachment compatibility backend（跨渠道附件存储 / Session ACL / 兼容提取）
+@krischoichoi/channel-web         # Web 设置面板
+@krischoichoi/channel-testkit
+@krischoichoi/channel-compat
+@krischoichoi/channel-verify
 
-@wsz987/channel-weixin
-@wsz987/channel-qq
-@wsz987/channel-dingtalk
-@wsz987/channel-lark
-@wsz987/channel-telegram    # 内置渠道适配器（Bot API 长轮询 + edit streaming + getFile 下载）
+@krischoichoi/channel-weixin
+@krischoichoi/channel-qq
+@krischoichoi/channel-dingtalk
+@krischoichoi/channel-lark
+@krischoichoi/channel-telegram    # 内置渠道适配器（Bot API 长轮询 + edit streaming + getFile 下载）
 
-@wsz987/dsh-channels
+@krischoichoi/dsh-channels
 ```
 
 其中：
 
 ```text
-@wsz987/dsh-channels = DSH Bundle
+@krischoichoi/dsh-channels = DSH Bundle
 ```
 
 不是业务实现集合。
@@ -165,7 +165,7 @@ deepseek-harness-channels/
 │  ├─ channel-testkit/     # 契约测试 / fakes / fixture loader
 │  ├─ channel-compat/      # 上游版本治理 / doctor / manifest
 │  ├─ channel-verify/      # 适配器契约验证（pnpm verify）
-│  └─ channels/            # 对外 DSH bundle @wsz987/dsh-channels
+│  └─ channels/            # 对外 DSH bundle @krischoichoi/dsh-channels
 │
 ├─ fixtures/
 │  ├─ weixin/              # 微信 iLink inbound/outbound/QR fixtures
@@ -269,7 +269,7 @@ Root Bundle 直接实现或直接调用任何平台 SDK：
 import '@larksuiteoapi/node-sdk'
 ```
 
-平台 SDK 的依赖和使用必须被隔离在对应 `channel-*` 子包。Root Bundle 可以通过依赖这些子包完成一次性产品安装（`@wsz987/dsh-channels -> channel-lark -> Lark SDK`），但不得自己直接接触平台 SDK。
+平台 SDK 的依赖和使用必须被隔离在对应 `channel-*` 子包。Root Bundle 可以通过依赖这些子包完成一次性产品安装（`@krischoichoi/dsh-channels -> channel-lark -> Lark SDK`），但不得自己直接接触平台 SDK。
 
 ### 红线 5
 

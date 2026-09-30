@@ -340,7 +340,7 @@ describe('capabilities.media (compat extension)', () => {
   });
 });
 
-describe('public package surface (@wsz987/channel-core)', () => {
+describe('public package surface (@krischoichoi/channel-core)', () => {
   it('re-exports the hydration helper and directional media types', () => {
     expect(typeof core.applyHydrationResult).toBe('function');
     expect(typeof core.isHydratableBinaryPart).toBe('function');

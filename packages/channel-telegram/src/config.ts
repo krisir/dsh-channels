@@ -12,6 +12,7 @@
  * `ctx.credentials` under `tokenRef` exactly once and strips the plaintext.
  */
 import Schema from '@deepseek-ai/schemastery';
+import type { Volatile } from '@deepseek-ai/cordis';
 
 /** Default credential reference name for the Telegram Bot API token. */
 export const TELEGRAM_BOT_TOKEN_REF = 'TELEGRAM_BOT_TOKEN';
@@ -98,35 +99,65 @@ export interface TelegramConfig {
   maxDownloadBytes: number;
 }
 
-export const Config: Schema<TelegramConfig> = Schema.object({
-  enabled: Schema.boolean().default(true),
-  accountId: Schema.string().default('main'),
-  baseUrl: Schema.string().default('https://api.telegram.org'),
+/**
+ * Activation-time config shape (Harness 0.2.0): every volatile field resolves
+ * to a `Volatile<T>` live handle instead of a plain value. `apply()` unwraps
+ * these once via `resolveVolatileConfig` into a plain `TelegramConfig`.
+ */
+export interface TelegramConfigLive {
+  enabled: Volatile<boolean>;
+  accountId: Volatile<string>;
+  baseUrl: Volatile<string>;
+  tokenRef: string;
+  token?: string;
+  timeoutMs: Volatile<number>;
+  longPollTimeoutMs: Volatile<number>;
+  reconnect: Volatile<TelegramReconnectConfig>;
+  dedup: Volatile<TelegramDedupConfig>;
+  streaming: Volatile<TelegramStreamingConfig>;
+  typing: Volatile<TelegramTypingConfig>;
+  formatting: Volatile<TelegramFormattingConfig>;
+  maxDownloadBytes: Volatile<number>;
+}
+
+// The runtime schema is genuine Schemastery (validation happens at the Loader
+// boundary); the annotation records the activation-time output shape. The cast
+// is required because Schemastery's inferred ObjectT models per-field optionality
+// more precisely than the hand-written `TelegramConfigLive` alias.
+export const Config = Schema.object({
+  // Harness 0.2.0 settings model: fields the control plane / settings page may
+  // write at runtime are declared `.volatile()` — they surface on the
+  // auto-generated settings form, `ctx.settings.update(entryId, patch)` accepts
+  // exactly these paths, and at activation they resolve to `Volatile<T>`
+  // handles (unwrapped by `resolveVolatileConfig` in definition.ts / apply()).
+  enabled: Schema.boolean().default(true).volatile(),
+  accountId: Schema.string().default('main').volatile(),
+  baseUrl: Schema.string().default('https://api.telegram.org').volatile(),
   // Credential reference name only — never the secret value itself.
   tokenRef: Schema.string().default(TELEGRAM_BOT_TOKEN_REF),
   // DEPRECATED migration-only legacy plaintext field: kept so old configs still
   // parse. apply() migrates its value to credentials once and deletes it.
   token: Schema.string().hidden(),
-  timeoutMs: Schema.natural().default(30000),
-  longPollTimeoutMs: Schema.natural().default(25000),
+  timeoutMs: Schema.natural().default(30000).volatile(),
+  longPollTimeoutMs: Schema.natural().default(25000).volatile(),
   reconnect: Schema.object({
     enabled: Schema.boolean().default(true),
     baseDelayMs: Schema.natural().default(1000),
     maxDelayMs: Schema.natural().default(30000),
     maxRetries: Schema.natural().default(10),
-  }),
+  }).default({}).volatile(),
   dedup: Schema.object({
     enabled: Schema.boolean().default(true),
     windowMs: Schema.natural().default(5000),
-  }),
+  }).default({}).volatile(),
   streaming: Schema.object({
     enabled: Schema.boolean().default(true),
     placeholder: Schema.string().default('…'),
-  }),
+  }).default({}).volatile(),
   typing: Schema.object({
     enabled: Schema.boolean().default(true),
     refreshMs: Schema.natural().min(1000).default(4000),
-  }),
+  }).default({}).volatile(),
   formatting: Schema.object({
     mode: Schema.union([
       Schema.const('auto'),
@@ -136,6 +167,6 @@ export const Config: Schema<TelegramConfig> = Schema.object({
       Schema.const('plain'),
     ]).default('auto'),
     fallback: Schema.const('plain').default('plain'),
-  }),
-  maxDownloadBytes: Schema.natural().default(20 * 1024 * 1024),
-});
+  }).default({}).volatile(),
+  maxDownloadBytes: Schema.natural().default(20 * 1024 * 1024).volatile(),
+}) as unknown as Schema<TelegramConfigLive>;

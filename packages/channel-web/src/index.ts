@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-web — host (Node) side.
+ * @krischoichoi/channel-web — host (Node) side.
  *
  * Cordis plugin entry for a Harness host process. Registers TWO webServer
  * prefix routes:

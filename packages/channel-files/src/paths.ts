@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { resolveChannelDataDirectory } from '@wsz987/channel-core';
+import { resolveChannelDataDirectory } from '@krischoichoi/channel-core';
 
 /**
  * One on-disk directory segment for an attachment id.

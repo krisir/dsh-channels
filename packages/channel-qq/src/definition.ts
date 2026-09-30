@@ -22,12 +22,13 @@ import type {
   ChannelSetupDescriptor,
   ConfiguredState,
   ChannelSetupField,
-} from '@wsz987/channel-control';
-import { ControlError } from '@wsz987/channel-control';
+} from '@krischoichoi/channel-control';
+import { ControlError } from '@krischoichoi/channel-control';
 import { createHash } from 'node:crypto';
 import type { QQConfig } from './config.js';
 import { QQ_APP_SECRET_REF } from './config.js';
 import { QQAdapter, type QQAdapterDeps } from './adapter.js';
+import { resolveVolatileConfig } from '@krischoichoi/channel-core';
 
 /**
  * Structural credential seam the definition uses (mirrors channel-control's
@@ -77,10 +78,13 @@ type SavableKey = (typeof SAVABLE_KEYS)[number];
 
 /** Deep-ish clone of the mutable top-level config sub-objects. */
 function cloneSnapshot(config: QQConfig): QQConfig {
+  // Harness 0.2.0: volatile fields arrive as `Volatile<T>` handles; unwrap
+  // them once so the snapshot (and everything reading it) sees plain values.
+  const plain = resolveVolatileConfig(config);
   return {
-    ...config,
-    streaming: { ...config.streaming },
-    dedup: { ...config.dedup },
+    ...plain,
+    streaming: { ...plain.streaming },
+    dedup: { ...plain.dedup },
   };
 }
 

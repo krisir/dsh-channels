@@ -18,7 +18,7 @@
  * Failure handling follows the shared contract: a download failure never
  * blocks text delivery. The part keeps its `resourceRef` and records a stable
  * de-identified `ingressFailure` code via `toIngressFailureCode` from
- * `@wsz987/channel-core` (shared `BodyTooLargeError` maps to 'too-large').
+ * `@krischoichoi/channel-core` (shared `BodyTooLargeError` maps to 'too-large').
  */
 import {
   BodyTooLargeError,
@@ -26,7 +26,7 @@ import {
   toIngressFailureCode,
   type ChannelLogger,
   type MessagePart,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 
 /** Platform file resolution seam (implemented by the upstream driver). */
 export interface TelegramFileResolver {

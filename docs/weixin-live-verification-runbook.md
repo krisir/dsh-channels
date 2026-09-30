@@ -51,7 +51,7 @@ $env:DSH_WEIXIN_LIVE_IMAGE_PATH = 'C:\weixin-live\wx-image-246.jpg'
 $env:DSH_WEIXIN_LIVE_FILE_PATH = 'C:\weixin-live\wx-live-246.txt'
 $env:DSH_WEIXIN_LIVE_VIDEO_PATH = 'C:\weixin-live\wx-video-246.mp4'
 $env:DSH_WEIXIN_REQUIRE_MEDIA = '1'
-pnpm --filter @wsz987/channel-weixin test:live
+pnpm --filter @krischoichoi/channel-weixin test:live
 ```
 
 若需指定 endpoint，设置 `DSH_WEIXIN_BASE_URL`；未设置或设置为空字符串时自动使用

@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-verify — offline verification for third-party channel adapters
+ * @krischoichoi/channel-verify — offline verification for third-party channel adapters
  * (Task 17.3, `dsh channels verify`).
  *
  * A dependency-light library surface plus a zero-dependency CLI. `verifyAdapter`

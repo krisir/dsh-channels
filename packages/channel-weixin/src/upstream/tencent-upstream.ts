@@ -20,9 +20,9 @@ import {
   type ChannelAdapterContext,
   type AuthChallenge,
   type ChannelTarget,
-} from '@wsz987/channel-core';
-import type { FetchLike } from '@wsz987/channel-core';
-import type { MessagePart } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import type { FetchLike } from '@krischoichoi/channel-core';
+import type { MessagePart } from '@krischoichoi/channel-core';
 import pkg from '../../package.json' with { type: 'json' };
 import type { WeixinConfig } from '../config.js';
 import { ILinkClient, type ILinkClientOptions } from '../ilink/client.js';

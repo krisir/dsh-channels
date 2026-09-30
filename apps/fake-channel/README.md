@@ -1,4 +1,4 @@
-# @wsz987/app-fake-channel
+# @krischoichoi/app-fake-channel
 
 Private end-to-end proof app for the dsh-channels monorepo.
 
@@ -9,9 +9,9 @@ messaging platform or Harness runtime.
 ## Run
 
 ```bash
-pnpm --filter @wsz987/app-fake-channel build
-pnpm --filter @wsz987/app-fake-channel typecheck
-pnpm --filter @wsz987/app-fake-channel test
+pnpm --filter @krischoichoi/app-fake-channel build
+pnpm --filter @krischoichoi/app-fake-channel typecheck
+pnpm --filter @krischoichoi/app-fake-channel test
 ```
 
 ## Related

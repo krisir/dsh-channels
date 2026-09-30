@@ -29,20 +29,20 @@ published by this workflow.
 
 | Package                    | Target stable version |
 | -------------------------- | --------------------- |
-| @wsz987/channel-core       | 0.5.1                 |
-| @wsz987/channel-harness    | 0.5.1                 |
-| @wsz987/channel-control    | 0.5.1                 |
-| @wsz987/channel-files      | 0.5.1                 |
-| @wsz987/channel-web        | 0.5.1                 |
-| @wsz987/channel-weixin     | 0.5.1                 |
-| @wsz987/channel-qq         | 0.5.1                 |
-| @wsz987/channel-dingtalk   | 0.5.1                 |
-| @wsz987/channel-lark       | 0.5.1                 |
-| @wsz987/channel-telegram   | 0.5.1                 |
-| @wsz987/dsh-channels       | 0.5.1                 |
+| @krischoichoi/channel-core       | 0.5.1                 |
+| @krischoichoi/channel-harness    | 0.5.1                 |
+| @krischoichoi/channel-control    | 0.5.1                 |
+| @krischoichoi/channel-files      | 0.5.1                 |
+| @krischoichoi/channel-web        | 0.5.1                 |
+| @krischoichoi/channel-weixin     | 0.5.1                 |
+| @krischoichoi/channel-qq         | 0.5.1                 |
+| @krischoichoi/channel-dingtalk   | 0.5.1                 |
+| @krischoichoi/channel-lark       | 0.5.1                 |
+| @krischoichoi/channel-telegram   | 0.5.1                 |
+| @krischoichoi/dsh-channels       | 0.5.1                 |
 
 > ⚠️ **Why not 0.5.0 — the published `latest` is a DIFFERENT, older line.**
-> `@wsz987/dsh-channels@0.5.0` is **already published** (2026-08-24) and is built
+> `@krischoichoi/dsh-channels@0.5.0` is **already published** (2026-08-24) and is built
 > against Harness **`0.1.1-rc.2`**, still peering on the since-retired
 > `@deepseek-ai/dsh-host-apiproxy`. It therefore **cannot run** on Harness
 > `0.1.5-rc.2` (injecting the removed `apiProxy` stalls the Cordis loader).
@@ -54,7 +54,7 @@ published by this workflow.
 > flow above), so the migration would silently never ship. Consuming the pending
 > changesets and renumbering to the next free stable version is what put the
 > tree on `0.5.1`; the remaining action is the `v0.5.1` tag.
-> Verify before releasing: `npm view '@wsz987/channel-harness@<target>' peerDependencies`
+> Verify before releasing: `npm view '@krischoichoi/channel-harness@<target>' peerDependencies`
 > must name `@deepseek-ai/dsh-*@0.1.5-rc.2` and must **not** name `dsh-host-apiproxy`.
 `apps/*` are private (`"private": true`) and never published.
 
@@ -88,7 +88,7 @@ the consumer side requires TypeScript compilation**:
 - **`lib/`** — emitted by `tsc` via `pnpm build` (turbo; `test` and
   `typecheck` depend on `^build` so dependencies are always built first).
 - **`exports` map** — every subpath points into `lib/` (`lib/index.js` +
-  `lib/index.d.ts`, e.g. `@wsz987/channel-core/plugin` →
+  `lib/index.d.ts`, e.g. `@krischoichoi/channel-core/plugin` →
   `./lib/plugin.js` / `./lib/plugin.d.ts`).
 - **`files` field** — restricts the npm tarball to `lib` (+ `README.md`,
   and `cordis.patch.yml` for the bundle).
@@ -146,17 +146,17 @@ update testedVersion
    `[channels, credentials]`, the channel
    adapters → `[channels, (credentials,) channelControl]`);
 2. dynamically `import()`s every bundle-owned plugin specifier — this enforces
-   Node ESM **exports-map resolution** (`@wsz987/dsh-channels/service`, etc.)
+   Node ESM **exports-map resolution** (`@krischoichoi/dsh-channels/service`, etc.)
    and asserts the Cordis plugin shape
    (`name`, `apply`, optional `inject`);
 3. asserts every patch row resolves through the bundle package itself, so a
-   profile needs only `@wsz987/dsh-channels` as a direct dependency, and checks
+   profile needs only `@krischoichoi/dsh-channels` as a direct dependency, and checks
    that its `package.json` `exports` map covers every referenced subpath;
 4. asserts every channel adapter's `Config` exposes an `enabled` boolean
    (Schemastery object-schema introspection) so all channels can be disabled
    via config.
 
-The bundle package (`@wsz987/dsh-channels`) is marked as a DSH bundle with the
+The bundle package (`@krischoichoi/dsh-channels`) is marked as a DSH bundle with the
 `dsh.bundle.patch` key pointing at `cordis.patch.yml`. A profile
 consumes it via the `dsh.profile.bundles` list, not a hand-written
 `plugins:` map (see `apps/example/minimal-profile/`).
@@ -173,7 +173,7 @@ validation installs the bundle into a **clean profile** with the real dsh CLI
 # 1. add the bundle to a clean profile — `plugin` auto-initializes the
 #    profile on first use (never reuse a dirty profile for release validation;
 #    there is no `dsh profile create` step)
-npx @deepseek-ai/dsh plugin --profile release-validation add -w @wsz987/dsh-channels@latest
+npx @deepseek-ai/dsh plugin --profile release-validation add -w @krischoichoi/dsh-channels@latest
 
 # 2. dump the merged config — verify the ten plugins were inserted
 npx @deepseek-ai/dsh --profile release-validation --dump-config
@@ -208,7 +208,7 @@ Every publishable package carries:
 }
 ```
 
-`access: public` lets the `@wsz987/*` scope publish to the public npm registry
+`access: public` lets the `@krischoichoi/*` scope publish to the public npm registry
 without an org token; the repository field links npm back to the source.
 
 ## Release checklist (Release DoD)
@@ -219,7 +219,7 @@ without an org token; the repository field links npm back to the source.
 | Changesets                   | ✅     | `.changeset/`, `pnpm changeset` / `version` / `release` |
 | dependency update PR         | ✅     | Renovate + `.github/workflows/upgrade.yml` |
 | clean-profile DSH install    | ⏳     | manual step above — requires the dsh CLI |
-| all-in-one bundle            | ✅     | `@wsz987/dsh-channels` + `cordis.patch.yml` |
+| all-in-one bundle            | ✅     | `@krischoichoi/dsh-channels` + `cordis.patch.yml` |
 | example profile              | ✅     | `apps/example/minimal-profile/` |
 | architecture docs            | ✅     | `docs/architecture.md` + `docs/architecture/*.md` |
 | adapter authoring docs       | ✅     | `docs/adapter-authoring.md` |
@@ -290,7 +290,7 @@ PRs do not trigger it:
 1. checkout + pnpm 9.15.3 + Node 22 (cache pnpm);
 2. `pnpm install --frozen-lockfile`;
 3. verifies release metadata and requires the `v*` tag to match the independently
-   versioned `@wsz987/dsh-channels` bundle;
+   versioned `@krischoichoi/dsh-channels` bundle;
 4. runs release-script tests, build, typecheck, the full test suite, fixtures,
    manifests, doctor and bundle validation;
 5. packs the eleven allowlisted release-family packages in dependency order,

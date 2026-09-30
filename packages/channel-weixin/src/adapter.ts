@@ -28,8 +28,8 @@ import type {
   ImagePart,
   FilePart,
   VideoPart,
-} from '@wsz987/channel-core';
-import { ChannelError, collectText } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError, collectText } from '@krischoichoi/channel-core';
 import { redactMessage } from './ilink/errors.js';
 import type { WeixinConfig } from './config.js';
 import type { HttpTransport } from './transport.js';

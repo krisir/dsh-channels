@@ -22,7 +22,7 @@ import {
   type ChannelTarget,
   type MessageReceived,
   type OutboundMessage,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import {
   AccountCredentialStore,
   ContextTokenStore,

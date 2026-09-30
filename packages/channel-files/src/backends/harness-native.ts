@@ -13,7 +13,7 @@
  * generic attachment API, its public package types/schema will define the
  * adapter and trust-boundary validation added here.
  */
-import { BINARY_KINDS, type BinaryKind } from '@wsz987/channel-core';
+import { BINARY_KINDS, type BinaryKind } from '@krischoichoi/channel-core';
 
 /** Backend-neutral capability consumed by the dormant migration seam. */
 export interface NativeGenericAttachmentCapability {

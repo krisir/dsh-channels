@@ -8,12 +8,12 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type ChannelAdapterContext } from '@wsz987/channel-core';
+import { ChannelService, resolveVolatileConfig, type ChannelAdapterContext } from '@krischoichoi/channel-core';
 import { Config, TelegramAdapter, apply } from '../src/index.ts';
 import type { TelegramConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -27,7 +27,7 @@ function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
       typing: { enabled: true, refreshMs: 4000 },
       maxDownloadBytes: 20 * 1024 * 1024,
     ...overrides,
-  });
+  })) as unknown as TelegramConfig;
 }
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));

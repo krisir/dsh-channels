@@ -17,7 +17,7 @@
  * dropped, while a crash after emit but before cursor commit is still dropped
  * on replay (no duplicate Agent trigger).
  */
-import type { ChannelStorage } from '@wsz987/channel-core';
+import type { ChannelStorage } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import type { ILinkMessage } from '../ilink/types.js';
 

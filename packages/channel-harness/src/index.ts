@@ -1,7 +1,7 @@
 /**
- * @wsz987/channel-harness — the only package that imports Harness public APIs.
+ * @krischoichoi/channel-harness — the only package that imports Harness public APIs.
  *
- * Bridges ChannelEvents (from `@wsz987/channel-core` adapters) to Harness
+ * Bridges ChannelEvents (from `@krischoichoi/channel-core` adapters) to Harness
  * sessions: inbound messages resolve to a SessionBinding, resolve/create an
  * agent via `ctx.agents`, and call `agent.followup`; outbound assistant
  * output flows back through the official `session/event` feed to the channel

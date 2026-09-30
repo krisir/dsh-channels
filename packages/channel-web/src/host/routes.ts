@@ -16,7 +16,7 @@ import type {
   AuthStatePoll,
   ChannelAdapter,
   ChannelHealth,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { errorBody } from './security.js';
 import { authInputSchema } from './routes-v2.js';
 

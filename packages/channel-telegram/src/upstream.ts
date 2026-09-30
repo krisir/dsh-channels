@@ -24,7 +24,7 @@ import {
   ChannelError,
   mimeHintFromFilename,
   normalizeMimeHint,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import type { HttpTransport } from './transport.js';
 import { classifyTelegramError, TelegramApiError, type TelegramErrorParameters } from './api-error.js';

@@ -18,7 +18,7 @@ import { Context } from '@deepseek-ai/cordis';
 import CommandRuntime from '@deepseek-ai/dsh-commands';
 import { createScope } from '@deepseek-ai/dsh-scope';
 import { SessionId } from '@deepseek-ai/dsh-session';
-import type { ChannelTarget, MessageReceived } from '@wsz987/channel-core';
+import type { ChannelTarget, MessageReceived } from '@krischoichoi/channel-core';
 import {
   AgentManager,
   type AgentGateway,
@@ -148,13 +148,13 @@ describe('/version handler', () => {
         version: '0.4.3',
         tag: 'latest',
         crossLine: false,
-        commands: ['npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels'],
+        commands: ['npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels'],
       },
       checkedAt: 1_700_000_000_000,
     };
     const text = await runVersion(versionDeps(new Context(), async () => info));
     expect(text).toContain('Update available: 0.4.3 (latest)');
-    expect(text).toContain('npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels');
+    expect(text).toContain('npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels');
     expect(text).not.toContain('npm i -g @deepseek-ai/dsh@latest');
     // The control-plane version wins over the local package fallback.
     expect(text).toContain('Bundle: 0.4.2');
@@ -169,7 +169,7 @@ describe('/version handler', () => {
         crossLine: true,
         commands: [
           'npm i -g @deepseek-ai/dsh@latest',
-          'npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest',
+          'npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest',
         ],
       },
     };
@@ -177,7 +177,7 @@ describe('/version handler', () => {
     expect(text).toContain('Update available: 0.5.0 (latest)');
     expect(text).toContain('cross-version-line');
     expect(text).toContain('npm i -g @deepseek-ai/dsh@latest');
-    expect(text).toContain('npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest');
+    expect(text).toContain('npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest');
   });
 
   it('degrades to the version-only output when the probe throws', async () => {
@@ -329,7 +329,7 @@ describe('/version through the bridge', () => {
       crossLine: true,
       commands: [
         'npm i -g @deepseek-ai/dsh@latest',
-        'npx @deepseek-ai/dsh plugin --profile web add -w @wsz987/dsh-channels@latest',
+        'npx @deepseek-ai/dsh plugin --profile web add -w @krischoichoi/dsh-channels@latest',
       ],
     });
     await bridge.handleChannelEvent(makeMessageEvent('/version', 'm1'));
@@ -364,7 +364,7 @@ describe('/version through the bridge', () => {
       version: '0.4.3',
       tag: 'latest',
       crossLine: false,
-      commands: ['npx @deepseek-ai/dsh plugin --profile web update -w @wsz987/dsh-channels'],
+      commands: ['npx @deepseek-ai/dsh plugin --profile web update -w @krischoichoi/dsh-channels'],
     });
     await bridge.handleChannelEvent(makeMessageEvent('hello', 'm1'));
     const agent = gateway.agents.get(gateway.createCalls[0]!)!;

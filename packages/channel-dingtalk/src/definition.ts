@@ -17,11 +17,12 @@ import {
   type ChannelSetupDescriptor,
   type ConfiguredState,
   type AuthBeginInput,
-} from '@wsz987/channel-control';
-import { ControlError } from '@wsz987/channel-control';
+} from '@krischoichoi/channel-control';
+import { ControlError } from '@krischoichoi/channel-control';
 import type { DingTalkConfig, DingTalkUpstreamConfig } from './config.js';
 import { DINGTALK_CLIENT_SECRET_REF } from './config.js';
 import { DingTalkAdapter, type DingTalkAdapterDeps } from './adapter.js';
+import { resolveVolatileConfig } from '@krischoichoi/channel-core';
 import {
   beginDingTalkDeviceAuth,
   pollDingTalkDeviceAuth,
@@ -208,12 +209,15 @@ export function createDingTalkDefinition(options: DingTalkDefinitionOptions): Ch
 }
 
 function cloneConfig(config: DingTalkConfig): DingTalkConfig {
+  // Harness 0.2.0: volatile fields arrive as `Volatile<T>` handles; unwrap
+  // them once so the snapshot (and everything reading it) sees plain values.
+  const plain = resolveVolatileConfig(config);
   return {
-    ...config,
-    reconnect: { ...config.reconnect },
-    dedup: { ...config.dedup },
-    card: { ...config.card },
-    upstream: { ...config.upstream },
+    ...plain,
+    reconnect: { ...plain.reconnect },
+    dedup: { ...plain.dedup },
+    card: { ...plain.card },
+    upstream: { ...plain.upstream },
   };
 }
 

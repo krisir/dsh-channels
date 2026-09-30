@@ -17,11 +17,11 @@ import {
   SESSION_BINDING_SCHEMA_VERSION,
   type SessionBinding,
   type SessionBindingStore,
-} from '@wsz987/channel-harness';
+} from '@krischoichoi/channel-harness';
 import { FileChannelInboundAssetStore } from '../src/attachments/store.ts';
 import { DEFAULT_ATTACHMENT_POLICY } from '../src/attachments/policy.ts';
 import { resolveAttachment } from '../src/attachment-resolver.ts';
-import type { ChannelAdapter, ChannelLogger, OutboundMessage, SendResult } from '@wsz987/channel-core';
+import type { ChannelAdapter, ChannelLogger, OutboundMessage, SendResult } from '@krischoichoi/channel-core';
 
 function makeBinding(overrides: Partial<SessionBinding> = {}): SessionBinding {
   return {

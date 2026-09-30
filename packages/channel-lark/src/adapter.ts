@@ -33,8 +33,8 @@ import type {
   OutboundMessage,
   ReplyHandle,
   SendResult,
-} from '@wsz987/channel-core';
-import { ChannelError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import { Client, Domain, WSClient } from '@larksuiteoapi/node-sdk';
 import type { LarkConfig } from './config.js';
 import type { LarkOutbound, LarkUpstream } from './upstream.js';

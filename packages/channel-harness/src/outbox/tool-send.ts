@@ -14,7 +14,7 @@
  */
 import { defineTool, ToolArgsError } from '@deepseek-ai/dsh-tools';
 import type { Context } from '@deepseek-ai/cordis';
-import type { SendResult } from '@wsz987/channel-core';
+import type { SendResult } from '@krischoichoi/channel-core';
 import type { ChannelOutboxService } from './service.js';
 
 export interface RegisterSendChannelMessageToolOptions {

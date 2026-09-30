@@ -76,7 +76,7 @@ function requiredSpecifiers(code: string): Set<string> {
   return specs;
 }
 
-describe('@wsz987/channel-web client bundle', () => {
+describe('@krischoichoi/channel-web client bundle', () => {
   let module: LoadedModule & { exports?: Record<string, unknown> };
 
   beforeEach(() => {
@@ -84,8 +84,8 @@ describe('@wsz987/channel-web client bundle', () => {
     module = loadClient();
   });
 
-  it('captures the module id "@wsz987/channel-web"', () => {
-    expect(module.id).toBe('@wsz987/channel-web');
+  it('captures the module id "@krischoichoi/channel-web"', () => {
+    expect(module.id).toBe('@krischoichoi/channel-web');
   });
 
   it('exports name === "channel-web"', () => {
@@ -174,7 +174,7 @@ describe('@wsz987/channel-web client bundle', () => {
   });
 });
 
-describe('@wsz987/channel-web client module graph contract', () => {
+describe('@krischoichoi/channel-web client module graph contract', () => {
   const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as {
     dsh?: { client?: { platform?: string; inject?: string[] } };
     peerDependencies?: Record<string, string>;
@@ -201,14 +201,14 @@ describe('@wsz987/channel-web client module graph contract', () => {
 
   it('layers dependencies per the current static/dynamic split', () => {
     // Dynamic client dependency → peer + dev (compile input).
-    expect(pkg.peerDependencies?.['@deepseek-ai/dsh-client-locale']).toBe('0.1.5-rc.2');
-    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-locale']).toBe('0.1.5-rc.2');
-    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-ui-slots']).toBe('0.1.5-rc.2');
-    expect(pkg.peerDependencies?.['@deepseek-ai/dsh-client-ui-settings']).toBe('0.1.5-rc.2');
-    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-ui-settings']).toBe('0.1.5-rc.2');
+    expect(pkg.peerDependencies?.['@deepseek-ai/dsh-client-locale']).toBe('0.2.0-rc.2');
+    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-locale']).toBe('0.2.0-rc.2');
+    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-ui-slots']).toBe('0.2.0-rc.2');
+    expect(pkg.peerDependencies?.['@deepseek-ai/dsh-client-ui-settings']).toBe('0.2.0-rc.2');
+    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-ui-settings']).toBe('0.2.0-rc.2');
     // Static UI library → dev-only compilation input, never a peer.
     expect(pkg.peerDependencies?.['@deepseek-ai/dsh-client-ui-primitives']).toBeUndefined();
-    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-ui-primitives']).toBe('0.1.5-rc.2');
+    expect(pkg.devDependencies?.['@deepseek-ai/dsh-client-ui-primitives']).toBe('0.2.0-rc.2');
     // React is shell-owned: dev-only, not shipped as a dependency.
     expect(pkg.dependencies?.react).toBeUndefined();
     expect(pkg.peerDependencies?.react).toBeUndefined();
@@ -220,7 +220,7 @@ describe('@wsz987/channel-web client module graph contract', () => {
     // Same wrapper shape as the official dynamic client artifacts: the
     // executing script only registers the factory; module body side effects
     // live inside the factory closure.
-    expect(code.startsWith('window.__ModuleLoader__.load({\n  id: "@wsz987/channel-web",\n  factory: (require) => {')).toBe(true);
+    expect(code.startsWith('window.__ModuleLoader__.load({\n  id: "@krischoichoi/channel-web",\n  factory: (require) => {')).toBe(true);
     expect(code.trimEnd().endsWith('return module.exports;\n  }\n});')).toBe(true);
   });
 

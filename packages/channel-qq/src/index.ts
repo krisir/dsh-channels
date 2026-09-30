@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-qq — QQ channel adapter for DeepSeek Harness.
+ * @krischoichoi/channel-qq — QQ channel adapter for DeepSeek Harness.
  *
  * Maps the QQ platform (via the official Tencent SDK
  * `@tencent-connect/qqbot-nodejs`) to the stable Channel Contract. The SDK
@@ -24,10 +24,10 @@
  */
 import { type Context } from '@deepseek-ai/cordis';
 import { credentialRef } from '@deepseek-ai/dsh-credentials';
-import type { SettingsProvider } from '@deepseek-ai/dsh-settings';
-import { mountChannelAdapter } from '@wsz987/channel-core';
-import type { QQConfig } from './config.js';
+import type SettingsForms from '@deepseek-ai/dsh-settings';
+import { mountChannelAdapter, resolveVolatileConfig, resolveVolatileValue } from '@krischoichoi/channel-core';
 import { Config, QQ_APP_SECRET_REF } from './config.js';
+import type { QQConfig, QQConfigLive } from './config.js';
 import { QQAdapter, type QQAdapterDeps } from './adapter.js';
 import { createQQDefinition, qqConversationScopeFingerprint } from './definition.js';
 import type { QQDefinitionOptions } from './definition.js';
@@ -37,7 +37,7 @@ export const name = 'channel-qq';
 export const inject: string[] = ['channels', 'credentials'];
 
 export { Config, QQ_APP_SECRET_REF };
-export type { QQConfig } from './config.js';
+export type { QQConfig, QQConfigLive } from './config.js';
 export { QQAdapter, type QQAdapterDeps } from './adapter.js';
 export { createQQDefinition } from './definition.js';
 export type { CredentialSeam, QQDefinitionOptions } from './definition.js';
@@ -73,7 +73,19 @@ export { mapInbound, mapMessageParts, type QQInboundMeta } from './mapper.js';
 export { mapInteraction, type QQInteractionMapping, type QQInteractionDropReason } from './interaction-mapper.js';
 export { manifest, type QQManifest } from './manifest.js';
 
-export function apply(ctx: Context, config: QQConfig, deps: QQAdapterDeps = {}): void {
+/**
+ * Entry plugin apply. Accepts both the activation-time live shape (volatile
+ * fields resolve to `Volatile<T>` handles under Harness 0.2.0) and a plain
+ * snapshot (tests / programmatic mounting); plain fields pass through
+ * `resolveVolatileConfig` untouched. The shape is validated by Schemastery at
+ * the Loader boundary via the attached `Config` schema.
+ */
+export function apply(
+  ctx: Context,
+  rawConfig: QQConfig | QQConfigLive,
+  deps: QQAdapterDeps = {},
+): void {
+  const config = resolveVolatileConfig(rawConfig) as QQConfig;
   const control = ctx.get('channelControl') as
     | { definitions: { register(d: unknown): unknown } }
     | undefined;
@@ -84,15 +96,14 @@ export function apply(ctx: Context, config: QQConfig, deps: QQAdapterDeps = {}):
     // §25/§27) and a disabled definition must stay visible so the Web control
     // plane can re-enable it later (doc §19/§20).
     const credentials = (ctx as Context & { credentials: CredentialSeam }).credentials;
-    const settings = ctx.get('settings') as SettingsProvider | undefined;
-    const scope = settings?.register('channels-qq', Config, { base: config });
+    const settings = ctx.get('settings') as SettingsForms | undefined;
     control.definitions.register(
       createQQDefinition({
-        config: scope?.get() ?? config,
+        config,
         deps,
         credentials,
-        persistSetup: (patch) => scope?.update(patch) ?? Promise.resolve(),
-        persistEnabled: (enabled) => scope?.update({ enabled }) ?? Promise.resolve(),
+        persistSetup: (patch) => settings?.update('channels-qq', patch) ?? Promise.resolve(),
+        persistEnabled: (enabled) => settings?.update('channels-qq', { enabled }) ?? Promise.resolve(),
         resolveOwnerIdentity: async (accountId, appId) => {
           const key = `qq:owner-openid:${accountId}:${qqConversationScopeFingerprint(appId) ?? 'unscoped'}`;
           return ctx.channels.resources.storage.get(key);
@@ -115,7 +126,7 @@ export function apply(ctx: Context, config: QQConfig, deps: QQAdapterDeps = {}):
   // `enabled` gate still applies (doc §20). Mount ONLY when configured: an
   // unconfigured channel logs a warning and returns WITHOUT throwing, so it can
   // never crash profile startup (doc §25).
-  if (!config.enabled) return;
+  if (!resolveVolatileValue(config.enabled)) return;
   if (!config.appSecretRef) {
     ctx.logger.warn(`[channel-qq] no appSecretRef configured; skipping mount`);
     return;

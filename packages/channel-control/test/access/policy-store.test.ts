@@ -3,8 +3,8 @@
  * over an in-memory ChannelStorage, including the missing-vs-invalid distinction.
  */
 import { describe, expect, it } from 'vitest';
-import { MemoryStorage, type ChannelStorage } from '@wsz987/channel-core';
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
+import { MemoryStorage, type ChannelStorage } from '@krischoichoi/channel-core';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
 import {
   ChannelStorageAccessPolicyStore,
   MemoryAccessPolicyStore,

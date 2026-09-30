@@ -34,7 +34,7 @@
  * failures in the running suite.
  */
 import { describe, expect, it } from 'vitest';
-import type { MessageReceived } from '@wsz987/channel-core';
+import type { MessageReceived } from '@krischoichoi/channel-core';
 
 /** One mapped `message.received` case to validate. */
 export interface InboundMessageCase {

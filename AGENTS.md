@@ -56,7 +56,7 @@ Adapter 不得自行定义不同于 `channel-harness` 的 ACL 语义；外部主
 
 | 包 | 职责 |
 | --- | --- |
-| `channels` | 对外 bundle（`@wsz987/dsh-channels`） |
+| `channels` | 对外 bundle（`@krischoichoi/dsh-channels`） |
 | `channel-core` | Channel Contract / `defineChannelAdapter` |
 | `channel-harness` | 渠道 ↔ Harness 桥 |
 | `channel-files` | 可选通用文件扩展（存储 / 解析 / `read_channel_attachment`） |

@@ -32,7 +32,7 @@ import { registerReadChannelAttachmentTool } from '../src/attachments/tool-read.
 import { storeBinaryPart } from '../src/attachments/pipeline.ts';
 import { createAttachmentExtractor } from '../src/attachments/pipeline-extractor.ts';
 import { sha256Hex } from '../src/attachments/hash.ts';
-import { OutboxError } from '@wsz987/channel-harness';
+import { OutboxError } from '@krischoichoi/channel-harness';
 
 async function tempRoot(): Promise<string> {
   return mkdtemp(join(tmpdir(), 'dsh-v1compat-'));

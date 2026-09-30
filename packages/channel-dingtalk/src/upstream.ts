@@ -19,7 +19,7 @@
  * - POST /card/finish   — finalize the card (status 'finished')
  * - POST /card/fail     — mark the card failed (status 'failed')
  */
-import type { ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
 import type { HttpTransport } from './transport.js';
 
 /** Card create response: the gateway-issued card id. */

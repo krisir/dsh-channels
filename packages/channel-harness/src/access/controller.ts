@@ -19,7 +19,7 @@
  * The plan separates the Security Gate (authorized) from the Activation Gate
  * (activated). `reason` is always the single most-specific cause.
  */
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
 import type { InboundAccessDecision } from './decision.js';
 
 export interface InboundAccessInput {

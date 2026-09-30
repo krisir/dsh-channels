@@ -3,7 +3,7 @@
  * session (doc H0.3).
  *
  * The canonical key is `channel:account:conversation[:thread]` — one account
- * never collapses into one session. The bridge reuses `@wsz987/channel-core`'s
+ * never collapses into one session. The bridge reuses `@krischoichoi/channel-core`'s
  * `conversationKey` so both sides agree on the exact string; branded
  * channel-core identity types only appear on the channel side, so this package
  * works with plain strings.
@@ -24,7 +24,7 @@
  * The old v1 `agentId` field has been removed (migrated to `route.model` by
  * `binding-store`, then v2 -> v3 adds the legacy-default `conversationType`).
  */
-import { conversationKey, type ChannelConversationKey } from '@wsz987/channel-core';
+import { conversationKey, type ChannelConversationKey } from '@krischoichoi/channel-core';
 import type { AgentRouteSpec } from './agent-router.js';
 
 export const SESSION_BINDING_SCHEMA_VERSION = 3 as const;

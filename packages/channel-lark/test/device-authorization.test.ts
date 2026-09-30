@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { AuthProviderSession } from '@wsz987/channel-control';
+import type { AuthProviderSession } from '@krischoichoi/channel-control';
 import { pollLarkDeviceAuthorization } from '../src/auth/device-authorization.js';
 
 const session: AuthProviderSession = {

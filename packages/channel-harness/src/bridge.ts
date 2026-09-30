@@ -46,7 +46,7 @@ import type {
   InteractionReceived,
   MessageReceived,
   TextPart,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { Config } from './config.js';
 import type { SessionBindingStore } from './binding-store.js';
 import type { AgentManager, AgentRef } from './agent-manager.js';
@@ -82,7 +82,7 @@ import {
 import { ChannelModelSelectionController } from './model-selection.js';
 import { toLoggableError } from './loggable-error.js';
 import { ChannelSessionFactory } from './channel-session-factory.js';
-import { isReservedClaimCommand } from '@wsz987/channel-core';
+import { isReservedClaimCommand } from '@krischoichoi/channel-core';
 import { InboundAccessController } from './access/controller.js';
 import type {
   ChannelAccessPolicyResolver,

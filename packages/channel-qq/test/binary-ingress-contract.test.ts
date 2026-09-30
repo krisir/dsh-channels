@@ -17,16 +17,16 @@
  */
 import { Context } from '@deepseek-ai/cordis';
 import { vi, expect } from 'vitest';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import type { SecureRemoteMediaFetcher } from '@wsz987/channel-core';
-import { createTestContext, runBinaryIngressContract } from '@wsz987/channel-testkit';
+import { ChannelService, type MessageReceived, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import type { SecureRemoteMediaFetcher } from '@krischoichoi/channel-core';
+import { createTestContext, runBinaryIngressContract } from '@krischoichoi/channel-testkit';
 import type { QQBotInboundMessage } from '@tencent-connect/qqbot-nodejs';
 import type { QQConfig } from '../src/config.ts';
 import { Config, QQAdapter } from '../src/index.ts';
 import { FakeQQSdkClient } from '../src/sdk-client.ts';
 
 function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     appId: 'APP_ID',
@@ -36,7 +36,7 @@ function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
     dedup: { enabled: false, windowMs: 5000 },
     startupTimeoutMs: 15000,
     ...overrides,
-  });
+  })) as unknown as QQConfig;
 }
 
 /** Deterministic bytes the fake fetcher returns for every attachment URL. */

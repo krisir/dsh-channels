@@ -24,8 +24,8 @@
  * Official responses are trust-boundary validated with zod `safeParse` before
  * their fields are read; invalid envelopes surface as `ChannelError`s.
  */
-import { ChannelError } from '@wsz987/channel-core';
-import type { OutboundActionRow } from '@wsz987/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
+import type { OutboundActionRow } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import type {
   LarkFileRef,

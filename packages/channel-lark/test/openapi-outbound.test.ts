@@ -8,7 +8,7 @@
  * built elsewhere from config).
  */
 import { describe, expect, it } from 'vitest';
-import { ChannelError } from '@wsz987/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import {
   LarkOpenApiOutbound,
   receiveIdType,

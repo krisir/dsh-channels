@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { MessageReceived } from '@wsz987/channel-core';
+import type { MessageReceived } from '@krischoichoi/channel-core';
 import { runInboundIdentityContract, runActivationContract } from '../src/index.ts';
 
 // Hand-built MessageReceived fixtures. Branded string ids (ChannelId, AccountId,

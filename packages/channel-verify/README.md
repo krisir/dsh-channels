@@ -1,4 +1,4 @@
-# @wsz987/channel-verify
+# @krischoichoi/channel-verify
 
 Offline verification CLI for third-party DeepSeek Harness channel adapters
 (`dsh channels verify`).
@@ -10,7 +10,7 @@ platform credentials — so the CLI is CI-friendly and offline.
 ## Install
 
 ```bash
-pnpm add -D @wsz987/channel-verify
+pnpm add -D @krischoichoi/channel-verify
 ```
 
 The package ships a CLI binary with hand-rolled argument parsing:
@@ -46,14 +46,14 @@ not fail the run.
 | `capabilities` | `capabilities` is a valid `ChannelCapabilities` object |
 | `fixtures` | `fixtures/<channel>/*.json` cases are present and valid |
 | `credentials` | No real credentials / secret values are committed in config or fixtures |
-| `contract` | The adapter passes the `@wsz987/channel-testkit` contract suite (or its own tests with `--test`) |
+| `contract` | The adapter passes the `@krischoichoi/channel-testkit` contract suite (or its own tests with `--test`) |
 
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-verify build
-pnpm --filter @wsz987/channel-verify typecheck
-pnpm --filter @wsz987/channel-verify test
+pnpm --filter @krischoichoi/channel-verify build
+pnpm --filter @krischoichoi/channel-verify typecheck
+pnpm --filter @krischoichoi/channel-verify test
 ```
 
 ## Related

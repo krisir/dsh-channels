@@ -8,14 +8,14 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type ChannelAdapterContext } from '@wsz987/channel-core';
+import { ChannelService, resolveVolatileConfig, type ChannelAdapterContext } from '@krischoichoi/channel-core';
 import { CredentialProvider } from '@deepseek-ai/dsh-credentials';
 import type { CredentialInfo, CredentialRef, ResolvedCredential } from '@deepseek-ai/dsh-credentials';
 import { Config, LarkAdapter, apply } from '../src/index.ts';
 import type { LarkConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     timeoutMs: 1000,
@@ -24,7 +24,7 @@ function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
     card: { createOnFirstDelta: true },
     upstream: { appId: 'cli_default' },
     ...overrides,
-  });
+  })) as unknown as LarkConfig;
 }
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));

@@ -22,9 +22,9 @@
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
-import type { ChannelAdapterContext, ChannelTarget } from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+import { ChannelService, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import type { ChannelAdapterContext, ChannelTarget } from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import { WeixinAdapter } from '../src/adapter.js';
 import { Config } from '../src/config.js';
 import type { WeixinConfig } from '../src/config.js';
@@ -46,14 +46,14 @@ import type {
 /* ------------------------------------------------------------------ */
 
 function makeConfig(overrides: Partial<WeixinConfig> = {}): WeixinConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     ilink: { baseUrl: 'https://fake.ilink.test', cdnBaseUrl: 'https://fake.cdn.test', botAgent: 'DeepSeekHarness/0.8.1' },
     network: { timeoutMs: 1000, longPollTimeoutMs: 1000 },
     reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10 },
     ...overrides,
-  } as unknown as WeixinConfig);
+  } as unknown as WeixinConfig)) as unknown as WeixinConfig;
 }
 
 function target(conversationId: string): ChannelTarget {

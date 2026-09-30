@@ -15,8 +15,8 @@
  * A download failure never blocks text delivery — the part keeps its `url`
  * and records a stable `ingressFailure` code.
  */
-import type { ChannelAdapterContext, MessagePart, MessageReceived } from '@wsz987/channel-core';
-import { SecureRemoteMediaFetcher } from '@wsz987/channel-core';
+import type { ChannelAdapterContext, MessagePart, MessageReceived } from '@krischoichoi/channel-core';
+import { SecureRemoteMediaFetcher } from '@krischoichoi/channel-core';
 
 /** Compact per-part summary for inbound message logs (debug diagnostics). */
 function summarizeParts(parts: readonly MessagePart[]): unknown[] {

@@ -1,9 +1,9 @@
 {
-  "name": "@wsz987/channel-weixin",
+  "name": "@krischoichoi/channel-weixin",
   "version": "0.5.1",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wsz987/dsh-channels.git"
+    "url": "git+https://github.com/krischoichoi/dsh-channels.git"
   },
   "publishConfig": {
     "access": "public"
@@ -30,15 +30,15 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@deepseek-ai/cordis": "^4.0.2",
-    "@deepseek-ai/dsh-settings": "0.1.5-rc.2",
-    "@deepseek-ai/schemastery": "^3.18.2",
-    "@wsz987/channel-control": "workspace:*",
-    "@wsz987/channel-core": "workspace:*",
+    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/dsh-settings": "0.2.0-rc.2",
+    "@deepseek-ai/schemastery": "~3.18.4",
+    "@krischoichoi/channel-control": "workspace:*",
+    "@krischoichoi/channel-core": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@wsz987/channel-testkit": "workspace:*",
+    "@krischoichoi/channel-testkit": "workspace:*",
     "rimraf": "^6.0.0"
   },
   "optionalDependencies": {

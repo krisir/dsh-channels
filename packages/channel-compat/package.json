@@ -1,9 +1,9 @@
 {
-  "name": "@wsz987/channel-compat",
+  "name": "@krischoichoi/channel-compat",
   "version": "0.2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wsz987/dsh-channels.git"
+    "url": "git+https://github.com/krischoichoi/dsh-channels.git"
   },
   "publishConfig": {
     "access": "public"
@@ -32,13 +32,13 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@wsz987/channel-core": "workspace:*",
-    "@deepseek-ai/cordis": "^4.0.2",
-    "@deepseek-ai/schemastery": "^3.18.2",
+    "@krischoichoi/channel-core": "workspace:*",
+    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/schemastery": "~3.18.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@wsz987/channel-testkit": "workspace:*",
+    "@krischoichoi/channel-testkit": "workspace:*",
     "rimraf": "^6.0.0"
   },
   "license": "MIT"

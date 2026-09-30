@@ -26,7 +26,7 @@
  * are deliberately NOT acked, so the platform can retry / surface the error.
  */
 import { TOPIC_CARD, TOPIC_ROBOT } from 'dingtalk-stream';
-import type { ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
 import type { CardCreateResult, DingTalkUpstream } from './upstream.js';
 import { z } from 'zod';
 

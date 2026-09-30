@@ -12,7 +12,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Context } from '@deepseek-ai/cordis';
 import type { Agent } from '@deepseek-ai/dsh-agent';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
+import { ChannelService, type MessageReceived } from '@krischoichoi/channel-core';
 import type { SessionEvent } from '@deepseek-ai/dsh-session';
 import {
   AgentManager,

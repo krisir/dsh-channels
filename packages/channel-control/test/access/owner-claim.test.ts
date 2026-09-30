@@ -14,8 +14,8 @@
  * - challenge never logged (spy logger)
  */
 import { describe, expect, it, vi } from 'vitest';
-import type { ChannelAccessPolicy, ChannelEvent } from '@wsz987/channel-core';
-import { textParts } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy, ChannelEvent } from '@krischoichoi/channel-core';
+import { textParts } from '@krischoichoi/channel-core';
 import { ChannelDefinitionRegistry } from '../../src/definitions/registry.js';
 import type { ChannelAccessDescriptor, ChannelDefinition } from '../../src/types.js';
 import { MemoryAccessPolicyStore } from '../../src/access/policy-store.js';

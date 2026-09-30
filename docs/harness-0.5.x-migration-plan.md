@@ -56,7 +56,7 @@ bundle patch 发现/落地 → 9 行插件加载 → 五渠道注册 → 控制�
 | 插件加载 | 启动日志出现 `[channel-harness] console diagnostics enabled` |
 | 五渠道注册 | `GET /dsh-channels/api/v2/channels` 返回五渠道齐全 |
 | API 路由 | `/v2/channels`、`/v2/update-check`、`/v1/channels` → 200；未知路径 → 404；`/` → 401 |
-| 客户端投递 | `__DSH_BOOT__` 含 `@wsz987/dsh-channels` 条目，其 url 200 且内容为 `window.__ModuleLoader__.load({id,factory})` |
+| 客户端投递 | `__DSH_BOOT__` 含 `@krischoichoi/dsh-channels` 条目，其 url 200 且内容为 `window.__ModuleLoader__.load({id,factory})` |
 | 真实平台收发 | 需真实账号/应用 → **LIVE-REQUIRED**（按渠道见 `docs/compatibility-matrix.md` §4） |
 
 关键结论：本批 Harness 变更（`ctx.agent` 移除、Inbox 类型化、`SessionHandle` 生命周期、
@@ -74,7 +74,7 @@ session 单写者锁、`Session.events`→`snapshotEvents`、V3、persona 拆分
 
 ### 4.1 版本号与内容倒挂（P0，发布阻塞）
 
-npm `@wsz987/dsh-channels` 的 `latest` 是 **`0.5.0`**（2026-08-24），它构建于 Harness
+npm `@krischoichoi/dsh-channels` 的 `latest` 是 **`0.5.0`**（2026-08-24），它构建于 Harness
 **`0.1.1-rc.2`**，peer 仍包含已退役的 `@deepseek-ai/dsh-host-apiproxy`，因此在
 `0.1.5-rc.2` 上**无法运行**（注入已移除的 `apiProxy` 会卡住 Cordis loader）。
 
@@ -82,7 +82,7 @@ npm `@wsz987/dsh-channels` 的 `latest` 是 **`0.5.0`**（2026-08-24），它构
 因此 release-prep 把 11 个发布包 + private root 对齐到**下一个空闲稳定版 `0.5.1`**
 （`0.4.2 + minor` 只会算出被占用的 `0.5.0`）。
 
-发布前必须确认：`npm view '@wsz987/channel-harness@<target>' peerDependencies` 指向
+发布前必须确认：`npm view '@krischoichoi/channel-harness@<target>' peerDependencies` 指向
 `0.1.5-rc.2` 且**不含** `dsh-host-apiproxy`；剩余动作只有打 tag
 （`git tag v0.5.1 && git push origin v0.5.1`，见 `docs/release.md`）。
 

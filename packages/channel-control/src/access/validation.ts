@@ -15,7 +15,7 @@
 import {
   channelAccessPolicySchema,
   type ChannelAccessPolicy,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { ChannelAccessDescriptor } from '../types.js';
 import { materializeAccessPolicy } from './materialize.js';
 

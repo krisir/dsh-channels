@@ -1,4 +1,4 @@
-# @wsz987/channel-core
+# @krischoichoi/channel-core
 
 Stable cross-channel contract and Cordis `ChannelService` for DeepSeek Harness Channels.
 
@@ -10,14 +10,14 @@ depends on a concrete messaging platform.
 ## Install
 
 ```bash
-pnpm add @wsz987/channel-core
+pnpm add @krischoichoi/channel-core
 ```
 
 As a Cordis plugin:
 
 ```yaml
 - id: channels-service
-  name: '@wsz987/channel-core/plugin'
+  name: '@krischoichoi/channel-core/plugin'
 ```
 
 ## What's inside
@@ -37,7 +37,7 @@ As a Cordis plugin:
 ## Quick start
 
 ```ts
-import { defineChannelAdapter } from '@wsz987/channel-core';
+import { defineChannelAdapter } from '@krischoichoi/channel-core';
 
 export default defineChannelAdapter({
   id: 'my-channel',
@@ -70,7 +70,7 @@ service falls back to in-memory stores:
 
 ```ts
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
+import { ChannelService } from '@krischoichoi/channel-core';
 
 const ctx = new Context();
 const channels = new ChannelService(ctx);
@@ -89,9 +89,9 @@ The plugin resolves the durable data directory in this order:
 ## Development
 
 ```bash
-pnpm --filter @wsz987/channel-core build
-pnpm --filter @wsz987/channel-core typecheck
-pnpm --filter @wsz987/channel-core test
+pnpm --filter @krischoichoi/channel-core build
+pnpm --filter @krischoichoi/channel-core typecheck
+pnpm --filter @krischoichoi/channel-core test
 ```
 
 ## Related

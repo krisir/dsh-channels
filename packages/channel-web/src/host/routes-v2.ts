@@ -32,10 +32,10 @@ import type {
   PublicAuthStatus,
   PublicConversationIdentity,
   PublicOwnerClaimSession,
-} from '@wsz987/channel-control';
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
-import { channelAccessPolicySchema, isChannelError } from '@wsz987/channel-core';
-import { isControlError } from '@wsz987/channel-control';
+} from '@krischoichoi/channel-control';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
+import { channelAccessPolicySchema, isChannelError } from '@krischoichoi/channel-core';
+import { isControlError } from '@krischoichoi/channel-control';
 import { z } from 'zod';
 import { errorBody } from './security.js';
 

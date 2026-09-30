@@ -25,7 +25,7 @@ import type {
   AskUserQuestionAnswer,
   AskUserQuestionItem,
 } from '@deepseek-ai/dsh-user-questions/types';
-import type { ChannelAdapter, ChannelLogger } from '@wsz987/channel-core';
+import type { ChannelAdapter, ChannelLogger } from '@krischoichoi/channel-core';
 import type { AgentManager } from '../agent-manager.js';
 import type { ReplyContextStore } from '../reply-context-store.js';
 import { WaterfallQuestionBackend, type ChannelUserQuestionService } from './question-waterfall-backend.js';

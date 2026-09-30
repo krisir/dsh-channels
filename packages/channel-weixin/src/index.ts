@@ -1,14 +1,14 @@
 /**
- * @wsz987/channel-weixin — direct Tencent Weixin iLink channel adapter.
+ * @krischoichoi/channel-weixin — direct Tencent Weixin iLink channel adapter.
  *
  * Replaces the old self-hosted HTTP gateway client with a direct iLink client
  * (QR login, getUpdates long-poll, sendmessage). Streaming is `buffered`.
  */
 import { type Context } from '@deepseek-ai/cordis';
-import type { SettingsProvider } from '@deepseek-ai/dsh-settings';
-import { mountChannelAdapter } from '@wsz987/channel-core';
-import type { ChannelAdapter, ChannelDefinition } from '@wsz987/channel-control';
-import type { WeixinConfig } from './config.js';
+import type SettingsForms from '@deepseek-ai/dsh-settings';
+import { mountChannelAdapter, resolveVolatileConfig, resolveVolatileValue } from '@krischoichoi/channel-core';
+import type { ChannelAdapter, ChannelDefinition } from '@krischoichoi/channel-control';
+import type { WeixinConfig, WeixinConfigLive } from './config.js';
 import { Config } from './config.js';
 import { WeixinAdapter, type WeixinAdapterDeps } from './adapter.js';
 import { createWeixinDefinition } from './definition.js';
@@ -18,10 +18,11 @@ export const name = 'channel-weixin';
 export const inject: string[] = ['channels'];
 
 // Adapter mounting uses the shared transactional `mountChannelAdapter`
-// from @wsz987/channel-core (doc section 5): register -> start; on start error
+// from @krischoichoi/channel-core (doc section 5): register -> start; on start error
 // abort + best-effort stop + unregister + rethrow; on unload abort + stop + unregister.
 
 export { Config };
+export type { WeixinConfigLive } from './config.js';
 export { WeixinAdapter, type WeixinAdapterDeps } from './adapter.js';
 export {
   createWeixinDefinition,
@@ -151,15 +152,26 @@ type ChannelControlLike = {
   runtime?: { adapter(channelId: string): ChannelAdapter | undefined };
 };
 
-export function apply(ctx: Context, config: WeixinConfig, deps: WeixinAdapterDeps = {}): void {
+/**
+ * Entry plugin apply. Accepts both the activation-time live shape (volatile
+ * fields resolve to `Volatile<T>` handles under Harness 0.2.0) and a plain
+ * snapshot (tests / programmatic mounting); plain fields pass through
+ * `resolveVolatileConfig` untouched. The shape is validated by Schemastery at
+ * the Loader boundary via the attached `Config` schema.
+ */
+export function apply(
+  ctx: Context,
+  rawConfig: WeixinConfig | WeixinConfigLive,
+  deps: WeixinAdapterDeps = {},
+): void {
+  const config = resolveVolatileConfig(rawConfig) as WeixinConfig;
   const control = ctx.get('channelControl') as ChannelControlLike | undefined;
   if (control) {
     // Control-plane entry (doc §43): register the definition EVEN when
     // disabled — the control plane auto-starts it (autoStart) and a disabled
     // definition must stay visible so the Web control plane can re-enable it
     // later (doc §19/§20). The M1 QR flow is driven through the mounted adapter.
-    const settings = ctx.get('settings') as SettingsProvider | undefined;
-    const scope = settings?.register('channels-weixin', Config, { base: config });
+    const settings = ctx.get('settings') as SettingsForms | undefined;
     // Weixin owner auto-discovery: the control plane never reads
     // weixin credential storage; a closure here maps the stored scanning
     // user's canonical id out of the platform's own AccountCredentialStore.
@@ -174,10 +186,10 @@ export function apply(ctx: Context, config: WeixinConfig, deps: WeixinAdapterDep
     };
     control.definitions.register(
       createWeixinDefinition({
-        config: scope?.get() ?? config,
+        config,
         deps,
         getAdapter: () => control.runtime?.adapter('weixin'),
-        persistEnabled: (enabled) => scope?.update({ enabled }) ?? Promise.resolve(),
+        persistEnabled: (enabled) => settings?.update('channels-weixin', { enabled }) ?? Promise.resolve(),
         resolveOwnerIdentity,
       }),
     );
@@ -186,7 +198,7 @@ export function apply(ctx: Context, config: WeixinConfig, deps: WeixinAdapterDep
   // Legacy headless/standalone path (no channel-control): mount as today.
   // There is no directory/control surface to re-enable a disabled channel, so
   // the config `enabled` gate still applies (doc §20).
-  if (!config.enabled) return;
+  if (!resolveVolatileValue(config.enabled)) return;
   const adapter = new WeixinAdapter(config, deps);
   mountChannelAdapter(
     ctx,

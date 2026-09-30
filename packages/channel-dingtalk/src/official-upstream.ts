@@ -16,8 +16,8 @@
  * no official-behavior basis are marked `@upstream-gap` / `@deprecated` with a
  * reason (delete any protocol with no official basis).
  */
-import type { ChannelTarget, OutboundActionRow } from '@wsz987/channel-core';
-import { ChannelError, SecureRemoteMediaFetcher } from '@wsz987/channel-core';
+import type { ChannelTarget, OutboundActionRow } from '@krischoichoi/channel-core';
+import { ChannelError, SecureRemoteMediaFetcher } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import type { CardCreateResult, DingTalkUpstream } from './upstream.js';
 import type { HttpTransport } from './transport.js';

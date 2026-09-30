@@ -19,7 +19,7 @@ import type {
   ChannelTarget,
   OutboundMessage,
   ReplyHandle,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { DingTalkUpstream } from './upstream.js';
 
 export type DingTalkCardStatus = 'idle' | 'active' | 'finished' | 'failed';

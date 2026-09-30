@@ -45,7 +45,7 @@ import type {
   InteractionReceived,
   MessageReceived,
   OutboundMessage,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { AgentManager } from '../agent-manager.js';
 import type { ReplyContextStore } from '../reply-context-store.js';
 import type {

@@ -26,7 +26,7 @@ import CommandRuntime, { parseCommand } from '@deepseek-ai/dsh-commands';
 import { createScope } from '@deepseek-ai/dsh-scope';
 import { SessionId } from '@deepseek-ai/dsh-session';
 import { AgentRegistry } from '@deepseek-ai/dsh-agent';
-import type { ChannelTarget, MessageReceived } from '@wsz987/channel-core';
+import type { ChannelTarget, MessageReceived } from '@krischoichoi/channel-core';
 import {
   AgentManager,
   HarnessAgentGateway,

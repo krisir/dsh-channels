@@ -5,8 +5,8 @@ import { join } from 'node:path';
 import { Context } from '@deepseek-ai/cordis';
 import { AgentRegistry, type Agent } from '@deepseek-ai/dsh-agent';
 import { AttachmentId } from '@deepseek-ai/dsh-attachment';
-import { ChannelService, type ChannelEvent, type MessageReceived } from '@wsz987/channel-core';
-import { accessPolicyStorageKey, type ChannelAccessPolicy } from '@wsz987/channel-core';
+import { ChannelService, type ChannelEvent, type MessageReceived } from '@krischoichoi/channel-core';
+import { accessPolicyStorageKey, type ChannelAccessPolicy } from '@krischoichoi/channel-core';
 import type { Session, SessionEvent } from '@deepseek-ai/dsh-session';
 import {
   AgentManager,

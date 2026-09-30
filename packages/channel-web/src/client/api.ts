@@ -104,7 +104,7 @@ export interface PublicError {
 }
 
 // ---------------------------------------------------------------------------
-// Access-control DTOs — mirror @wsz987/channel-control shapes.
+// Access-control DTOs — mirror @krischoichoi/channel-control shapes.
 // Policies carry ONLY canonical owner/sender/group ids — never any secret.
 // ---------------------------------------------------------------------------
 
@@ -203,7 +203,7 @@ export interface PublicOwnerClaimSession {
 }
 
 // ---------------------------------------------------------------------------
-// Bundle update-check DTOs — mirror @wsz987/channel-control shapes. The host
+// Bundle update-check DTOs — mirror @krischoichoi/channel-control shapes. The host
 // performs the npm registry check; the browser only renders this sanitized,
 // secret-free projection (it never contacts npm itself).
 // ---------------------------------------------------------------------------

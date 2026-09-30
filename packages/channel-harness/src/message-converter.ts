@@ -31,7 +31,7 @@ import {
   type MessagePart,
   type MessageReceived,
   type VideoPart,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { ChannelAttachmentDescriptor } from './file-provider.js';
 
 /** Type-level alias: the bridge always produces Harness user messages. */

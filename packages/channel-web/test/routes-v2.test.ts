@@ -12,15 +12,15 @@ import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { ControlError } from '@wsz987/channel-control';
+import { ControlError } from '@krischoichoi/channel-control';
 import type {
   ChannelAccessState,
   ChannelSetupDescriptor,
   ChannelSummary,
   PublicAuthSession,
   PublicOwnerClaimSession,
-} from '@wsz987/channel-control';
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-control';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
 import { apply } from '../src/index.js';
 import type { ChannelControlLike } from '../src/host/routes-v2.js';
 

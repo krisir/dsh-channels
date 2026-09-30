@@ -8,8 +8,8 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, ChannelError, type InteractionReceived, type OutboundMessage } from '@wsz987/channel-core';
-import { makeChannelTarget, createTestContext } from '@wsz987/channel-testkit';
+import { ChannelService, ChannelError, resolveVolatileConfig, type InteractionReceived, type OutboundMessage } from '@krischoichoi/channel-core';
+import { makeChannelTarget, createTestContext } from '@krischoichoi/channel-testkit';
 import {
   Config,
   TelegramAdapter,
@@ -51,7 +51,7 @@ class FakeTransport implements HttpTransport {
 }
 
 function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -65,7 +65,7 @@ function makeConfig(overrides: Partial<TelegramConfig> = {}): TelegramConfig {
     typing: { enabled: true, refreshMs: 4000 },
     maxDownloadBytes: 20 * 1024 * 1024,
     ...overrides,
-  });
+  })) as unknown as TelegramConfig;
 }
 
 const CALLBACK_UPDATE = {

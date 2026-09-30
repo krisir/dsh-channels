@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-web — Web client plugin entry.
+ * @krischoichoi/channel-web — Web client plugin entry.
  *
  * This file is bundled by esbuild into lib/client.js and wrapped in the
  * Harness `window.__ModuleLoader__.load({ id, factory })` format. It registers

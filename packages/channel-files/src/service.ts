@@ -6,7 +6,7 @@ import type {
   ChannelImageStoreInput,
   ResolvedChannelAttachment,
   StoredBinaryPart,
-} from '@wsz987/channel-harness';
+} from '@krischoichoi/channel-harness';
 import { FileChannelInboundAssetStore } from './attachments/store.js';
 import { DEFAULT_ATTACHMENT_POLICY } from './attachments/policy.js';
 import { createAttachmentExtractor } from './attachments/pipeline-extractor.js';

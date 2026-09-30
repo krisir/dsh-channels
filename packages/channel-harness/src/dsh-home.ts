@@ -15,7 +15,7 @@ import {
 import {
   CHANNELS_DATA_DIR_NAME,
   resolveChannelDataDirectory,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import { join } from 'node:path';
 
 export { CHANNELS_DATA_DIR_NAME };

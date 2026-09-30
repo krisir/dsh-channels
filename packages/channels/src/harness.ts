@@ -1,1 +1,1 @@
-export * from '@wsz987/channel-harness';
+export * from '@krischoichoi/channel-harness';

@@ -31,8 +31,8 @@ import type {
   ChannelTarget,
   OutboundMessage,
   ReplyHandle,
-} from '@wsz987/channel-core';
-import { ChannelError } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import {
   STREAM_MARKDOWN_ELEMENT_ID,
   streamingCardJson,

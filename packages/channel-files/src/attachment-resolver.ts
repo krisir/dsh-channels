@@ -11,7 +11,7 @@
 import type { ChannelInboundAssetStore } from './attachments/store.js';
 import { AssetStoreError } from './attachments/store.js';
 import { DEFAULT_ATTACHMENT_POLICY, rawReadLimit, type AttachmentPolicy } from './attachments/policy.js';
-import { OutboxError, type ResolvedChannelAttachment } from '@wsz987/channel-harness';
+import { OutboxError, type ResolvedChannelAttachment } from '@krischoichoi/channel-harness';
 
 /** Byte cap applied when the caller supplies no explicit policy. */
 const DEFAULT_BOUND: AttachmentPolicy = DEFAULT_ATTACHMENT_POLICY;

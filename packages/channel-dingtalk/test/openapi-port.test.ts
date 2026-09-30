@@ -3,8 +3,8 @@
  * and media upload/send. Fully offline (fake transport).
  */
 import { describe, expect, it } from 'vitest';
-import type { ChannelTarget } from '@wsz987/channel-core';
-import { ChannelError } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import {
   DingTalkOpenApiPortImpl,
   OFFICIAL_BASIS,

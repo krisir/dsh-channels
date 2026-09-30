@@ -1,1 +1,1 @@
-export * from '@wsz987/channel-control/plugin';
+export * from '@krischoichoi/channel-control/plugin';

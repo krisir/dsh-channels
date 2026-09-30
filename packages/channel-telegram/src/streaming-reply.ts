@@ -34,7 +34,7 @@ import type {
   ChannelTarget,
   OutboundMessage,
   ReplyHandle,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { TelegramUpstream } from './upstream.js';
 import { TelegramApiError } from './api-error.js';
 import { REGULAR_MESSAGE_MAX } from './rich-message.js';

@@ -1,4 +1,4 @@
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
 import type { ChannelAccessPolicyResolver } from '../src/access/resolver.js';
 
 const allowAllPolicy: ChannelAccessPolicy = {

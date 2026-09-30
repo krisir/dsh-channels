@@ -20,7 +20,7 @@ import type {
   InteractionReceived,
   MessageReceived,
   OutboundMessage,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import type { AgentManager } from '../src/agent-manager.ts';
 import { ReplyContextStore } from '../src/reply-context-store.ts';
 import { WaterfallQuestionBackend } from '../src/interactions/question-waterfall-backend.ts';

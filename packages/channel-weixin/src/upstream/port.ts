@@ -13,8 +13,8 @@
  *   - a capability that the upstream cannot yet provide is surfaced as a
  *     typed `UpstreamCapabilityError` — NEVER faked.
  */
-import type { ChannelAdapterContext } from '@wsz987/channel-core';
-import type { SecretStore, ChannelStorage } from '@wsz987/channel-core';
+import type { ChannelAdapterContext } from '@krischoichoi/channel-core';
+import type { SecretStore, ChannelStorage } from '@krischoichoi/channel-core';
 
 /** Uniform upstream-facing QR state (normalizes the Weixin iLink machine). */
 export type QrAuthState = 'pending' | 'authenticated' | 'expired' | 'failed';

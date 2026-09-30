@@ -5,8 +5,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, textParts } from '@wsz987/channel-core';
-import type { ChannelAccessPolicy } from '@wsz987/channel-core';
+import { ChannelService, textParts } from '@krischoichoi/channel-core';
+import type { ChannelAccessPolicy } from '@krischoichoi/channel-core';
 import { ChannelControlService } from '../../src/service.js';
 import { ChannelDefinitionRegistry } from '../../src/definitions/registry.js';
 import type { CredentialSeam } from '../../src/credentials/manager.js';

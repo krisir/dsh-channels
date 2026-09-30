@@ -12,7 +12,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Context } from '@deepseek-ai/cordis';
 import { SessionId } from '@deepseek-ai/dsh-session';
-import type { ChannelLogger } from '@wsz987/channel-core';
+import type { ChannelLogger } from '@krischoichoi/channel-core';
 import type { WorkspaceConfig } from '../src/config.ts';
 import { HarnessChannelWorkspaceResolver, resolveChannelWorkspaceRoot, type ChannelWorkspaceLike, type ChannelWorkspaceInput, type WorkspaceRegistryLike } from '../src/workspace-resolver.ts';
 import { stableSafeAccountKey as resolverKey } from '../src/channel-label.ts';

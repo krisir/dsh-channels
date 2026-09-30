@@ -11,7 +11,7 @@ import type {
   ChannelAdapterContext,
   ChannelStorage,
   SecretStore,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 import {
   ContextTokenStore,
   CursorCommitError,

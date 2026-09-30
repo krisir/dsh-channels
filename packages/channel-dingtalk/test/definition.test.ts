@@ -12,7 +12,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
+import { ChannelService, resolveVolatileConfig } from '@krischoichoi/channel-core';
 import { CredentialProvider } from '@deepseek-ai/dsh-credentials';
 import type { CredentialInfo, CredentialRef, ResolvedCredential } from '@deepseek-ai/dsh-credentials';
 import {
@@ -76,7 +76,7 @@ class FakeSeam {
 }
 
 function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -87,7 +87,7 @@ function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
     card: { createOnFirstDelta: true },
     upstream: { mode: 'gateway' },
     ...overrides,
-  });
+  })) as unknown as DingTalkConfig;
 }
 
 describe('createDingTalkDefinition setup descriptor', () => {

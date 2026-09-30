@@ -9,7 +9,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type ChannelAdapterContext } from '@wsz987/channel-core';
+import { ChannelService, type ChannelAdapterContext, resolveVolatileConfig } from '@krischoichoi/channel-core';
 import { CredentialProvider } from '@deepseek-ai/dsh-credentials';
 import type { CredentialInfo, CredentialRef, ResolvedCredential } from '@deepseek-ai/dsh-credentials';
 import { Config, QQAdapter, apply } from '../src/index.ts';
@@ -31,7 +31,7 @@ class FakeCredentials extends CredentialProvider {
 }
 
 function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     appId: 'dummy-app-id',
@@ -41,7 +41,7 @@ function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
     dedup: { enabled: true, windowMs: 5000 },
     startupTimeoutMs: 15000,
     ...overrides,
-  });
+  })) as unknown as QQConfig;
 }
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));

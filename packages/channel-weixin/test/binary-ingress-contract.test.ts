@@ -27,9 +27,9 @@
  */
 import { vi, expect, afterEach } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import type { ChannelAdapterContext } from '@wsz987/channel-core';
-import { createTestContext, runBinaryIngressContract } from '@wsz987/channel-testkit';
+import { ChannelService, resolveVolatileConfig, type MessageReceived } from '@krischoichoi/channel-core';
+import type { ChannelAdapterContext } from '@krischoichoi/channel-core';
+import { createTestContext, runBinaryIngressContract } from '@krischoichoi/channel-testkit';
 import { WeixinAdapter } from '../src/adapter.js';
 import { Config } from '../src/config.js';
 import type { WeixinConfig } from '../src/config.js';
@@ -37,14 +37,14 @@ import type { HttpTransport } from '../src/index.js';
 import { AccountCredentialStore } from '../src/auth/account-store.js';
 
 function makeConfig(overrides: Partial<WeixinConfig> = {}): WeixinConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     ilink: { baseUrl: 'https://fake.ilink.test', cdnBaseUrl: 'https://fake.cdn.test', botAgent: 'DeepSeekHarness/0.8.1' },
     network: { timeoutMs: 1000, longPollTimeoutMs: 1000 },
     reconnect: { enabled: false, baseDelayMs: 1, maxDelayMs: 10 },
     ...overrides,
-  } as unknown as WeixinConfig);
+  } as unknown as WeixinConfig)) as unknown as WeixinConfig;
 }
 
 /** Deterministic bytes the CDN fetch stub returns for every full_url. */

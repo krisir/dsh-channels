@@ -33,7 +33,7 @@ import { FileChannelInboundAssetStore } from '../src/attachments/store.ts';
 import { DEFAULT_ATTACHMENT_POLICY } from '../src/attachments/policy.ts';
 import { resolveAttachment } from '../src/attachment-resolver.ts';
 import { registerReadChannelAttachmentTool } from '../src/attachments/tool-read.ts';
-import { OutboxError } from '@wsz987/channel-harness';
+import { OutboxError } from '@krischoichoi/channel-harness';
 
 async function tempRoot(): Promise<string> {
   return mkdtemp(join(tmpdir(), 'dsh-acl-'));

@@ -15,7 +15,7 @@
  * package carries no dependency on any concrete credentials implementation.
  */
 import { Service, type Context } from '@deepseek-ai/cordis';
-import type { ChannelAccessPolicy, ChannelAdapter, ChannelEvent, ChannelStorage } from '@wsz987/channel-core';
+import type { ChannelAccessPolicy, ChannelAdapter, ChannelEvent, ChannelStorage } from '@krischoichoi/channel-core';
 import { ChannelDefinitionRegistry } from './definitions/registry.js';
 import { CredentialManager, type CredentialSeam } from './credentials/manager.js';
 import { AuthSessionManager } from './auth/session-manager.js';
@@ -80,7 +80,7 @@ export interface ChannelControlServiceOptions {
    */
   resolveOwnerIdentity?(channelId: string, accountId: string): Promise<string | undefined>;
   /**
-   * Prompt-only bundle update check (npm dist-tags of @wsz987/dsh-channels).
+   * Prompt-only bundle update check (npm dist-tags of @krischoichoi/dsh-channels).
    * Defaults: enabled, 24h TTL, memory-only cache (the plugin wires the shared
    * durable ChannelStorage).
    */

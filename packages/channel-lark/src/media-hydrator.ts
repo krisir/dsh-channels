@@ -44,8 +44,8 @@ import {
   toIngressFailureCode,
   type BinaryHydrationResult,
   type MessagePart,
-} from '@wsz987/channel-core';
-import type { MessageReceived } from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
+import type { MessageReceived } from '@krischoichoi/channel-core';
 import {
   LARK_MESSAGE_RESOURCE_MAX_BYTES,
   type LarkMediaPort,

@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-compat — upstream compatibility manifests, version policy,
+ * @krischoichoi/channel-compat — upstream compatibility manifests, version policy,
  * `channels doctor` and the M4 governance aggregation.
  *
  * A dependency-light library surface: structural `AdapterManifest` reading

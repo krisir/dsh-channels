@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { MessagePart } from '@wsz987/channel-core';
+import type { MessagePart } from '@krischoichoi/channel-core';
 import type { ChannelInboundAssetStore } from './store.js';
 import { sanitizeFilename } from './filename.js';
 import type {

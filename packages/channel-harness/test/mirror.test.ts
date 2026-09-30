@@ -10,7 +10,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { SessionId } from '@deepseek-ai/dsh-session';
 import type { Session } from '@deepseek-ai/dsh-session';
-import type { ChannelAdapter, ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelAdapter, ChannelTarget } from '@krischoichoi/channel-core';
 import { ReplyContextStore } from '../src/reply-context-store.ts';
 import { ReplyRouter } from '../src/reply-router.ts';
 import type { SessionBinding } from '../src/session-router.ts';

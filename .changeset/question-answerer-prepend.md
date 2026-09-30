@@ -1,5 +1,5 @@
 ---
-'@wsz987/channel-harness': patch
+'@krischoichoi/channel-harness': patch
 ---
 
 修复渠道 `ask_user_question` 全渠道失效（Web profile 下问题被官方 Remote answerer 吞掉）。

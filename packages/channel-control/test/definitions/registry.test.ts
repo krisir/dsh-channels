@@ -2,7 +2,7 @@
  * ChannelDefinitionRegistry unit tests (doc §14 / M2 Task 1).
  */
 import { describe, expect, it } from 'vitest';
-import { ChannelDuplicateError, isChannelError } from '@wsz987/channel-core';
+import { ChannelDuplicateError, isChannelError } from '@krischoichoi/channel-core';
 import { ChannelDefinitionRegistry } from '../../src/definitions/registry.js';
 import type { ChannelDefinition } from '../../src/index.js';
 

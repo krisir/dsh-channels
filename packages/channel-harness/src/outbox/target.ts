@@ -6,7 +6,7 @@
  * authority, so the target comes from the STORE-resolved binding,
  * never from an in-memory agent cache and never from the incoming message.
  */
-import type { ChannelTarget } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
 import type { SessionBinding } from '../session-router.js';
 
 /**

@@ -1,5 +1,5 @@
 /**
- * @wsz987/channel-core — stable cross-channel contract and Cordis ChannelService.
+ * @krischoichoi/channel-core — stable cross-channel contract and Cordis ChannelService.
  *
  * Exports identity types, structured messages, channel events, capabilities,
  * the `ChannelAdapter` contract, `ReplyHandle`, the `ChannelMountHandle`
@@ -31,3 +31,4 @@ export * from './schema.js';
 export * from './secrets.js';
 export * from './service.js';
 export * from './storage.js';
+export * from './volatile.js';

@@ -13,7 +13,7 @@
  * endpoint. Credentials never appear in this module (clients are built
  * elsewhere from resolved config/credentials).
  */
-import type { OutboundActionRow } from '@wsz987/channel-core';
+import type { OutboundActionRow } from '@krischoichoi/channel-core';
 
 /** Minimal media reference for the basic outbound image send. */
 export interface LarkMediaRef {

@@ -1,7 +1,7 @@
 /**
  * Inbound processing: dedup window + structured mapping + media hydration (image/file/audio/video) + emit.
  */
-import type { ChannelAdapterContext, MessagePart, MessageReceived } from '@wsz987/channel-core';
+import type { ChannelAdapterContext, MessagePart, MessageReceived } from '@krischoichoi/channel-core';
 import { z } from 'zod';
 import { dedupKey, mapInbound, mapInteraction, type DingTalkInboundMeta } from './mapper.js';
 

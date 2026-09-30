@@ -15,9 +15,10 @@
  * No `im.v1.message.patch` pseudo-stream and no legacy transport.
  */
 import { describe, expect, it, vi } from 'vitest';
+import { resolveVolatileConfig } from '@krischoichoi/channel-core';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+import { ChannelService, type MessageReceived } from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import { ReplyRouter } from '../../channel-harness/src/reply-router.ts';
 import { ReplyContextStore } from '../../channel-harness/src/reply-context-store.ts';
 import { SESSION_BINDING_SCHEMA_VERSION, type SessionBinding } from '../../channel-harness/src/session-router.ts';
@@ -95,7 +96,7 @@ class FakeOpenApiClient implements LarkOpenApiClient {
 }
 
 function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     timeoutMs: 1000,
@@ -117,7 +118,7 @@ function makeConfig(overrides: Partial<LarkConfig> = {}): LarkConfig {
       appId: 'cli_e2e',
     },
     ...overrides,
-  });
+  })) as unknown as LarkConfig;
 }
 
 const silentLogger = {

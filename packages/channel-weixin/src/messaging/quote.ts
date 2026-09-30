@@ -1,4 +1,4 @@
-import type { MessagePart } from '@wsz987/channel-core';
+import type { MessagePart } from '@krischoichoi/channel-core';
 import type { ILinkMessageItem, ILinkRefMessage } from '../ilink/types.js';
 
 /**

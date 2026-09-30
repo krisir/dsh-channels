@@ -4,7 +4,7 @@
  * and the durability of the ChannelStorage-backed store.
  */
 import { describe, expect, it } from 'vitest';
-import { MemoryStorage, type ChannelStorage, type ChannelEvent } from '@wsz987/channel-core';
+import { MemoryStorage, type ChannelStorage, type ChannelEvent } from '@krischoichoi/channel-core';
 import {
   ChannelStorageConversationDirectoryStore,
   conversationDirectoryStorageKey,

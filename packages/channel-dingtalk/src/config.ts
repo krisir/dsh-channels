@@ -17,6 +17,7 @@
  * never written and never read to build the SDK client.
  */
 import Schema from '@deepseek-ai/schemastery';
+import type { Volatile } from '@deepseek-ai/cordis';
 
 /** Credential reference name for the DingTalk AppSecret (SDK mode, default). */
 export const DINGTALK_CLIENT_SECRET_REF = 'DSH_CHANNEL_DINGTALK_MAIN_CLIENT_SECRET';
@@ -106,22 +107,48 @@ export interface DingTalkConfig {
   upstream: DingTalkUpstreamConfig;
 }
 
-export const Config: Schema<DingTalkConfig> = Schema.object({
-  enabled: Schema.boolean().default(true),
-  accountId: Schema.string().default('main'),
-  baseUrl: Schema.string().default('http://127.0.0.1:9100'),
-  timeoutMs: Schema.natural().default(30000),
-  longPollTimeoutMs: Schema.natural().default(25000),
+/**
+ * Activation-time config shape (Harness 0.2.0): every volatile field resolves
+ * to a `Volatile<T>` live handle instead of a plain value. `apply()` unwraps
+ * these once via `resolveVolatileConfig` into a plain `DingTalkConfig`.
+ */
+export interface DingTalkConfigLive {
+  enabled: Volatile<boolean>;
+  accountId: Volatile<string>;
+  baseUrl: Volatile<string>;
+  timeoutMs: Volatile<number>;
+  longPollTimeoutMs: Volatile<number>;
+  reconnect: Volatile<DingTalkReconnectConfig>;
+  dedup: Volatile<DingTalkDedupConfig>;
+  card: Volatile<DingTalkCardConfig>;
+  upstream: Volatile<DingTalkUpstreamConfig>;
+}
+
+// The runtime schema is genuine Schemastery (validation happens at the Loader
+// boundary); the annotation records the activation-time output shape. The cast
+// is required because Schemastery's inferred ObjectT models per-field optionality
+// more precisely than the hand-written `DingTalkConfigLive` alias.
+export const Config = Schema.object({
+  // Harness 0.2.0 settings model: fields the control plane / settings page may
+  // write at runtime are declared `.volatile()` — they surface on the
+  // auto-generated settings form, `ctx.settings.update(entryId, patch)` accepts
+  // exactly these paths, and at activation they resolve to `Volatile<T>`
+  // handles (unwrapped by `resolveVolatileConfig` in definition.ts / apply()).
+  enabled: Schema.boolean().default(true).volatile(),
+  accountId: Schema.string().default('main').volatile(),
+  baseUrl: Schema.string().default('http://127.0.0.1:9100').volatile(),
+  timeoutMs: Schema.natural().default(30000).volatile(),
+  longPollTimeoutMs: Schema.natural().default(25000).volatile(),
   reconnect: Schema.object({
     enabled: Schema.boolean().default(true),
     baseDelayMs: Schema.natural().default(1000),
     maxDelayMs: Schema.natural().default(30000),
     maxRetries: Schema.natural().default(10),
-  }),
+  }).default({}).volatile(),
   dedup: Schema.object({
     enabled: Schema.boolean().default(true),
     windowMs: Schema.natural().default(5000),
-  }),
+  }).default({}).volatile(),
   card: Schema.object({
     createOnFirstDelta: Schema.boolean().default(true),
     // Deliberately NO default: question buttons require a card template that is
@@ -130,7 +157,7 @@ export const Config: Schema<DingTalkConfig> = Schema.object({
     interactiveTemplateId: Schema.string(),
     interactiveTextParam: Schema.string().default('text'),
     interactiveActionsParam: Schema.string().default('actions'),
-  }),
+  }).default({}).volatile(),
   upstream: Schema.object({
     mode: Schema.union(['sdk', 'gateway']).default('sdk'),
     // The AppKey (clientId) is not a secret and may live in config.
@@ -141,5 +168,5 @@ export const Config: Schema<DingTalkConfig> = Schema.object({
     // still parse. apply() migrates its value to credentials a single time and
     // deletes it. Never written, never read to build the SDK client.
     clientSecret: Schema.string().hidden(),
-  }),
-});
+  }).default({}).volatile(),
+}) as unknown as Schema<DingTalkConfigLive>;

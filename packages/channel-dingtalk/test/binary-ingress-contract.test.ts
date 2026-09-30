@@ -17,8 +17,8 @@
  *   documented skips over invented fixtures).
  */
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService, type MessageReceived } from '@wsz987/channel-core';
-import { createTestContext, runBinaryIngressContract } from '@wsz987/channel-testkit';
+import { ChannelService, type MessageReceived, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import { createTestContext, runBinaryIngressContract } from '@krischoichoi/channel-testkit';
 import {
   Config,
   DingTalkAdapter,
@@ -29,7 +29,7 @@ import {
 import type { DingTalkConfig } from '../src/config.ts';
 
 function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     baseUrl: 'http://fake',
@@ -40,7 +40,7 @@ function makeConfig(overrides: Partial<DingTalkConfig> = {}): DingTalkConfig {
     card: { createOnFirstDelta: true },
     upstream: { mode: 'gateway' },
     ...overrides,
-  });
+  })) as unknown as DingTalkConfig;
 }
 
 const meta = { channel: 'dingtalk' as never, accountId: 'main' as never };

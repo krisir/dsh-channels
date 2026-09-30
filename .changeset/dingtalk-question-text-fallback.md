@@ -1,6 +1,6 @@
 ---
-'@wsz987/channel-dingtalk': patch
-'@wsz987/channel-harness': patch
+'@krischoichoi/channel-dingtalk': patch
+'@krischoichoi/channel-harness': patch
 ---
 
 修复钉钉 `ask_user_question` 总是回「无法在当前渠道展示问题，已取消。」

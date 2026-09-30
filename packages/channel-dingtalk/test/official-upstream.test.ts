@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { ChannelTarget } from '@wsz987/channel-core';
-import { ChannelError } from '@wsz987/channel-core';
+import type { ChannelTarget } from '@krischoichoi/channel-core';
+import { ChannelError } from '@krischoichoi/channel-core';
 import { DingTalkOfficialUpstream, type HttpRequestInit, type HttpTransport } from '../src/index.ts';
 
 const API = 'https://api.dingtalk.com';

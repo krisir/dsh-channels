@@ -9,8 +9,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { Context } from '@deepseek-ai/cordis';
-import { ChannelService } from '@wsz987/channel-core';
-import { createTestContext } from '@wsz987/channel-testkit';
+import { ChannelService, resolveVolatileConfig } from '@krischoichoi/channel-core';
+import { createTestContext } from '@krischoichoi/channel-testkit';
 import { ReplyRouter } from '../../channel-harness/src/reply-router.ts';
 import { ReplyContextStore } from '../../channel-harness/src/reply-context-store.ts';
 import type { SessionBinding } from '../../channel-harness/src/session-router.ts';
@@ -20,7 +20,7 @@ import type { QQConfig } from '../src/config.ts';
 import { SESSION_BINDING_SCHEMA_VERSION } from '../../channel-harness/src/session-router.ts';
 
 function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
-  return Config({
+  return resolveVolatileConfig(Config({
     enabled: true,
     accountId: 'main',
     appId: 'APP_ID',
@@ -30,7 +30,7 @@ function makeConfig(overrides: Partial<QQConfig> = {}): QQConfig {
     dedup: { enabled: true, windowMs: 5000 },
     startupTimeoutMs: 15000,
     ...overrides,
-  });
+  })) as unknown as QQConfig;
 }
 
 const silentLogger = {

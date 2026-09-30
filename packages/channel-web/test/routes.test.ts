@@ -12,7 +12,7 @@ import type {
   ChannelTarget,
   OutboundMessage,
   SendResult,
-} from '@wsz987/channel-core';
+} from '@krischoichoi/channel-core';
 
 /**
  * Routes integration tests (M1).
