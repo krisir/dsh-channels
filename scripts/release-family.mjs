@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 
 export const RELEASE_BUNDLE = '@krischoichoi/dsh-channels';
-export const RELEASE_REPOSITORY = 'git+https://github.com/wsz987/dsh-channels.git';
+export const RELEASE_REPOSITORY = 'git+https://github.com/krischoichoi/dsh-channels.git';
 export const RELEASE_PACKAGE_NAMES = [
   '@krischoichoi/channel-core',
   '@krischoichoi/channel-control',

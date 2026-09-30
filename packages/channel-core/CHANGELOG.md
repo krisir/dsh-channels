@@ -1,5 +1,16 @@
 # @wsz987/channel-core
 
+## 0.6.1
+
+### Patch Changes
+
+- 修复首次发布时内部依赖被写成 `workspace:*` 的问题。
+
+  `npm publish` 不会重写 pnpm 的 `workspace:` 协议，导致 0.6.0 各包在 registry 上的
+  `dependencies` 仍是 `"@krischoichoi/channel-*": "workspace:*"`，消费者安装即失败。
+  本版本改用仓库自带的 `pnpm release:pack` / `pnpm release:publish` 管线（内部 `pnpm pack`
+  会写入真实版本号，`assertPackedManifest` 会在发布前拦截 `workspace:` 残留）。
+
 ## 0.6.0
 
 ### Minor Changes
