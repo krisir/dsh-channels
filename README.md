@@ -8,10 +8,10 @@
 
 支持图片与文件收发，Agent 可直接读取 PDF、DOCX、XLSX 和文本内容
 
-[![CI](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml)
+[![CI](https://github.com/krisir/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/krisir/dsh-channels/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
 [![npm downloads](https://img.shields.io/npm/dm/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
-[![GitHub stars](https://img.shields.io/github/stars/krischoichoi/dsh-channels?style=flat)](https://github.com/krischoichoi/dsh-channels/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/krischoichoi/dsh-channels?style=flat)](https://github.com/krisir/dsh-channels/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22.19-brightgreen.svg)](package.json)
 
@@ -172,7 +172,7 @@ npx @deepseek-ai/dsh plugin --profile web remove -w @krischoichoi/dsh-channels
 ## 从源码运行
 
 ```bash
-git clone https://github.com/krischoichoi/dsh-channels.git
+git clone https://github.com/krisir/dsh-channels.git
 cd dsh-channels
 pnpm install
 pnpm build

@@ -8,10 +8,10 @@ Multi-channel integration with unified configuration — chat with your Agent on
 
 Send and receive images and files, with PDF, DOCX, XLSX and text content readable by the Agent
 
-[![CI](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/krischoichoi/dsh-channels/actions/workflows/ci.yml)
+[![CI](https://github.com/krisir/dsh-channels/actions/workflows/ci.yml/badge.svg)](https://github.com/krisir/dsh-channels/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
 [![npm downloads](https://img.shields.io/npm/dm/%40krischoichoi%2Fdsh-channels)](https://www.npmjs.com/package/@krischoichoi/dsh-channels)
-[![GitHub stars](https://img.shields.io/github/stars/krischoichoi/dsh-channels?style=flat)](https://github.com/krischoichoi/dsh-channels/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/krischoichoi/dsh-channels?style=flat)](https://github.com/krisir/dsh-channels/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22.19-brightgreen.svg)](package.json)
 
@@ -174,7 +174,7 @@ By default each channel / account pair is isolated automatically — no configur
 ## Running from source
 
 ```bash
-git clone https://github.com/krischoichoi/dsh-channels.git
+git clone https://github.com/krisir/dsh-channels.git
 cd dsh-channels
 pnpm install
 pnpm build

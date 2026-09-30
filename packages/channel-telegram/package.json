@@ -3,7 +3,7 @@
   "version": "0.6.1",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/krischoichoi/dsh-channels.git"
+    "url": "git+https://github.com/krisir/dsh-channels.git"
   },
   "publishConfig": {
     "access": "public"
